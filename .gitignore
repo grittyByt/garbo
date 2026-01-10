@@ -17,3 +17,6 @@ build/
 
 # Coverage
 coverage/
+
+# Files
+originX/

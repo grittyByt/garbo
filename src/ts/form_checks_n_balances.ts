@@ -609,6 +609,7 @@ type garboInputError = {
   message: string;
 }
 
+// the user has the option to fill in the email input or the keyword input with this function
 function checksNBalances(theEmail: string, theKey: string): garboInputError[] {
   // an empty array to catch all the errors
   const errors: garboInputError[] = [];
@@ -616,21 +617,99 @@ function checksNBalances(theEmail: string, theKey: string): garboInputError[] {
   const email = theEmail.trim();
   const keyword = theKey.trim();
 
+  //don't leave both input fields blank Garbo needs something to search by
   if (email === "" && keyword === ""){
-    
+    //email error
+    errors.push({
+      input: "email",
+      message: "Enter an email address or a keyword to be searched (at least one is required)"
+    });
+    //keyword error
+    errors.push({
+      input: "keyword",
+      message: "Enter a keyword or an email address to be searched (at least one is required)"
+    });
+    // no form submission if there is an error
+    return errors;
+  }
+  /* Email rules are set so if the user wants to not enter a valid email in the input
+  * then an error will show*/
+  if (email !== ""){
+    if (!isValidEmail(email)) {
+      errors.push({
+        input: "email",
+        message: "Please enter a valid email address"
+      });
+    }
+  }
+
+  if (keyword !== ""){
+    if (keyword.length > 25) {
+      errors.push({
+        input: "keyword",
+        message: "The input cannot have this many characters"
+      });
+    }
+    if ( keyword.length < 3) {
+      errors.push({
+        input: "keyword",
+        message: "The input cannot be this short"
+      });
+    }
+  }
+  // the function returns all the errors (if any) found.  Fills up garborInputError array
+  return errors;
+
+}
+
+// this function will affect the DOM by displaying the error messages to the user
+function showGarboErrors(errors: garboInputError[]): void {
+  //grabbing the HTML element by its className
+  const emailErrorBox = document.querySelector(".errorMadeAtEmail") as HTMLElement | null;
+  const keywordErrorBox = document.querySelector(".errorMadeAtKeyword") as HTMLElement | null;
+  //grabbing the p tag within the previous classNames
+  const emailErrorMsg = emailErrorBox?.querySelector("p") as HTMLParagraphElement | null;
+  const keywordErrorMsg = keywordErrorBox?.querySelector("p") as HTMLParagraphElement | null;
+
+  //default to CSS display setting
+  emailErrorBox?.style.setProperty("display", "none");
+  keywordErrorBox?.style.setProperty("display", "none");
+
+  // clears old error messages
+  if (emailErrorMsg) emailErrorMsg.textContent = "";
+  if (keywordErrorMsg) keywordErrorMsg.textContent = "";
+
+  // Find the first email-related error (if any)
+  const emailErr = errors.find((e) => e.input === "email");
+
+  // Find the first keyword-related error (if any)
+  const keywordErr = errors.find((e) => e.input === "keyword");
+
+  // If we found an email error, show it
+  if (emailErr) {
+
+    if (emailErrorMsg) emailErrorMsg.textContent = emailErr.message;
+
+    emailErrorBox?.style.setProperty("display", "block");
+  }
+
+  // If we found a keyword error, show it
+  if (keywordErr) {
+
+    if (keywordErrorMsg) keywordErrorMsg.textContent = keywordErr.message;
+
+    keywordErrorBox?.style.setProperty("display", "block");
   }
 
 }
 
-
+// this function ensures an email is in the correct format
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   // returns true or false
   return emailRegex.test(email);
 }
 
-// Your JS did: isValidEmail(); (bug: missing argument)
-// Removed that call.
 
 function isValidKeyword(): string {
   return keyword_valid.value;

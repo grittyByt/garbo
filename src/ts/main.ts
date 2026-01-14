@@ -1,3 +1,11 @@
+/*==========================
+*         IMPORTS
+* =========================*/
+
+import {login_verified} from "./form_checks_n_balances";
+import {signUp_verified} from "./form_checks_n_balances";
+
+
 function qs<T extends Element>(selector: string, parent: ParentNode = document): T {
   const el = parent.querySelector(selector);
   if (!el) throw new Error(`Missing element for selector: ${selector}`);
@@ -55,8 +63,8 @@ const confirmUser = document.createElement("input"); // currently unused
 const confirmPath = document.createElement("input");
 
 const signUp_btn = document.createElement("button");
-const feedback_su = document.createElement("div");
-const feedback_login = document.createElement("div");
+export const feedback_su = document.createElement("div");
+export const feedback_login = document.createElement("div");
 
 const feedback = document.createElement("p"); // currently unused
 const back_btn = document.createElement("button"); // currently unused
@@ -98,14 +106,14 @@ intro.appendChild(newUserBlock);
    Clones (typed)
 ========================= */
 
-const feedback_su2 = feedback_su.cloneNode(true) as HTMLDivElement;
-const feedback_su3 = feedback_su.cloneNode(true) as HTMLDivElement;
-const feedback_su6 = feedback_su.cloneNode(true) as HTMLDivElement;
-const feedback_su7 = feedback_su.cloneNode(true) as HTMLDivElement;
-const feedback_su8 = feedback_su.cloneNode(true) as HTMLDivElement;
-const feedback_su9 = feedback_su.cloneNode(true) as HTMLDivElement;
+export const feedback_su2 = feedback_su.cloneNode(true) as HTMLDivElement;
+export const feedback_su3 = feedback_su.cloneNode(true) as HTMLDivElement;
+export const feedback_su6 = feedback_su.cloneNode(true) as HTMLDivElement;
+export const feedback_su7 = feedback_su.cloneNode(true) as HTMLDivElement;
+export const feedback_su8 = feedback_su.cloneNode(true) as HTMLDivElement;
+export const feedback_su9 = feedback_su.cloneNode(true) as HTMLDivElement;
 
-const feedback_li2 = feedback_login.cloneNode(true) as HTMLDivElement;
+export const feedback_li2 = feedback_login.cloneNode(true) as HTMLDivElement;
 
 /* =========================
    Event listeners

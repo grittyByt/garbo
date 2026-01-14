@@ -1,4 +1,8 @@
-"use strict";
+/*==========================
+*         IMPORTS
+* =========================*/
+import { login_verified, signUp_verified } from "./form_checks_n_balances.js";
+// import {  } from "./form_checks_n_balances";
 function qs(selector, parent = document) {
     const el = parent.querySelector(selector);
     if (!el)
@@ -21,7 +25,8 @@ const intro = qs(".intro");
 const welcomeBlock = qs(".welcome-user");
 const login_button = qs(".login-button");
 const new_user_button = qs(".new-user-button");
-const theFoot = qs("footer");
+// const theFoot = qs("footer");
+
 /* =========================
    Elements we create
 ========================= */
@@ -47,8 +52,8 @@ const confirmEmail = document.createElement("input");
 const confirmUser = document.createElement("input"); // currently unused
 const confirmPath = document.createElement("input");
 const signUp_btn = document.createElement("button");
-const feedback_su = document.createElement("div");
-const feedback_login = document.createElement("div");
+export const feedback_su = document.createElement("div");
+export const feedback_login = document.createElement("div");
 const feedback = document.createElement("p"); // currently unused
 const back_btn = document.createElement("button"); // currently unused
 /* =========================
@@ -82,13 +87,13 @@ intro.appendChild(newUserBlock);
 /* =========================
    Clones (typed)
 ========================= */
-const feedback_su2 = feedback_su.cloneNode(true);
-const feedback_su3 = feedback_su.cloneNode(true);
-const feedback_su6 = feedback_su.cloneNode(true);
-const feedback_su7 = feedback_su.cloneNode(true);
-const feedback_su8 = feedback_su.cloneNode(true);
-const feedback_su9 = feedback_su.cloneNode(true);
-const feedback_li2 = feedback_login.cloneNode(true);
+export const feedback_su2 = feedback_su.cloneNode(true);
+export const feedback_su3 = feedback_su.cloneNode(true);
+export const feedback_su6 = feedback_su.cloneNode(true);
+export const feedback_su7 = feedback_su.cloneNode(true);
+export const feedback_su8 = feedback_su.cloneNode(true);
+export const feedback_su9 = feedback_su.cloneNode(true);
+export const feedback_li2 = feedback_login.cloneNode(true);
 /* =========================
    Event listeners
 ========================= */

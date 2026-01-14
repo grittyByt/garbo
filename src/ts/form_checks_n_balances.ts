@@ -5,9 +5,21 @@
 // need to import functions to the main.ts file
 // add module type to html file as well
 
-/* =========================
-   Validators (typed + fixed)
-========================= */
+/*==========================
+*         IMPORTS
+* =========================*/
+
+import {
+  feedback_su,
+  feedback_su2,
+  feedback_su3,
+  feedback_su6,
+  feedback_su7,
+  feedback_su8,
+  feedback_su9,
+  feedback_login,
+  feedback_li2} from "./main.js";
+/*++++++++++++++++++++++++++++++++++++*/
 
 export function signUp_verified(fName: HTMLInputElement, lName: HTMLInputElement, uName: HTMLInputElement, userEmail: HTMLInputElement, confirmEmail: HTMLInputElement, pathway: HTMLInputElement, confirmPath: HTMLInputElement): void {
   // Helper function to update class based on condition
@@ -62,10 +74,10 @@ export function signUp_verified(fName: HTMLInputElement, lName: HTMLInputElement
   const uNameVal = uName.value.trim();
   updateClass(
     uName,
-    uNameVal.length >= 3 && uNameVal.length <= 16,
+    uNameVal.length >= 5 && uNameVal.length <= 16,
     feedback_su3,
     "Looks good",
-    "Username: 3 to 16 characters are required!"
+    "Username: 5 to 16 characters are required!"
   );
 
   // Validate eMail: non-empty and valid format
@@ -91,9 +103,9 @@ export function signUp_verified(fName: HTMLInputElement, lName: HTMLInputElement
 
 
 
-/* =========================
-   Login validation (typed + fixed comparisons)
-========================= */
+/*=======================
+   Login validation
+=========================*/
 
 export function login_verified(uName: HTMLInputElement, pWord: HTMLInputElement): void {
   const uNameVal = uName.value.trim();
@@ -197,13 +209,9 @@ export function login_verified(uName: HTMLInputElement, pWord: HTMLInputElement)
   pFeedback(pWordError, pWord, feedback_li2);
 }
 
-
-
-
-
-/* =========================
-   checksNBalances + keyword/email (fixed)
-========================= */
+/*=======================
+    checksNBalances
+=========================*/
 /* function is made to check users' input for valid entry before garbo goes to check users'
     email for either the email address or the keyword up for deletion
  */

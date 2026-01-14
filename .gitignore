@@ -12,10 +12,16 @@ build/
 # Logs
 *.log
 
-# OS junk
+# OS & Editor junk
 .DS_Store
+.vscode/
+.idea
 
 # Coverage
 coverage/
 
-# Files
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/

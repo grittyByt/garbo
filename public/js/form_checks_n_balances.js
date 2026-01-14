@@ -1,11 +1,13 @@
-"use strict";
 /* =========================
    Helpers (TS-safe DOM)
 ========================= */
-/* =========================
-   Validators (typed + fixed)
-========================= */
-function signUp_verified(fName, lName, uName, userEmail, confirmEmail, pathway, confirmPath) {
+// need to import functions to the main.ts file
+// add module type to html file as well
+/*==========================
+*         IMPORTS
+* =========================*/
+import { feedback_su, feedback_su2, feedback_su3, feedback_su6, feedback_su7, feedback_su8, feedback_su9, feedback_login, feedback_li2 } from "./main.js";
+export function signUp_verified(fName, lName, uName, userEmail, confirmEmail, pathway, confirmPath) {
     // Helper function to update class based on condition
     function updateClass(element, isValid, feedbackEl, validComment, invalidComment) {
         if (isValid) {
@@ -54,9 +56,9 @@ function signUp_verified(fName, lName, uName, userEmail, confirmEmail, pathway, 
     updateClass(confirmPath, confirmPassValid, feedback_su9, "Password is confirmed", "Password: Not a match!");
 }
 /* =========================
-   Login validation (typed + fixed comparisons)
+   Login validation
 ========================= */
-function login_verified(uName, pWord) {
+export function login_verified(uName, pWord) {
     const uNameVal = uName.value.trim();
     const passwordVal = pWord.value.trim();
     // Regex to detect email

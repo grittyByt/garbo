@@ -2,8 +2,7 @@
 *         IMPORTS
 * =========================*/
 
-import {login_verified} from "./form_checks_n_balances";
-import {signUp_verified} from "./form_checks_n_balances";
+import {signUpForm_verified, loginForm_verified} from "./form_checks_n_balances";
 
 
 function qs<T extends Element>(selector: string, parent: ParentNode = document): T {
@@ -127,44 +126,63 @@ new_user_button.addEventListener("click", () => {
   display_signUp();
 });
 
-signUp_btn.addEventListener("click", async (e: MouseEvent) => {
+signUp_btn.addEventListener("submit", async (e: MouseEvent) => {
   e.preventDefault();
 
-  signUp_verified(fName, lName, uName, userEmail, confirmEmail, pathway, confirmPath);
+  //Frontend validation
+  const result = signUpForm_verified(fName, lName, uName, userEmail, confirmEmail, pathway, confirmPath);
+  if (!result.ok) return;
 
-  const user: {
-    fName: string;
-    lName: string;
-    uName: string;
-    eMail: string;
-    password: string;
-  } = {
-    fName: fName.value.trim(),
-    lName: lName.value.trim(),
-    uName: uName.value.trim(),
-    eMail: userEmail.value.trim(),
-    password: pathway.value.trim(),
+  //the build
+  const user = {
+    firstName: fName.value.trim(),
+    lastName: lName.value.trim(),
+    userName: uName.value.trim(),
+    email: userEmail.value.trim(),
+    thePath: pathway.value.trim(),
   };
 
-  const response = await fetch("http://localhost:3000/signup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(user),
-  });
+  try {
+    const response = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
+    });
 
-  // Avoid "any": type the response shape you expect
-  const data: { message?: string } = await response.json();
+    const data: { user?: unknown; error?: string } = await response.json();
 
-  if (response.ok) {
+    // Handle success vs failure
+    if (!response.ok) {
+      alert(data.error ?? "Signup failed.");
+      return;
+    }
+
     alert("Signup successful!");
-  } else {
-    alert("Error: " + (data.message ?? "Unknown error"));
+    // Optional: redirect or update UI here
+    // window.location.href = "/dashboard.html";
+
+  } catch (err) {
+    // 6️⃣ Network / unexpected error handling
+    console.error("Signup request failed:", err);
+    alert("Unable to connect to server. Please try again.");
   }
+
+
+
+
+  // // Avoid "any": type the response shape you expect
+  // const data: { message?: string } = await response.json();
+  //
+  // if (response.ok) {
+  //   alert("Signup successful!");
+  // } else {
+  //   alert("Error: " + (data.message ?? "Unknown error"));
+  // }
 });
 
 loginForm_button.addEventListener("click", async (e: MouseEvent) => {
   e.preventDefault();
-  login_verified(userName_input, password_input);
+  loginForm_verified(userName_input, password_input);
   console.log("login button pressed");
 });
 
@@ -236,7 +254,8 @@ function display_signUp(): void {
   newUserBlock.style.display = "flex";
 
   signUp_sheet.style.display = "flex";
-  signUp_sheet.action = "submit";
+  signUp_sheet.method = "POST";
+  signUp_sheet.action = "http://localhost:5432/backend/auth/signup";
   signUp_sheet.noValidate = true;
 
   // Attributes for labels
@@ -305,7 +324,7 @@ function display_signUp(): void {
 
   // Confirm email
   confirmEmail.type = "email";
-  confirmEmail.name = "confirmEmail";
+  confirmEmail.name = "eMail";
   confirmEmail.placeholder = "Confirm your email";
 
   // User's password
@@ -315,7 +334,7 @@ function display_signUp(): void {
 
   // Confirm password
   confirmPath.type = "password";
-  confirmPath.name = "confirmPassword";
+  confirmPath.name = "passwordHash";
   confirmPath.placeholder = "Confirm the password";
 
   // sign up button
@@ -375,7 +394,7 @@ function display_login(): void {
 }
 
 /* =========================
-   Bootstrap validation hook (FIXED)
+   Bootstrap validation hook
 ========================= */
 
 // Your JS tried: Array.from(forms).forEach(...)

@@ -19,9 +19,29 @@ import {
   feedback_su9,
   feedback_login,
   feedback_li2} from "./main.js";
+import {hashPassword} from "../../backend/lib/password";
+
+/*++++++++++++++++++++++++++++++++++++*/
 /*++++++++++++++++++++++++++++++++++++*/
 
-export function signUp_verified(fName: HTMLInputElement, lName: HTMLInputElement, uName: HTMLInputElement, userEmail: HTMLInputElement, confirmEmail: HTMLInputElement, pathway: HTMLInputElement, confirmPath: HTMLInputElement): void {
+type newUserSignedUp = {
+  firstName: string,
+  lastName: string,
+  userName: string,
+  email: string,
+  thePath: string
+};
+
+export function signUpForm_verified(
+    fName: HTMLInputElement,
+    lName: HTMLInputElement,
+    uName: HTMLInputElement,
+    userEmail: HTMLInputElement,
+    confirmEmail: HTMLInputElement,
+    pathway: HTMLInputElement,
+    confirmPath: HTMLInputElement
+): {ok: true; data: newUserSignedUp} | {ok: false} {
+
   // Helper function to update class based on condition
   function updateClass(
     element: HTMLElement,
@@ -50,55 +70,77 @@ export function signUp_verified(fName: HTMLInputElement, lName: HTMLInputElement
     return emailRegex.test(email);
   }
 
-  // Validate fName: 3–20 characters
+  // Validate fName: 3–25 characters
   const fNameVal = fName.value.trim();
+  const validFName = fNameVal.length >= 3 && fNameVal.length <= 25;
   updateClass(
     fName,
-    fNameVal.length >= 3 && fNameVal.length <= 20,
+    validFName,
     feedback_su,
     "Looks good",
-    "First Name: 3 to 20 characters are required!"
+    "3 to 20 characters are required!"
   );
 
-  // Validate lName: 3–20 characters
+  // Validate lName: 3–25 characters
   const lNameVal = lName.value.trim();
+  const validLName = lNameVal.length >= 3 && lNameVal.length <= 25;
   updateClass(
     lName,
-    lNameVal.length >= 3 && lNameVal.length <= 20,
+    validLName,
     feedback_su2,
     "Looks good",
-    "Last Name: 3 to 20 characters are required!"
+    "3 to 20 characters are required!"
   );
 
   // Validate uName: 3–16 characters
   const uNameVal = uName.value.trim();
+  const validUName = uNameVal.length >= 5 && uNameVal.length <= 16;
   updateClass(
     uName,
-    uNameVal.length >= 5 && uNameVal.length <= 16,
+    validUName,
     feedback_su3,
     "Looks good",
-    "Username: 5 to 16 characters are required!"
+    "5 to 16 characters are required!"
   );
 
   // Validate eMail: non-empty and valid format
   const eMailVal = userEmail.value.trim();
-  const eMailValid = eMailVal !== "" && isValidEmailFormat(eMailVal);
-  updateClass(userEmail, eMailValid, feedback_su6, "Email is good", "Email: Not valid!");
+  const validEMail = eMailVal !== "" && isValidEmailFormat(eMailVal);
+  updateClass(userEmail, validEMail, feedback_su6, "Email is good", "Email is not valid");
 
   // Validate confirmMail: matches eMail and valid format
-  const confirmMailVal = confirmEmail.value.trim();
-  const confirmMailValid = confirmMailVal !== "" && confirmMailVal === eMailVal && isValidEmailFormat(confirmMailVal);
-  updateClass(confirmEmail, confirmMailValid, feedback_su7, "Email is confirmed", "Email: Not a match!");
+  const confirmedEMailVal = confirmEmail.value.trim();
+  const validConfirmedEMail = confirmedEMailVal !== "" && confirmedEMailVal === eMailVal;
+  updateClass(confirmEmail, validConfirmedEMail, feedback_su7, "Email is confirmed", "Email does not match");
 
   // Validate password: 8–20 characters
   const passwordVal = pathway.value.trim();
-  const passwordValid = passwordVal.length >= 8 && passwordVal.length <= 20;
-  updateClass(pathway, passwordValid, feedback_su8, "Password is good", "Password: 8 to 20 characters are required!");
+  const validPassword = passwordVal.length >= 8 && passwordVal.length <= 20;
+  updateClass(pathway, validPassword, feedback_su8, "Password is good", "8 to 20 characters are required");
 
   // Validate confirmPass: matches password and 8–20 characters
-  const confirmPassVal = confirmPath.value.trim();
-  const confirmPassValid = confirmPassVal === passwordVal && confirmPassVal.length >= 8 && confirmPassVal.length <= 20;
-  updateClass(confirmPath, confirmPassValid, feedback_su9, "Password is confirmed", "Password: Not a match!");
+  const confirmedPassVal = confirmPath.value.trim();
+  const validConfirmedPass = confirmedPassVal === passwordVal;
+
+  updateClass(confirmPath, validConfirmedPass, feedback_su9, "Password is confirmed", "Password does not match!");
+
+  const legit =
+      validFName && validLName &&
+      validUName && validEMail &&
+      validConfirmedEMail && validPassword &&
+      validConfirmedPass;
+
+  if (!legit) return {ok: false};
+
+  return {ok: true,
+    data: {
+      firstName: fNameVal,
+      lastName: lNameVal,
+      userName: uNameVal,
+      email: confirmedEMailVal,
+      thePath: confirmedPassVal,
+    },
+  };
 }
 
 
@@ -107,7 +149,7 @@ export function signUp_verified(fName: HTMLInputElement, lName: HTMLInputElement
    Login validation
 =========================*/
 
-export function login_verified(uName: HTMLInputElement, pWord: HTMLInputElement): void {
+export function loginForm_verified(uName: HTMLInputElement, pWord: HTMLInputElement): void {
   const uNameVal = uName.value.trim();
   const passwordVal = pWord.value.trim();
 
@@ -270,7 +312,7 @@ function checksNBalances(theEmail: string, theKey: string): garboInputError[] {
       });
     }
   }
-  // the function returns all the errors (if any) found.  Fills up garborInputError array
+  // the function returns all the errors (if any) found.  Fills up garboInputError array
   return errors;
 
 }

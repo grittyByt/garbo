@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+  output = ""
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                    String   @id @default(uuid())
+  firstName             String
+  lastName              String
+  eMail                 String   @unique
+  userName              String   @unique
+  passwordHash          String   // store argon2id hash string here
+  passwordUpdatedAt     DateTime @default(now())
+
+  // Optional: for security / UX
+  failedLoginCount  Int      @default(0)
+  lastFailedLoginAt DateTime?
+  lockedUntil       DateTime?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([eMail])
+}

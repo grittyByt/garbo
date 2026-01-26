@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output = ""
+  output   = ""
 }
 
 datasource db {
@@ -8,21 +8,44 @@ datasource db {
 }
 
 model User {
-  id                    String   @id @default(uuid())
-  firstName             String
-  lastName              String
-  eMail                 String   @unique
-  userName              String   @unique
-  passwordHash          String   // store argon2id hash string here
-  passwordUpdatedAt     DateTime @default(now())
+  id                Int         @id @default(autoincrement())
+  publicId          String      @unique @default(uuid())
+  firstName         String
+  lastName          String
+  eMail             String      @unique
+  userName          String      @unique
+  passwordHash      String
+  passwordUpdatedAt DateTime    @default(now())
 
   // Optional: for security / UX
-  failedLoginCount  Int      @default(0)
+  // Lockout / backoff
+  failedLoginCount  Int         @default(0)
   lastFailedLoginAt DateTime?
   lockedUntil       DateTime?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  //MFA (TOTP)
+  mfaEnabled        Boolean     @default(false)
+  mfaSecretEnc      String?
+  mfaEnrolledAt     DateTime?
+
+  resetTokens       PWResetToken[]
+
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
   @@index([eMail])
+}
+
+model PWResetToken {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash String      @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime    @default(now())
+
+  @@index([userId, expiresAt])
 }

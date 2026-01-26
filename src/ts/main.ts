@@ -138,8 +138,8 @@ signUp_btn.addEventListener("submit", async (e: MouseEvent) => {
     firstName: fName.value.trim(),
     lastName: lName.value.trim(),
     userName: uName.value.trim(),
-    email: userEmail.value.trim(),
-    thePath: pathway.value.trim(),
+    email: confirmEmail.value.trim(),
+    thePath: confirmPath.value.trim(),
   };
 
   try {
@@ -160,6 +160,7 @@ signUp_btn.addEventListener("submit", async (e: MouseEvent) => {
     alert("Signup successful!");
     // Optional: redirect or update UI here
     // window.location.href = "/dashboard.html";
+
 
   } catch (err) {
     // 6️⃣ Network / unexpected error handling

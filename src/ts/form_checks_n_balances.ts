@@ -36,6 +36,7 @@ export function signUpForm_verified(
     fName: HTMLInputElement,
     lName: HTMLInputElement,
     uName: HTMLInputElement,
+    // age: HTMLInputElement,
     userEmail: HTMLInputElement,
     confirmEmail: HTMLInputElement,
     pathway: HTMLInputElement,
@@ -72,7 +73,7 @@ export function signUpForm_verified(
 
   // Validate fName: 3–25 characters
   const fNameVal = fName.value.trim();
-  const validFName = fNameVal.length >= 3 && fNameVal.length <= 25;
+  const validFName = fNameVal.length >= 2 && fNameVal.length <= 25;
   updateClass(
     fName,
     validFName,

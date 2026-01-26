@@ -1,33 +1,85 @@
+//Authentication routes that take form input and store users
+
+/*
+* How this schema is used for Signup (backend flow)
+
+Goal
+
+Create a row in User with email/username/... and passwordHash.
+
+Typical backend steps
+	1.	Receive signup data: firstName, lastName, email, username, password
+	2.	Validate it (lengths, email format, password rules)
+	3.	Check uniqueness:
+	•	findUnique({ where: { email } })
+	•	findUnique({ where: { username } })
+	4.	Hash password with argon2id
+	5.	Create user:
+	•	prisma.user.create({ data: {...} })
+	6.	Return success (and start a session)
+
+Key point: the frontend should not “verify” by checking the DB. It verifies by:
+	•	checking basic form rules locally (fast feedback),
+	•	then calling /api/signup,
+	•	backend returns success or validation errors.
+* */
+/*
+* How this schema is used for Login (backend flow)
+
+Goal
+
+Find the user by email or username, then verify password.
+
+Typical backend steps
+	1.	Receive login data: identifier (email or username), password
+	2.	Find user:
+	•	if identifier looks like email -> where: { email }
+	•	else -> where: { username }
+	3.	If no user: return “invalid credentials” (generic message)
+	4.	Verify:
+	•	argon2.verify(user.passwordHash, passwordAttempt)
+	5.	If ok: create session/token and return success
+
+Again: frontend does not read passwordHash or user data directly from DB.
+
+* */
 // routes/auth.ts
 import { Router } from "express";
 import * as argon2 from "argon2";
 import { prisma } from "../lib/prisma";
 import { hashPassword, verifyPassword } from "../lib/password";
+import {loginIpLimiter} from "./middleware";
 
 const router = Router();
 
 router.post("/signup", async (req, res) => {
   try {
-    const { fName, lName, uName, eMail, password } = req.body ?? {};
+    const { fName, lName, uName, age, eMail, password } = req.body ?? {};
 
     // Server-side validation (never trust browser)
-    if (!fName || fName.length < 3 || fName.length > 25) {
+    if (!fName || fName.length < 2 || fName.length > 25) {
+      // 400 = Bad request
+      /*
+       * The server cannot or will not process the request due to something that is
+       *  perceived to be a client error (e.g., malformed request syntax, invalid request
+       *  message framing, or deceptive request routing).
+      */
       return res.status(400).json({
         error: "Invalid first name"
       });
     }
+
     if (!lName || lName.length < 3 || lName.length > 25) {
       return res.status(400).json({
         error: "Invalid last name"
       });
     }
 
-    // const userExist = prisma.user.findUnique({ where: { uName } });
-    // if (userExist) {
-    //   return res.status(400).json({
-    //     error: "Username already exist"
-    //   });
-    // }
+    if (!age || age <= 15 || age >= 125) {
+      return res.status(400).json({
+        error: "Invalid age"
+      });
+    }
 
     if (!uName || uName.length < 5 || uName.length > 16) {
       return res.status(400).json({
@@ -48,12 +100,16 @@ router.post("/signup", async (req, res) => {
 
 
     // Check uniqueness (depending on your schema unique constraints)
-    const existing = await prisma.user.findFirst({
+    const userExist = await prisma.user.findFirst({
       where: { OR: [{ eMail: eMail }, { userName: uName }] },
+      // this allows Prisma to work and sort faster by producing only the id associated
+      // with the particular user
       select: { id: true },
     });
 
-    if (existing) {
+    if (userExist) {
+      // 409 = Conflict
+      // This response is sent when a request conflicts with the current state of the server.
       return res.status(409).json({
         error: "Email or username already in use"
       });
@@ -63,25 +119,35 @@ router.post("/signup", async (req, res) => {
     const passwordHash = await hashPassword(password);
 
     // Create user
-    const user = await prisma.user.create({
+    const welcomeUser = await prisma.user.create({
       data: {
         firstName: fName,
         lastName: lName,
         userName: uName,
         eMail: eMail,
-        passwordHash,
+        passwordHash: passwordHash,
       },
-      select: { firstName: true, lastName: true, userName: true, eMail: true, createdAt: true },
+      select: { id: true, firstName: true, lastName: true, userName: true, eMail: true, createdAt: true },
     });
 
-    return res.status(201).json({ user });
+    // 201 = Created
+    /*
+    * successful response status code indicates that the HTTP request has led to
+    * the creation of a resource.
+    */
+    return res.status(201).json({ welcomeUser });
   } catch (err) {
     console.error(err);
+    // 500 = Internal Server Issue
+    /*
+    * server error response status code indicates that the server encountered an
+    * unexpected condition that prevented it from fulfilling the request.
+    * */
     return res.status(500).json({ error: "Server error" });
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", loginIpLimiter, async (req, res) => {
   try {
 
     const {loginUser, loginPass} = req.body;

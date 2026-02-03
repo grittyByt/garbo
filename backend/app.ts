@@ -10,16 +10,19 @@ import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth';
 
 const app = express();
+
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true })); // for form POSTs
+
 // Enforce HTTPS in production
 app.use((req, res, next) => {
-  if (process.env.NODE_ENV === "production") {
-    const proto = req.header("x-forwarded-proto");
+  if (process.env.NODE_ENV === 'production') {
+    const proto = req.header('x-forwarded-proto');
     if (proto && proto !== "https") {
-      return res.status(403).send("HTTPS required.");
+      return res.status(403).send('HTTPS required.');
     }
   }
   next();

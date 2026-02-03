@@ -43,109 +43,22 @@ Typical backend steps
 Again: frontend does not read passwordHash or user data directly from DB.
 
 * */
-// routes/auth.ts
+
 import { Router } from "express";
-import * as argon2 from "argon2";
+import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { hashPassword, verifyPassword } from "../lib/password";
 import {loginIpLimiter} from "./middleware";
+import { signupHandler, verifyEmailHandler, resendVerificationHandler } from "../controllers/auth.controller";
+import { generate6DigitCode, hashCode, timingSafeEqualHex } from "../lib/verify-code";
+import { sendVerificationEmail } from "../lib/mailer";
 
 const router = Router();
+const CODE_TTL_MIN = 10;
+const RESEND_MIN = 5;
+const MAX_ATTEMPTS = 8;
 
-router.post("/signup", async (req, res) => {
-  try {
-    const { fName, lName, uName, age, eMail, password } = req.body ?? {};
-
-    // Server-side validation (never trust browser)
-    if (!fName || fName.length < 2 || fName.length > 25) {
-      // 400 = Bad request
-      /*
-       * The server cannot or will not process the request due to something that is
-       *  perceived to be a client error (e.g., malformed request syntax, invalid request
-       *  message framing, or deceptive request routing).
-      */
-      return res.status(400).json({
-        error: "Invalid first name"
-      });
-    }
-
-    if (!lName || lName.length < 3 || lName.length > 25) {
-      return res.status(400).json({
-        error: "Invalid last name"
-      });
-    }
-
-    if (!age || age <= 15 || age >= 125) {
-      return res.status(400).json({
-        error: "Invalid age"
-      });
-    }
-
-    if (!uName || uName.length < 5 || uName.length > 16) {
-      return res.status(400).json({
-        error: "Invalid username"
-      });
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!eMail || !emailRegex.test(eMail)) {
-      return res.status(400).json({
-        error: "Invalid email"
-      });
-    }
-    if (!password || password.length < 8 || password.length > 64) {
-      return res.status(400).json({
-        error: "Invalid password"
-      });
-    }
-
-
-    // Check uniqueness (depending on your schema unique constraints)
-    const userExist = await prisma.user.findFirst({
-      where: { OR: [{ eMail: eMail }, { userName: uName }] },
-      // this allows Prisma to work and sort faster by producing only the id associated
-      // with the particular user
-      select: { id: true },
-    });
-
-    if (userExist) {
-      // 409 = Conflict
-      // This response is sent when a request conflicts with the current state of the server.
-      return res.status(409).json({
-        error: "Email or username already in use"
-      });
-    }
-
-    // Hash password
-    const passwordHash = await hashPassword(password);
-
-    // Create user
-    const welcomeUser = await prisma.user.create({
-      data: {
-        firstName: fName,
-        lastName: lName,
-        userName: uName,
-        eMail: eMail,
-        passwordHash: passwordHash,
-      },
-      select: { id: true, firstName: true, lastName: true, userName: true, eMail: true, createdAt: true },
-    });
-
-    // 201 = Created
-    /*
-    * successful response status code indicates that the HTTP request has led to
-    * the creation of a resource.
-    */
-    return res.status(201).json({ welcomeUser });
-  } catch (err) {
-    console.error(err);
-    // 500 = Internal Server Issue
-    /*
-    * server error response status code indicates that the server encountered an
-    * unexpected condition that prevented it from fulfilling the request.
-    * */
-    return res.status(500).json({ error: "Server error" });
-  }
-});
+router.post("/signup", signupHandler);
 
 router.post("/login", loginIpLimiter, async (req, res) => {
   try {
@@ -185,6 +98,11 @@ router.post("/login", loginIpLimiter, async (req, res) => {
     return res.status(500).json({ error: "Server error during login." });
   }
 });
+
+
+router.post("/verify-email", verifyEmailHandler);
+router.post("/resend-verification", resendVerificationHandler);
+
 
 /**
  * POST /api/auth/logout

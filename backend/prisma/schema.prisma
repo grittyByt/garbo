@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = ""
+  // output   = ""
 }
 
 datasource db {
@@ -8,44 +8,63 @@ datasource db {
 }
 
 model User {
-  id                Int         @id @default(autoincrement())
-  publicId          String      @unique @default(uuid())
+  id                Int      @id @default(autoincrement())
+  publicId          String   @unique @default(uuid())
   firstName         String
   lastName          String
-  eMail             String      @unique
-  userName          String      @unique
+  eMail             String   @unique
+  userName          String   @unique
   passwordHash      String
-  passwordUpdatedAt DateTime    @default(now())
+  passwordUpdatedAt DateTime @default(now())
+
+  // Email Verification
+  emailVerified   Boolean   @default(false)
+  emailVerifiedAt DateTime?
+
+  emailVerification EmailVerificationToken?
 
   // Optional: for security / UX
   // Lockout / backoff
-  failedLoginCount  Int         @default(0)
+  failedLoginCount  Int       @default(0)
   lastFailedLoginAt DateTime?
   lockedUntil       DateTime?
 
   //MFA (TOTP)
-  mfaEnabled        Boolean     @default(false)
-  mfaSecretEnc      String?
-  mfaEnrolledAt     DateTime?
+  mfaEnabled    Boolean   @default(false)
+  mfaSecretEnc  String?
+  mfaEnrolledAt DateTime?
 
-  resetTokens       PWResetToken[]
+  resetTokens PWResetToken[]
 
-
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([eMail])
 }
 
 model PWResetToken {
-  id        String      @id @default(uuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  tokenHash String      @unique
+  tokenHash String    @unique
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime    @default(now())
+  createdAt DateTime  @default(now())
 
   @@index([userId, expiresAt])
+}
+
+model EmailVerificationToken {
+  id     String @id @default(uuid())
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  codeHash    String
+  expiresAt   DateTime
+  resendAfter DateTime
+
+  attemptCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

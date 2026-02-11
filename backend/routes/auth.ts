@@ -47,20 +47,16 @@ Again: frontend does not read passwordHash or user data directly from DB.
 import { Router } from "express";
 import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
-import { hashPassword, verifyPassword } from "../lib/password";
+import { verifyPassword } from "../lib/password";
 import {loginIpLimiter} from "./middleware";
 import { signupHandler, verifyEmailHandler, resendVerificationHandler } from "../controllers/auth.controller";
-import { generate6DigitCode, hashCode, timingSafeEqualHex } from "../lib/verify-code";
-import { sendVerificationEmail } from "../lib/mailer";
 
-const router = Router();
-const CODE_TTL_MIN = 10;
-const RESEND_MIN = 5;
-const MAX_ATTEMPTS = 8;
 
-router.post("/signup", signupHandler);
+const authRouter = Router();
 
-router.post("/login", loginIpLimiter, async (req, res) => {
+authRouter.post("/signup", signupHandler);
+
+authRouter.post("/login", loginIpLimiter, async (req: Request, res: Response) => {
   try {
 
     const {loginUser, loginPass} = req.body;
@@ -100,15 +96,15 @@ router.post("/login", loginIpLimiter, async (req, res) => {
 });
 
 
-router.post("/verify-email", verifyEmailHandler);
-router.post("/resend-verification", resendVerificationHandler);
+authRouter.post("/verify-email", verifyEmailHandler);
+authRouter.post("/resend-verification", resendVerificationHandler);
 
 
 /**
  * POST /api/auth/logout
  * If you use cookies/sessions, clear them here.
  */
-router.post("/logout", async (_req, res) => {
+authRouter.post("/logout", async (_req, res) => {
   // Placeholder until sessions are added
   return res.status(200).json({ ok: true });
 });
@@ -117,9 +113,9 @@ router.post("/logout", async (_req, res) => {
  * GET /api/auth/me
  * Returns current user if logged in (requires sessions/tokens to be meaningful)
  */
-router.get("/me", async (_req, res) => {
+authRouter.get("/me", async (_req, res) => {
   // Placeholder until sessions are added
   return res.status(200).json({ user: null });
 });
 
-export default router;
+export default authRouter;

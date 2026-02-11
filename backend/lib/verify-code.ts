@@ -1,6 +1,6 @@
 // Helpers: generate code, hash it, and compare
 
-import crypto from "crypto";
+import * as crypto from "crypto";
 
 export function generate6DigitCode(): string {
   // 000000 - 999999

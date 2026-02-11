@@ -10,7 +10,7 @@ Policy (simple + effective)
 * */
 
 import { prisma } from "./prisma";
-import crypto from "crypto";
+import crypto = require("crypto");
 import { makeResetToken } from "./resetTokens";
 import { hashPassword } from "./password";
 
@@ -22,7 +22,7 @@ const RESET_MINUTES = 30;
 export async function recordFailedLogin(userId: string) {
   const now = new Date();
   const theUser = await prisma.user.update({
-    where: { id: userId },
+    where: { publicId: userId },
     data: {
       failedLoginCount: { increment: 1 },
       lastFailedLoginAt: now,
@@ -33,7 +33,7 @@ export async function recordFailedLogin(userId: string) {
   if (theUser.failedLoginCount >= MAX_FAILS) {
     const lockedUntil = new Date(now.getTime() + LOCK_MINUTES * 60 * 1000);
     await prisma.user.update({
-      where: { id: userId },
+      where: { publicId: userId },
       data: { lockedUntil },
     });
   }
@@ -41,7 +41,7 @@ export async function recordFailedLogin(userId: string) {
 
 export async function clearFailedLogins(userId: string) {
   await prisma.user.update({
-    where: { id: userId },
+    where: { publicId: userId },
     data: { failedLoginCount: 0, lastFailedLoginAt: null, lockedUntil: null },
   });
 }
@@ -50,11 +50,11 @@ export function isLocked(lockedUntil: Date | null) {
   return lockedUntil != null && lockedUntil.getTime() > Date.now();
 }
 
-export async function createPasswordReset(userId: string) {
+export async function createPasswordReset(userId: number) {
   const { token, tokenHash } = makeResetToken();
   const expiresAt = new Date(Date.now() + RESET_MINUTES * 60 * 1000);
 
-  await prisma.PWResetToken.create({
+  await prisma.pWResetToken.create({
     data: { userId, tokenHash, expiresAt },
   });
 
@@ -66,7 +66,7 @@ export async function createPasswordReset(userId: string) {
 export async function resetPasswordWithToken(token: string, newPassword: string) {
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
-  const record = await prisma.PWResetToken.findUnique({
+  const record = await prisma.pWResetToken.findUnique({
     where: { tokenHash },
     include: { user: true },
   });
@@ -79,7 +79,7 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
 
   // Transaction: mark token used + update password
   await prisma.$transaction([
-    prisma.PWResetToken.update({
+    prisma.pWResetToken.update({
       where: { id: record.id },
       data: { usedAt: new Date() },
     }),

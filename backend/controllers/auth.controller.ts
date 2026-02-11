@@ -1,6 +1,6 @@
-import type { Request, Response } from "express";
 // import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma";
+import type { Request, Response } from "express";
 import { generate6DigitCode, hashCode, timingSafeEqualHex } from "../lib/verify-code";
 import { sendVerificationEmail } from "../lib/mailer";
 import {hashPassword} from "../lib/password";
@@ -11,10 +11,17 @@ const MAX_ATTEMPTS = 5;
 
 export async function signupHandler(req: Request, res: Response) {
   try {
-    const { fName, lName, uName, age, eMail, password } = req.body ?? {};
+    const { firstName, lastName, userName, eMail, age, password } = req.body as {
+      firstName?: string;
+      lastName?: string;
+      userName?: string;
+      eMail?: string;
+      age?: number;
+      password?: string;
+    };
 
     // Server-side validation (never trust browser)
-    if (!fName || fName.length < 2 || fName.length > 25) {
+    if (!firstName || firstName.length < 2 || firstName.length > 25) {
       // 400 = Bad request
       /*
        * The server cannot or will not process the request due to something that is
@@ -22,11 +29,12 @@ export async function signupHandler(req: Request, res: Response) {
        *  message framing, or deceptive request routing).
       */
       return res.status(400).json({
+
         error: "Invalid first name"
       });
     }
 
-    if (!lName || lName.length < 3 || lName.length > 25) {
+    if (!lastName || lastName.length < 3 || lastName.length > 25) {
       return res.status(400).json({
         error: "Invalid last name"
       });
@@ -38,7 +46,7 @@ export async function signupHandler(req: Request, res: Response) {
       });
     }
 
-    if (!uName || uName.length < 5 || uName.length > 16) {
+    if (!userName || userName.length < 5 || userName.length > 16) {
       return res.status(400).json({
         error: "Invalid username"
       });
@@ -58,7 +66,7 @@ export async function signupHandler(req: Request, res: Response) {
 
     // Check uniqueness (depending on your schema unique constraints)
     const userExist = await prisma.user.findFirst({
-      where: { OR: [{ eMail: eMail }, { userName: uName }] },
+      where: { OR: [{ eMail: eMail }, { userName: userName }] },
       // this allows Prisma to work and sort faster by producing only the id associated
       // with the particular user
       select: { id: true },
@@ -86,9 +94,9 @@ export async function signupHandler(req: Request, res: Response) {
     // Create user
     const welcomeUser = await prisma.user.create({
       data: {
-        firstName: fName,
-        lastName: lName,
-        userName: uName,
+        firstName: firstName,
+        lastName: lastName,
+        userName: userName,
         eMail: eMail,
         passwordHash: passwordHash,
         emailVerification: {

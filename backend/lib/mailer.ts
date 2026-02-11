@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import nodemailer = require("nodemailer");
 
 export const mailer = nodemailer.createTransport({
   host: process.env.SMTP_HOST!,
@@ -15,7 +15,7 @@ export async function sendVerificationEmail(to: string, code: string) {
   await mailer.sendMail({
     from: process.env.MAIL_FROM ?? `"${appName}" <no-reply@garbo.app>`,
     to,
-    subject: `${appName} verification code`,
+    subject: `Your ${appName} verification code`,
     text: `Your ${appName} verification code is: ${code}\n\nThis code expires in 10 minutes.`,
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.4">

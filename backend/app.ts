@@ -4,12 +4,16 @@
 	•	fetch("/api/auth/login", ...)
 * */
 
-import express from 'express';
+require("dotenv").config();
+import express = require('express');
+import type { Request, Response } from "express";
 import helmet from 'helmet';
-import cookieParser from 'cookie-parser';
+import cookieParser = require('cookie-parser');
 import authRouter from './routes/auth';
 
 const app = express();
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+console.log("🔥 Starting Garbo backend from app.ts");
 
 app.set('trust proxy', 1);
 app.use(express.json());
@@ -18,7 +22,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true })); // for form POSTs
 
 // Enforce HTTPS in production
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next) => {
   if (process.env.NODE_ENV === 'production') {
     const proto = req.header('x-forwarded-proto');
     if (proto && proto !== "https") {
@@ -32,5 +36,5 @@ app.use((req, res, next) => {
 
 app.use('/api/auth', authRouter);
 
-app.listen(5432, () => console.log("Server running on http://localhost:5432"));
-export default app;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// export default app;

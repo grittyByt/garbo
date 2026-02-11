@@ -2,7 +2,8 @@
 *         IMPORTS
 * =========================*/
 
-import {signUpForm_verified, loginForm_verified} from "./form_checks_n_balances";
+import { signUpForm_verified, loginForm_verified } from "./form_checks_n_balances";
+import { emailVerifyDisplay } from "./emailVerify";
 
 
 function qs<T extends Element>(selector: string, parent: ParentNode = document): T {
@@ -95,6 +96,13 @@ confirmPath.classList.add("confirm-password", "form-control");
 signUp_btn.classList.add("form-btn");
 
 /* =========================
+      Set Attributes
+========================= */
+
+signUp_btn.setAttribute("data-bs-toggle", "modal");
+signUp_btn.setAttribute("data-bs-target", "#staticBackdrop");
+
+/* =========================
    Append blocks to page
 ========================= */
 
@@ -157,6 +165,7 @@ signUp_btn.addEventListener("submit", async (e: MouseEvent) => {
       return;
     }
 
+    await emailVerifyDisplay();
     alert("Signup successful!");
     // Optional: redirect or update UI here
     // window.location.href = "/dashboard.html";

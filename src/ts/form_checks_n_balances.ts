@@ -19,7 +19,6 @@ import {
   feedback_su9,
   feedback_login,
   feedback_li2} from "./main.js";
-import {hashPassword} from "../../backend/lib/password";
 
 /*++++++++++++++++++++++++++++++++++++*/
 /*++++++++++++++++++++++++++++++++++++*/

@@ -166,7 +166,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p tsconfig.frontend.json",
     "watch": "tsc -p tsconfig.frontend.json --watch",
-    "type-check": "tsc -p tsconfig.frontend.json --noEmit"
+    "type-check": "tsc -p tsconfig.frontend.json --noEmit",
+    "sass": "sass --watch public/scss/style.scss:public/css/style.css"
   },
   "repository": {
     "type": "git",

@@ -2,8 +2,8 @@
 *         IMPORTS
 * =========================*/
 
-import { signUpForm_verified, loginForm_verified } from "./form_checks_n_balances";
-import { emailVerifyDisplay } from "./emailVerify";
+import { signUpForm_verified, loginForm_verified } from "./form_checks_n_balances.js";
+import { emailVerifyDisplay } from "./emailVerify.js";
 
 
 function qs<T extends Element>(selector: string, parent: ParentNode = document): T {
@@ -33,6 +33,9 @@ const welcomeBlock = qs<HTMLElement>(".welcome-user");
 const login_button = qs<HTMLButtonElement>(".login-button");
 const new_user_button = qs<HTMLButtonElement>(".new-user-button");
 const theFoot = qs<HTMLElement>("footer");
+
+// Garbo's detail
+const garboIntro = qs<HTMLElement>(".whoIsGarbo");
 
 /* =========================
    Elements we create
@@ -134,7 +137,7 @@ new_user_button.addEventListener("click", () => {
   display_signUp();
 });
 
-signUp_btn.addEventListener("submit", async (e: MouseEvent) => {
+signUp_btn.addEventListener("click", async (e: MouseEvent) => {
   e.preventDefault();
 
   //Frontend validation
@@ -261,6 +264,7 @@ function display_signUp(): void {
 
   // homepage buttons disappear & a new div block appears while the original disappears
   welcomeBlock.style.display = "none";
+  garboIntro.style.display = "none";
   newUserBlock.style.display = "flex";
 
   signUp_sheet.style.display = "flex";
@@ -356,7 +360,9 @@ function display_signUp(): void {
    Login display
 ========================= */
 function display_login(): void {
+
   welcomeBlock.style.display = "none";
+  garboIntro.style.display = "none";
   loginBlock.style.display = "flex";
 
   // clones

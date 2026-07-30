@@ -1,8 +1,8 @@
 /*==========================
 *         IMPORTS
 * =========================*/
-import { login_verified, signUp_verified } from "./form_checks_n_balances.js";
-// import {  } from "./form_checks_n_balances";
+import { signUpForm_verified, loginForm_verified } from "./form_checks_n_balances.js";
+import { emailVerifyDisplay } from "./emailVerify.js";
 function qs(selector, parent = document) {
     const el = parent.querySelector(selector);
     if (!el)
@@ -25,8 +25,9 @@ const intro = qs(".intro");
 const welcomeBlock = qs(".welcome-user");
 const login_button = qs(".login-button");
 const new_user_button = qs(".new-user-button");
-// const theFoot = qs("footer");
-
+const theFoot = qs("footer");
+// Garbo's detail
+const garboIntro = qs(".whoIsGarbo");
 /* =========================
    Elements we create
 ========================= */
@@ -80,6 +81,11 @@ pathway.classList.add("new-password", "form-control");
 confirmPath.classList.add("confirm-password", "form-control");
 signUp_btn.classList.add("form-btn");
 /* =========================
+      Set Attributes
+========================= */
+signUp_btn.setAttribute("data-bs-toggle", "modal");
+signUp_btn.setAttribute("data-bs-target", "#staticBackdrop");
+/* =========================
    Append blocks to page
 ========================= */
 intro.appendChild(loginBlock);
@@ -105,31 +111,52 @@ new_user_button.addEventListener("click", () => {
 });
 signUp_btn.addEventListener("click", async (e) => {
     e.preventDefault();
-    signUp_verified(fName, lName, uName, userEmail, confirmEmail, pathway, confirmPath);
+    //Frontend validation
+    const result = signUpForm_verified(fName, lName, uName, userEmail, confirmEmail, pathway, confirmPath);
+    if (!result.ok)
+        return;
+    //the build
     const user = {
-        fName: fName.value.trim(),
-        lName: lName.value.trim(),
-        uName: uName.value.trim(),
-        eMail: userEmail.value.trim(),
-        password: pathway.value.trim(),
+        firstName: fName.value.trim(),
+        lastName: lName.value.trim(),
+        userName: uName.value.trim(),
+        email: confirmEmail.value.trim(),
+        thePath: confirmPath.value.trim(),
     };
-    const response = await fetch("http://localhost:3000/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
-    });
-    // Avoid "any": type the response shape you expect
-    const data = await response.json();
-    if (response.ok) {
+    try {
+        const response = await fetch("/api/auth/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(user),
+        });
+        const data = await response.json();
+        // Handle success vs failure
+        if (!response.ok) {
+            alert(data.error ?? "Signup failed.");
+            return;
+        }
+        await emailVerifyDisplay();
         alert("Signup successful!");
+        // Optional: redirect or update UI here
+        // window.location.href = "/dashboard.html";
     }
-    else {
-        alert("Error: " + (data.message ?? "Unknown error"));
+    catch (err) {
+        // 6️⃣ Network / unexpected error handling
+        console.error("Signup request failed:", err);
+        alert("Unable to connect to server. Please try again.");
     }
+    // // Avoid "any": type the response shape you expect
+    // const data: { message?: string } = await response.json();
+    //
+    // if (response.ok) {
+    //   alert("Signup successful!");
+    // } else {
+    //   alert("Error: " + (data.message ?? "Unknown error"));
+    // }
 });
 loginForm_button.addEventListener("click", async (e) => {
     e.preventDefault();
-    login_verified(userName_input, password_input);
+    loginForm_verified(userName_input, password_input);
     console.log("login button pressed");
 });
 /* =========================
@@ -184,9 +211,11 @@ function display_signUp() {
     signUp_sheet.appendChild(signUp_btn);
     // homepage buttons disappear & a new div block appears while the original disappears
     welcomeBlock.style.display = "none";
+    garboIntro.style.display = "none";
     newUserBlock.style.display = "flex";
     signUp_sheet.style.display = "flex";
-    signUp_sheet.action = "submit";
+    signUp_sheet.method = "POST";
+    signUp_sheet.action = "http://localhost:5432/backend/auth/signup";
     signUp_sheet.noValidate = true;
     // Attributes for labels
     form_label.htmlFor = "validationCustom01";
@@ -236,7 +265,7 @@ function display_signUp() {
     userEmail.placeholder = "Enter your email";
     // Confirm email
     confirmEmail.type = "email";
-    confirmEmail.name = "confirmEmail";
+    confirmEmail.name = "eMail";
     confirmEmail.placeholder = "Confirm your email";
     // User's password
     pathway.type = "password";
@@ -244,7 +273,7 @@ function display_signUp() {
     pathway.placeholder = "Enter a password";
     // Confirm password
     confirmPath.type = "password";
-    confirmPath.name = "confirmPassword";
+    confirmPath.name = "passwordHash";
     confirmPath.placeholder = "Confirm the password";
     // sign up button
     signUp_btn.type = "button";
@@ -255,6 +284,7 @@ function display_signUp() {
 ========================= */
 function display_login() {
     welcomeBlock.style.display = "none";
+    garboIntro.style.display = "none";
     loginBlock.style.display = "flex";
     // clones
     const login_form_section2 = login_form_section.cloneNode(true);
@@ -291,7 +321,7 @@ function display_login() {
     loginForm_button.textContent = "Submit";
 }
 /* =========================
-   Bootstrap validation hook (FIXED)
+   Bootstrap validation hook
 ========================= */
 // Your JS tried: Array.from(forms).forEach(...)
 // But forms is a single HTMLFormElement, not iterable.

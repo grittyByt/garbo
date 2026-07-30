@@ -92,7 +92,7 @@ export function signUpForm_verified(
     "3 to 20 characters are required!"
   );
 
-  // Validate uName: 3–16 characters
+  // Validate uName: 5–16 characters
   const uNameVal = uName.value.trim();
   const validUName = uNameVal.length >= 5 && uNameVal.length <= 16;
   updateClass(

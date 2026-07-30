@@ -27,8 +27,8 @@ const fDate = qs<HTMLInputElement>("#fdate");
 const tDate = qs<HTMLInputElement>("#tdate");
 
 const burger_menu = qs<HTMLButtonElement>(".navbar-toggler");
-const intro = qs<HTMLElement>(".intro");
-const welcomeBlock = qs<HTMLElement>(".welcome-user");
+const intro = qs<HTMLElement>(".greetings");
+const welcomeBlock = qs<HTMLElement>(".welcome-section");
 
 const login_button = qs<HTMLButtonElement>(".login-button");
 const new_user_button = qs<HTMLButtonElement>(".new-user-button");
@@ -76,14 +76,14 @@ const back_btn = document.createElement("button"); // currently unused
    Class names assignment
 ========================= */
 
-loginBlock.classList.add("g-col-12", "login-user");
+loginBlock.classList.add("col-12", "login-user");
 login_sheet.classList.add("row", "g-3", "needs-validation", "login-form");
 login_form_section.classList.add("col-12");
 loginForm_button.classList.add("form-btn");
 userName_input.classList.add("form-control", "login-user-input");
 password_input.classList.add("form-control", "login-pass-input");
 
-newUserBlock.classList.add("g-col-12", "new-user");
+newUserBlock.classList.add("col-12", "new-user");
 signUp_sheet.classList.add("row", "g-3", "needs-validation", "signUp-form");
 form_section.classList.add("col-md-4");
 form_section6.classList.add("col-md-6");
@@ -131,10 +131,12 @@ export const feedback_li2 = feedback_login.cloneNode(true) as HTMLDivElement;
 
 login_button.addEventListener("click", () => {
   display_login();
+  console.log('login selected');
 });
 
 new_user_button.addEventListener("click", () => {
   display_signUp();
+  console.log('sign up selected');
 });
 
 signUp_btn.addEventListener("click", async (e: MouseEvent) => {

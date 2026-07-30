@@ -1,6 +1,9 @@
 // colors
 @use "colorway";
 
+// import bootstrap
+@use "../../node_modules/bootstrap/scss/bootstrap";
+
 // home
 @use "pages/home";
 

@@ -8,6 +8,7 @@
     "argon2": "^0.44.0",
     "aws-ssl-profiles": "^1.1.2",
     "body-parser": "^2.2.0",
+    "bootstrap": "^5.3.8",
     "bytes": "^3.1.2",
     "c12": "^3.1.0",
     "call-bind-apply-helpers": "^1.0.2",
@@ -161,7 +162,6 @@
     "xtend": "^4.0.2",
     "zeptomatch": "^2.0.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p tsconfig.frontend.json",

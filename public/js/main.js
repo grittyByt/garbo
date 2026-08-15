@@ -1,343 +1,290 @@
 /*==========================
-*         IMPORTS
-* =========================*/
-import { signUpForm_verified, loginForm_verified } from "./form_checks_n_balances.js";
+ *         IMPORTS
+ * =========================*/
+import { signUpForm_verified, loginForm_verified, } from "./form_checks_n_balances.js";
 import { emailVerifyDisplay } from "./emailVerify.js";
 function qs(selector, parent = document) {
-    const el = parent.querySelector(selector);
-    if (!el)
+    const element = parent.querySelector(selector);
+    if (!element) {
         throw new Error(`Missing element for selector: ${selector}`);
-    return el;
-}
-function qsa(selector, parent = document) {
-    return parent.querySelectorAll(selector);
+    }
+    return element;
 }
 /* =========================
    Existing DOM references
 ========================= */
-const garbosForm = qs(".garbos-form");
-const email_valid = qs("#email");
-const keyword_valid = qs("#keyword");
-const fDate = qs("#fdate");
-const tDate = qs("#tdate");
-const burger_menu = qs(".navbar-toggler");
 const intro = qs(".greetings");
 const welcomeBlock = qs(".welcome-section");
 const login_button = qs(".login-button");
 const new_user_button = qs(".new-user-button");
-const theFoot = qs("footer");
-// Garbo's detail
 const garboIntro = qs(".whoIsGarbo");
 /* =========================
-   Elements we create
+   Shared authentication card
 ========================= */
-// login side
+const authCard = document.createElement("section");
+const authPanel = document.createElement("div");
+const authTabs = document.createElement("div");
+const authForms = document.createElement("div");
+const loginTab = document.createElement("button");
+const signUpTab = document.createElement("button");
+authCard.classList.add("auth-card");
+authPanel.classList.add("auth-panel");
+authTabs.classList.add("auth-tabs");
+authForms.classList.add("auth-forms");
+loginTab.classList.add("auth-tab", "active");
+signUpTab.classList.add("auth-tab");
+loginTab.type = "button";
+signUpTab.type = "button";
+loginTab.textContent = "Sign In";
+signUpTab.textContent = "Sign Up";
+loginTab.setAttribute("aria-controls", "login-form-panel");
+signUpTab.setAttribute("aria-controls", "signup-form-panel");
+loginTab.setAttribute("aria-selected", "true");
+signUpTab.setAttribute("aria-selected", "false");
+/* =========================
+   Login elements
+========================= */
 const loginBlock = document.createElement("div");
 const login_sheet = document.createElement("form");
 const login_form_section = document.createElement("div");
+const login_form_section2 = document.createElement("div");
+const loginUserLabel = document.createElement("label");
+const loginPasswordLabel = document.createElement("label");
 const userName_input = document.createElement("input");
 const password_input = document.createElement("input");
 const loginForm_button = document.createElement("button");
-// sign-up side
+const keepSignedInGroup = document.createElement("div");
+const keepSignedIn = document.createElement("input");
+const keepSignedInLabel = document.createElement("label");
+const keepSignedInIcon = document.createElement("span");
+const forgotPassword = document.createElement("a");
+const loginDivider = document.createElement("div");
+export const feedback_login = document.createElement("div");
+export const feedback_li2 = feedback_login.cloneNode(true);
+loginBlock.classList.add("col-12", "login-user");
+login_sheet.classList.add("row", "g-3", "needs-validation", "login-form");
+login_form_section.classList.add("col-12", "form-group");
+login_form_section2.classList.add("col-12", "form-group");
+loginUserLabel.classList.add("form-label");
+loginPasswordLabel.classList.add("form-label");
+userName_input.classList.add("form-control", "login-user-input");
+password_input.classList.add("form-control", "login-pass-input");
+loginForm_button.classList.add("form-btn");
+keepSignedInGroup.classList.add("col-12", "keep-signed-in");
+keepSignedIn.classList.add("check");
+keepSignedInIcon.classList.add("icon");
+forgotPassword.classList.add("forgot-password");
+loginDivider.classList.add("form-divider");
+login_sheet.id = "login-form-panel";
+login_sheet.noValidate = true;
+loginUserLabel.htmlFor = "login-user-input";
+loginUserLabel.textContent = "Username";
+loginPasswordLabel.htmlFor = "login-pass-input";
+loginPasswordLabel.textContent = "Password";
+userName_input.id = "login-user-input";
+userName_input.type = "text";
+userName_input.name = "username";
+userName_input.placeholder = "Enter username";
+userName_input.autocomplete = "username";
+userName_input.required = true;
+password_input.id = "login-pass-input";
+password_input.type = "password";
+password_input.name = "password";
+password_input.placeholder = "Enter password";
+password_input.autocomplete = "current-password";
+password_input.required = true;
+keepSignedIn.id = "keep-signed-in";
+keepSignedIn.type = "checkbox";
+keepSignedIn.checked = true;
+keepSignedInLabel.htmlFor = "keep-signed-in";
+keepSignedInLabel.append(keepSignedInIcon, " Keep me signed in");
+loginForm_button.type = "submit";
+loginForm_button.textContent = "Sign In";
+forgotPassword.href = "#forgot";
+forgotPassword.textContent = "Forgot Password?";
+login_form_section.append(loginUserLabel, userName_input, feedback_login);
+login_form_section2.append(loginPasswordLabel, password_input, feedback_li2);
+keepSignedInGroup.append(keepSignedIn, keepSignedInLabel);
+login_sheet.append(login_form_section, login_form_section2, keepSignedInGroup, loginForm_button, loginDivider, forgotPassword);
+loginBlock.appendChild(login_sheet);
+/* =========================
+   Sign-up elements
+========================= */
 const newUserBlock = document.createElement("div");
 const signUp_sheet = document.createElement("form");
-const form_section = document.createElement("div");
-const form_section6 = document.createElement("div");
-const form_label = document.createElement("label");
 const fName = document.createElement("input");
 const lName = document.createElement("input");
 const userEmail = document.createElement("input");
+const confirmEmail = document.createElement("input");
 const uName = document.createElement("input");
 const pathway = document.createElement("input");
-const confirmEmail = document.createElement("input");
-const confirmUser = document.createElement("input"); // currently unused
 const confirmPath = document.createElement("input");
 const signUp_btn = document.createElement("button");
+const signUpDivider = document.createElement("div");
+const alreadyMember = document.createElement("button");
 export const feedback_su = document.createElement("div");
-export const feedback_login = document.createElement("div");
-const feedback = document.createElement("p"); // currently unused
-const back_btn = document.createElement("button"); // currently unused
-/* =========================
-   Class names assignment
-========================= */
-loginBlock.classList.add("col-12", "login-user");
-login_sheet.classList.add("row", "g-3", "needs-validation", "login-form");
-login_form_section.classList.add("col-12");
-loginForm_button.classList.add("form-btn");
-userName_input.classList.add("form-control", "login-user-input");
-password_input.classList.add("form-control", "login-pass-input");
-newUserBlock.classList.add("col-12", "new-user");
-signUp_sheet.classList.add("row", "g-3", "needs-validation", "signUp-form");
-form_section.classList.add("col-md-4");
-form_section6.classList.add("col-md-6");
-form_label.classList.add("form-label");
-fName.classList.add("form-control", "firsName");
-lName.classList.add("form-control", "lastName");
-userEmail.classList.add("form-control", "eMail");
-confirmEmail.classList.add("form-control", "confirm-eMail");
-uName.classList.add("form-control", "new-userName");
-confirmUser.classList.add("form-control", "confirm-userName");
-pathway.classList.add("new-password", "form-control");
-confirmPath.classList.add("confirm-password", "form-control");
-signUp_btn.classList.add("form-btn");
-/* =========================
-      Set Attributes
-========================= */
-signUp_btn.setAttribute("data-bs-toggle", "modal");
-signUp_btn.setAttribute("data-bs-target", "#staticBackdrop");
-/* =========================
-   Append blocks to page
-========================= */
-intro.appendChild(loginBlock);
-intro.appendChild(newUserBlock);
-/* =========================
-   Clones (typed)
-========================= */
 export const feedback_su2 = feedback_su.cloneNode(true);
 export const feedback_su3 = feedback_su.cloneNode(true);
 export const feedback_su6 = feedback_su.cloneNode(true);
 export const feedback_su7 = feedback_su.cloneNode(true);
 export const feedback_su8 = feedback_su.cloneNode(true);
 export const feedback_su9 = feedback_su.cloneNode(true);
-export const feedback_li2 = feedback_login.cloneNode(true);
+newUserBlock.classList.add("col-12", "new-user");
+signUp_sheet.classList.add("row", "g-3", "needs-validation", "signUp-form");
+fName.classList.add("form-control", "firsName");
+lName.classList.add("form-control", "lastName");
+userEmail.classList.add("form-control", "eMail");
+confirmEmail.classList.add("form-control", "confirm-eMail");
+uName.classList.add("form-control", "new-userName");
+pathway.classList.add("new-password", "form-control");
+confirmPath.classList.add("confirm-password", "form-control");
+signUp_btn.classList.add("form-btn");
+signUpDivider.classList.add("form-divider");
+alreadyMember.classList.add("already-member");
+signUp_sheet.id = "signup-form-panel";
+signUp_sheet.noValidate = true;
+signUp_sheet.method = "POST";
+function createSignUpGroup(labelText, input, feedback) {
+    const group = document.createElement("div");
+    const label = document.createElement("label");
+    group.classList.add("col-12", "form-group");
+    label.classList.add("form-label");
+    label.htmlFor = input.id;
+    label.textContent = labelText;
+    group.append(label, input, feedback);
+    return group;
+}
+fName.id = "validationCustom01";
+fName.type = "text";
+fName.name = "firstName";
+fName.placeholder = "Enter your first name";
+fName.autocomplete = "given-name";
+fName.required = true;
+lName.id = "validationCustom02";
+lName.type = "text";
+lName.name = "lastName";
+lName.placeholder = "Enter your last name";
+lName.autocomplete = "family-name";
+lName.required = true;
+uName.id = "validationCustom03";
+uName.type = "text";
+uName.name = "userName";
+uName.placeholder = "Create a username";
+uName.autocomplete = "username";
+uName.required = true;
+userEmail.id = "validationCustom04";
+userEmail.type = "email";
+userEmail.name = "email";
+userEmail.placeholder = "Enter your email";
+userEmail.autocomplete = "email";
+userEmail.required = true;
+confirmEmail.id = "validationCustom05";
+confirmEmail.type = "email";
+confirmEmail.name = "eMail";
+confirmEmail.placeholder = "Confirm your email";
+confirmEmail.autocomplete = "email";
+confirmEmail.required = true;
+pathway.id = "validationCustom06";
+pathway.type = "password";
+pathway.name = "password";
+pathway.placeholder = "Create a password";
+pathway.autocomplete = "new-password";
+pathway.required = true;
+confirmPath.id = "validationCustom07";
+confirmPath.type = "password";
+confirmPath.name = "passwordHash";
+confirmPath.placeholder = "Confirm your password";
+confirmPath.autocomplete = "new-password";
+confirmPath.required = true;
+signUp_btn.type = "submit";
+signUp_btn.textContent = "Sign Up";
+alreadyMember.type = "button";
+alreadyMember.textContent = "Already a member? Sign in";
+signUp_sheet.append(createSignUpGroup("First Name", fName, feedback_su), createSignUpGroup("Last Name", lName, feedback_su2), createSignUpGroup("Create a Username", uName, feedback_su3), createSignUpGroup("Email", userEmail, feedback_su6), createSignUpGroup("Confirm Email", confirmEmail, feedback_su7), createSignUpGroup("Password", pathway, feedback_su8), createSignUpGroup("Confirm Password", confirmPath, feedback_su9), signUp_btn, signUpDivider, alreadyMember);
+newUserBlock.appendChild(signUp_sheet);
 /* =========================
-   Event listeners
+   Build card once
 ========================= */
-login_button.addEventListener("click", () => {
-    display_login();
-    console.log('login selected');
-});
-new_user_button.addEventListener("click", () => {
-    display_signUp();
-    console.log('sign up selected');
-});
-signUp_btn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    //Frontend validation
+authTabs.append(loginTab, signUpTab);
+authForms.append(loginBlock, newUserBlock);
+authPanel.append(authTabs, authForms);
+authCard.appendChild(authPanel);
+intro.appendChild(authCard);
+/* =========================
+   UI behavior
+========================= */
+function openAuthCard(mode) {
+    welcomeBlock.style.display = "none";
+    garboIntro.style.display = "none";
+    authCard.classList.add("visible");
+    const showLogin = mode === "login";
+    loginBlock.classList.toggle("active", showLogin);
+    newUserBlock.classList.toggle("active", !showLogin);
+    loginTab.classList.toggle("active", showLogin);
+    signUpTab.classList.toggle("active", !showLogin);
+    loginTab.setAttribute("aria-selected", String(showLogin));
+    signUpTab.setAttribute("aria-selected", String(!showLogin));
+    if (showLogin) {
+        userName_input.focus();
+    }
+    else {
+        fName.focus();
+    }
+}
+function display_login() {
+    openAuthCard("login");
+}
+function display_signUp() {
+    openAuthCard("signup");
+}
+login_button.addEventListener("click", display_login);
+new_user_button.addEventListener("click", display_signUp);
+loginTab.addEventListener("click", display_login);
+signUpTab.addEventListener("click", display_signUp);
+alreadyMember.addEventListener("click", display_login);
+/* =========================
+   Form submission
+========================= */
+signUp_sheet.addEventListener("submit", async (event) => {
+    event.preventDefault();
     const result = signUpForm_verified(fName, lName, uName, userEmail, confirmEmail, pathway, confirmPath);
-    if (!result.ok)
+    if (!result.ok) {
+        signUp_sheet.classList.add("was-validated");
         return;
-    //the build
+    }
     const user = {
         firstName: fName.value.trim(),
         lastName: lName.value.trim(),
         userName: uName.value.trim(),
         email: confirmEmail.value.trim(),
-        thePath: confirmPath.value.trim(),
+        thePath: confirmPath.value,
     };
     try {
+        signUp_btn.disabled = true;
         const response = await fetch("/api/auth/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(user),
         });
         const data = await response.json();
-        // Handle success vs failure
         if (!response.ok) {
             alert(data.error ?? "Signup failed.");
             return;
         }
         await emailVerifyDisplay();
         alert("Signup successful!");
-        // Optional: redirect or update UI here
-        // window.location.href = "/dashboard.html";
+        signUp_sheet.reset();
+        display_login();
     }
-    catch (err) {
-        // 6️⃣ Network / unexpected error handling
-        console.error("Signup request failed:", err);
-        alert("Unable to connect to server. Please try again.");
+    catch (error) {
+        console.error("Signup request failed:", error);
+        alert("Unable to connect to the server. Please try again.");
     }
-    // // Avoid "any": type the response shape you expect
-    // const data: { message?: string } = await response.json();
-    //
-    // if (response.ok) {
-    //   alert("Signup successful!");
-    // } else {
-    //   alert("Error: " + (data.message ?? "Unknown error"));
-    // }
+    finally {
+        signUp_btn.disabled = false;
+    }
 });
-loginForm_button.addEventListener("click", async (e) => {
-    e.preventDefault();
+login_sheet.addEventListener("submit", (event) => {
+    event.preventDefault();
     loginForm_verified(userName_input, password_input);
-    console.log("login button pressed");
 });
-/* =========================
-   UI builders
-========================= */
-function signIn() {
-    // when the login button is pressed buttons disappear and a new form appears
-}
-function display_signUp() {
-    // clones
-    const form_section2 = form_section.cloneNode(true);
-    const form_section3 = form_section.cloneNode(true);
-    const form_section7 = form_section6.cloneNode(true);
-    const form_section8 = form_section6.cloneNode(true);
-    const form_section9 = form_section6.cloneNode(true);
-    const form_label2 = form_label.cloneNode(true);
-    const form_label3 = form_label.cloneNode(true);
-    const form_label6 = form_label.cloneNode(true);
-    const form_label7 = form_label.cloneNode(true);
-    const form_label8 = form_label.cloneNode(true);
-    const form_label9 = form_label.cloneNode(true);
-    // append everything to their respective blocks
-    newUserBlock.appendChild(signUp_sheet);
-    signUp_sheet.appendChild(form_section);
-    signUp_sheet.appendChild(form_section2);
-    signUp_sheet.appendChild(form_section3);
-    signUp_sheet.appendChild(form_section6);
-    signUp_sheet.appendChild(form_section7);
-    signUp_sheet.appendChild(form_section8);
-    signUp_sheet.appendChild(form_section9);
-    form_section.appendChild(form_label);
-    form_section.appendChild(fName);
-    form_section.appendChild(feedback_su);
-    form_section2.appendChild(form_label2);
-    form_section2.appendChild(lName);
-    form_section2.appendChild(feedback_su2);
-    form_section3.appendChild(form_label3);
-    form_section3.appendChild(uName);
-    form_section3.appendChild(feedback_su3);
-    form_section6.appendChild(form_label6);
-    form_section6.appendChild(userEmail);
-    form_section6.appendChild(feedback_su6);
-    form_section7.appendChild(form_label7);
-    form_section7.appendChild(confirmEmail);
-    form_section7.appendChild(feedback_su7);
-    form_section8.appendChild(form_label8);
-    form_section8.appendChild(pathway);
-    form_section8.appendChild(feedback_su8);
-    form_section9.appendChild(form_label9);
-    form_section9.appendChild(confirmPath);
-    form_section9.appendChild(feedback_su9);
-    signUp_sheet.appendChild(signUp_btn);
-    // homepage buttons disappear & a new div block appears while the original disappears
-    welcomeBlock.style.display = "none";
-    garboIntro.style.display = "none";
-    newUserBlock.style.display = "flex";
-    signUp_sheet.style.display = "flex";
-    signUp_sheet.method = "POST";
-    signUp_sheet.action = "http://localhost:5432/backend/auth/signup";
-    signUp_sheet.noValidate = true;
-    // Attributes for labels
-    form_label.htmlFor = "validationCustom01";
-    form_label.textContent = "First Name";
-    form_label2.htmlFor = "validationCustom02";
-    form_label2.textContent = "Last Name";
-    form_label3.htmlFor = "validationCustom03";
-    form_label3.textContent = "Create a Username";
-    form_label6.htmlFor = "validationCustom04";
-    form_label6.textContent = "Email";
-    form_label7.htmlFor = "validationCustom05";
-    form_label7.textContent = "Confirm Email";
-    form_label8.htmlFor = "validationCustom06";
-    form_label8.textContent = "Password";
-    form_label9.htmlFor = "validationCustom07";
-    form_label9.textContent = "Confirm Password";
-    // Attributes for inputs on form
-    fName.id = "validationCustom01";
-    fName.required = true;
-    lName.id = "validationCustom02";
-    lName.required = true;
-    uName.id = "validationCustom03";
-    uName.required = true;
-    userEmail.id = "validationCustom04";
-    userEmail.required = true;
-    confirmEmail.id = "validationCustom05";
-    confirmEmail.required = true;
-    pathway.id = "validationCustom06";
-    pathway.required = true;
-    confirmPath.id = "validationCustom07";
-    confirmPath.required = true;
-    // User's first name
-    fName.type = "text";
-    fName.name = "firstName";
-    fName.placeholder = "Enter your first name";
-    // User's last name
-    lName.type = "text";
-    lName.name = "lastName";
-    lName.placeholder = "Enter your last name";
-    // Username
-    uName.type = "text";
-    uName.name = "userName";
-    uName.placeholder = "Enter you new username";
-    // User's email
-    userEmail.type = "email";
-    userEmail.name = "email";
-    userEmail.placeholder = "Enter your email";
-    // Confirm email
-    confirmEmail.type = "email";
-    confirmEmail.name = "eMail";
-    confirmEmail.placeholder = "Confirm your email";
-    // User's password
-    pathway.type = "password";
-    pathway.name = "password";
-    pathway.placeholder = "Enter a password";
-    // Confirm password
-    confirmPath.type = "password";
-    confirmPath.name = "passwordHash";
-    confirmPath.placeholder = "Confirm the password";
-    // sign up button
-    signUp_btn.type = "button";
-    signUp_btn.textContent = "Sign Up";
-}
-/* =========================
-   Login display
-========================= */
-function display_login() {
-    welcomeBlock.style.display = "none";
-    garboIntro.style.display = "none";
-    loginBlock.style.display = "flex";
-    // clones
-    const login_form_section2 = login_form_section.cloneNode(true);
-    const form_label4 = form_label.cloneNode(true);
-    const form_label5 = form_label.cloneNode(true);
-    // add everything to the block
-    loginBlock.appendChild(login_sheet);
-    login_sheet.appendChild(login_form_section);
-    login_sheet.appendChild(login_form_section2);
-    login_form_section.appendChild(form_label4);
-    login_form_section.appendChild(userName_input);
-    login_form_section.appendChild(feedback_login);
-    login_form_section2.appendChild(form_label5);
-    login_form_section2.appendChild(password_input);
-    login_form_section2.appendChild(feedback_li2);
-    login_sheet.appendChild(loginForm_button);
-    form_label4.htmlFor = "login-user-input";
-    form_label4.textContent = "Username:";
-    form_label5.htmlFor = "login-pass-input";
-    form_label5.textContent = "Password:";
-    login_sheet.style.display = "flex";
-    login_sheet.action = "submit";
-    login_sheet.noValidate = true;
-    // username input
-    userName_input.type = "text";
-    userName_input.name = "username";
-    userName_input.placeholder = "Enter username";
-    // password input
-    password_input.type = "password";
-    password_input.name = "password";
-    password_input.placeholder = "Enter password";
-    // login button
-    loginForm_button.type = "button";
-    loginForm_button.textContent = "Submit";
-}
-/* =========================
-   Bootstrap validation hook
-========================= */
-// Your JS tried: Array.from(forms).forEach(...)
-// But forms is a single HTMLFormElement, not iterable.
-// Fix: wrap it in an array.
-(() => {
-    "use strict";
-    const form = signUp_sheet;
-    [form].forEach((f) => {
-        f.addEventListener("submit", (event) => {
-            if (!f.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            f.classList.add("was-validated");
-        }, false);
-    });
-})();

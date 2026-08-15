@@ -1,70 +1,74 @@
-// colors
 @use "../colorway";
 
 .home-page {
-  /* */
   background-color: colorway.$ash-black;
+  color: #6a6f8c;
   margin: 0;
   padding: 0;
 
-  nav {
-      position: fixed;
-      height: 4rem;
-      width: 100%;
-      background-color: colorway.$lakers;
-      box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-      //border: 1px solid #ff0000;
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
+  nav {
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    height: 4rem;
+    background-color: colorway.$lakers;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2),
+      0 6px 20px rgba(0, 0, 0, 0.19);
   }
 
   .show {
-      position: relative;
-      top: 4px;
-      /*opacity: 0.25;*/
-      /*transition: opacity 0.25s ease, visibility 0.25s ease;*/
-      background-color: #F0EEEE;
-
+    position: relative;
+    top: 4px;
+    background-color: #f0eeee;
   }
 
   .nav-link {
     display: inline-block;
     flex-wrap: nowrap;
-    transition: transform 0.3s ease-out, color 0.2s ease-in;
     color: colorway.$casper;
+    transition: transform 0.3s ease-out, color 0.2s ease-in;
 
     &:hover {
-        transform: translateY(-5px);
-        color: colorway.$platinum;
+      color: colorway.$platinum;
+      transform: translateY(-5px);
     }
   }
 
   .main-body {
-      margin-top: 5em;
-      width: 100%;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    margin-top: 5em;
   }
 
-  .greetings  {
-      width: 100%;
+  .greetings {
+    width: 100%;
   }
 
   .the-logo {
-    padding-top: 1em;
     display: flex;
     justify-content: center;
+    padding-top: 1em;
 
-      img {
-        height: 5em;
-      }
+    img {
+      height: 5em;
+    }
   }
 
   .whoIsGarbo {
+    margin-top: 2em;
     .thisIsGarbo {
-      h4{
-        margin: 3em 0 2em 0;
+      padding: 0.5em;
+      h4 {
+        margin: 3em 0 2em;
         color: colorway.$casper;
       }
 
@@ -74,337 +78,464 @@
         line-height: 2;
       }
     }
-    @media (min-width: 768px) {
-        .whoIsGarbo {
-          margin-bottom: 3em;
-        }
-      }
-
   }
+
   .welcome-section {
-    margin-top: 2em;
-    height: auto;
     display: block;
+    height: auto;
+    margin-top: 2em;
     place-content: center;
 
-       .create-user-button, .current-user-button {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+    .create-user-button,
+    .current-user-button {
+      margin: 0 0 3em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      }
-      .login-button {
-        align-items: center;
-        background-color: colorway.$hulk;
-        border: 2px solid #111;
-        border-radius: 8px;
-        box-sizing: border-box;
-        color: #111;
-        cursor: pointer;
-        display: flex;
-        font-family: Inter,sans-serif;
-        font-size: 16px;
-        height: 3em;
-        justify-content: center;
-        line-height: 24px;
-        width: min(350px, 90%);
-        max-width: 70%;
-        padding: 1em;
-        margin: 0 0 2em 0;
-        position: relative;
-        text-align: center;
-        text-decoration: none;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: manipulation;
-      }
-
-      .login-button:after {
-        background-color: #111;
-        border-radius: 8px;
-        content: "";
-        display: block;
-        height: 48px;
-        left: 0;
-        width: 100%;
-        position: absolute;
-        top: -2px;
-        transform: translate(8px, 8px);
-        transition: transform .2s ease-out;
-        z-index: -1;
-      }
-
-      .login-button:hover:after {
-        transform: translate(0, 0);
-      }
-
-      .login-button:active {
-        background-color: #ffdeda;
-        outline: 0;
-      }
-
-      .login-button:hover {
-        outline: 0;
-      }
-
-      @media (min-width: 768px) {
-        .login-button {
-          padding: 0 40px;
-        }
-      }
-
+    .login-button,
     .new-user-button {
-        align-items: center;
-        background-color: colorway.$hulk;
-        border: 2px solid #111;
-        border-radius: 8px;
-        box-sizing: border-box;
-        color: #111;
-        cursor: pointer;
-        display: flex;
-        font-family: Inter,sans-serif;
-        font-size: 16px;
-        height: 3em;
-        justify-content: center;
-        line-height: 24px;
-        width: min(350px, 90%);
-        max-width: 70%;
-        padding: 1em;
-        margin: 0 0 2em 0;
-        position: relative;
-        text-align: center;
-        text-decoration: none;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: manipulation;
-      }
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: min(350px, 90%);
+      max-width: 70%;
+      height: 3em;
+      padding: 1em;
+      border: 2px solid #111;
+      border-radius: 8px;
+      background-color: colorway.$hulk;
+      color: #111;
+      cursor: pointer;
+      font: 600 16px/24px Inter, sans-serif;
+      text-align: center;
+      text-decoration: none;
+      touch-action: manipulation;
+      user-select: none;
 
-      .new-user-button:after {
-        background-color: #111;
-        border-radius: 8px;
-        content: "";
-        display: block;
-        height: 48px;
-        left: 0;
-        width: 100%;
+      &::after {
         position: absolute;
         top: -2px;
-        transform: translate(8px, 8px);
-        transition: transform .2s ease-out;
+        left: 0;
         z-index: -1;
+        width: 100%;
+        height: 48px;
+        border-radius: 8px;
+        background-color: #111;
+        content: "";
+        transform: translate(8px, 8px);
+        transition: transform 0.2s ease-out;
       }
 
-      .new-user-button:hover:after {
+      &:hover::after {
         transform: translate(0, 0);
       }
 
-      .new-user-button:active {
+      &:active {
         background-color: #ffdeda;
         outline: 0;
       }
-
-      .new-user-button:hover {
-        outline: 0;
-      }
-
-      @media (min-width: 768px) {
-        .new-user-button {
-          padding: 0 40px;
-        }
-
-      }
-
-      //
-      //
-      //.current-user-button > button, .create-user-button > button {
-      //  padding: 1em;
-      //  margin: 0 0 2em 0;
-      //  width: 50%;
-      //  border-radius: 7px;
-      //  transition: .5s ease-out;
-      //  background-color: colorway.$hulk;
-      //
-      //}
-      //
-      //.current-user-button > button:hover, .create-user-button > button:hover {
-      //  background-color: colorway.$malachite;
-      //  transition: .25s ease-in;
-      //  scale: 1.1;
-      //}
+    }
   }
 
-  .login-user {
-      width: 100%;
-      border: 1px solid greenyellow;
-      display: none;
-      align-items: center;
-      justify-content: center;
-  }
-
-  .login-form {
-    margin: 1em 0 0 0;
-    height: 375px;
-    max-width: 100%;
-    padding: 0.5em;
-    margin: 0.5em;
+  /* Shared login/sign-up card */
+  .auth-card {
+    //background-image: url("public/assets/images/garbo_warehouse.png");
     display: none;
-    /*place-items: center;*/
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rebeccapurple;
+    width: 100%;
+    max-width: 525px;
+    min-height: 670px;
+    margin: 2rem auto;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    background:
+      linear-gradient(rgba(159, 87, 44, 0.92), rgba(100, 31, 7, 0.92)),
+      url("../../public/assets/images/garbo_warehouse.png")
+        no-repeat center / cover;
+    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.24),
+      0 17px 50px rgba(0, 0, 0, 0.19);
+
+    &.visible {
+      display: block;
+      animation: auth-card-in 0.35s ease-out;
+    }
   }
 
+  .auth-panel {
+    width: 100%;
+    min-height: 670px;
+    padding: 70px 60px 50px;
+  }
 
+  .auth-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .auth-tab {
+    padding: 0 0 0.4rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-transform: uppercase;
+
+    &.active {
+      border-color: colorway.$hulk;
+      color: #fff;
+    }
+  }
+
+  .auth-forms {
+    position: relative;
+    min-height: 480px;
+    perspective: 1000px;
+  }
+
+  .login-user,
   .new-user {
-    margin: 2em 0 0 0;
-    max-width: 100%;
     display: none;
-    align-items: center;
-    justify-content: center;
-    background-color: colorway.$smoke;
-    border-radius: 6px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+
+    &.active {
+      display: block;
+      animation: auth-form-flip 0.4s linear;
+      transform: rotateY(0);
+    }
   }
 
-
+  .login-form,
   .signUp-form {
-    margin: 1em 0 0 0;
+    display: flex;
+    width: 100%;
     max-width: 100%;
-    padding: 0.5em;
-    display: none;
-    align-items: center;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    align-items: stretch;
     justify-content: center;
   }
 
-  .valid-feedback {
-      margin-left: 0.5em;
+  .form-group {
+    margin-bottom: 0.25rem;
   }
 
-  .invalid-feedback {
-      margin-left: 0.5em;
+  .login-form .form-label,
+  .signUp-form .form-label {
+    display: block;
+    width: 100%;
+    margin: 0 0 0.35rem;
+    color: #c2c5d2;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
   }
 
-  .botSearch {
-      max-width: 550px;
-      margin: 1em;
-      display: none;
-      /*place-items: center;*/
-      /*align-items: center;*/
-      /*justify-content: center;*/
-      border: 1px solid aquamarine;
+  .login-form .form-control,
+  .signUp-form .form-control {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 48px;
+    margin: 0;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    box-shadow: none;
 
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
 
+    &:focus {
+      border-color: colorway.$hulk;
+      background: rgba(255, 255, 255, 0.16);
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(17, 97, 238, 0.22);
+    }
   }
 
-
-  h1, h2 {
-      /*margin: 0 auto;*/
-      text-align: center;
+  .eMail,
+  .confirm-eMail {
+    width: 100%;
   }
 
-  //img {
-  //    margin: 0 auto;
-  //}
-
-
-
-  input {
-      margin: 0.5em;
-      height: 3em;
-      /*max-width: em;*/
-      border: none;
-      border-radius: 5px;
+  .keep-signed-in {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0.25rem 0 0.75rem;
+    color: #c2c5d2;
   }
 
-
-  #email {
-      border-bottom:1px solid #e52666;
+  .keep-signed-in .check {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
   }
 
-  .errorMadeAtEmail {
-      display: none;
-      width: 100%;
-      text-align: center;
-      color: #ff0000;
+  .keep-signed-in label {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    margin: 0;
+    cursor: pointer;
   }
 
-  .errorMadeAtKeyword {
-      display: none;
-      width: 100%;
-      text-align: center;
-      color: #ff0000;
+  .keep-signed-in .icon {
+    position: relative;
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 0.45rem;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
   }
 
-  #keyword {
-      border-bottom:1px solid #e52666;
+  .keep-signed-in .icon::before,
+  .keep-signed-in .icon::after {
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background: #fff;
+    content: "";
+    transform: scale(0);
+    transition: transform 0.2s ease-in-out;
   }
 
-  label {
-      margin-bottom: -25px;
-      width: 100%;
-      /*display: flex;*/
-      /*position: relative;*/
-      /*left: -12em;*/
+  .keep-signed-in .icon::before {
+    bottom: 5px;
+    left: 2px;
+    width: 5px;
   }
 
-  .date-range {
-      display: flex;
-      gap: 1em; /* space between the two fields */
-      justify-content: space-between;
-      margin-bottom: 1em;
+  .keep-signed-in .icon::after {
+    top: 6px;
+    right: 0;
   }
 
-  .date-field {
-      display: flex;
-      flex-direction: column;
-      flex: 1; /* makes each field expand evenly */
+  .keep-signed-in .check:checked + label {
+    color: #fff;
   }
 
-  #fdate {
-      border-bottom:1px solid #e52666;
-      background-color: #e5e4e2;
+  .keep-signed-in .check:checked + label .icon {
+    background: colorway.$hulk;
   }
 
-  .errorHappened {
-      display: none;
-      width: 100%;
-      text-align: center;
-      color: #ff0000;
+  .keep-signed-in .check:checked + label .icon::before {
+    transform: scale(1) rotate(45deg);
   }
 
-  #tdate {
-      border-bottom:1px solid #e52666;
-      background-color: #e5e4e2;
-  }
-
-  .errorHappenedAgain {
-      display: none;
-      width: 100%;
-      text-align: center;
-      color: #ff0000;
-  }
-
-  .button_form1 {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .keep-signed-in .check:checked + label .icon::after {
+    transform: scale(1) rotate(-45deg);
   }
 
   .form-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(350px, 90%);
+    max-width: 80%;
+    height: 3em;
     margin: 2em 0 0 0;
-    display: block;
-    max-width: 200px;
-    border-radius: 5px;
-    border: outset;
+    padding: 1em;
+    border: 2px solid #111;
+    border-radius: 8px;
     background-color: colorway.$hulk;
+    color: #111;
+    cursor: pointer;
+    font: 600 16px/24px Inter, sans-serif;
+    text-align: center;
+    text-decoration: none;
+    touch-action: manipulation;
+    user-select: none;
+
+    &::after {
+      position: absolute;
+      top: -2px;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 48px;
+      border-radius: 8px;
+      background-color: #111;
+      content: "";
+      transform: translate(8px, 8px);
+      transition: transform 0.2s ease-out;
+    }
+
+    &:hover::after {
+      transform: translate(0, 0);
+    }
+
+    &:active {
+      background-color: #ffdeda;
+      outline: 0;
+    }
+
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+  }
+
+  .form-divider {
+    width: 100%;
+    height: 2px;
+    margin: 2.25rem 0 1.75rem;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .forgot-password,
+  .already-member {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: #c2c5d2;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .forgot-password:hover,
+  .already-member:hover {
+    color: #fff;
+  }
+
+  .valid-feedback,
+  .invalid-feedback {
+    margin-left: 0.5em;
+  }
+
+  .botSearch {
+    display: none;
+    max-width: 550px;
+    margin: 1em;
+    border: 1px solid aquamarine;
+  }
+
+  h1,
+  h2 {
+    text-align: center;
+  }
+
+  /* Keep the general Garbo search fields separate from auth fields. */
+  .garbos-form input,
+  .botSearch input {
+    height: 3em;
+    margin: 0.5em;
+    border: none;
+    border-radius: 5px;
+  }
+
+  #email,
+  #keyword {
+    border-bottom: 1px solid #e52666;
+  }
+
+  .errorMadeAtEmail,
+  .errorMadeAtKeyword,
+  .errorHappened,
+  .errorHappenedAgain {
+    display: none;
+    width: 100%;
+    color: #f00;
+    text-align: center;
+  }
+
+  .date-range {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    margin-bottom: 1em;
+  }
+
+  .date-field {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  #fdate,
+  #tdate {
+    border-bottom: 1px solid #e52666;
+    background-color: #e5e4e2;
+  }
+
+  .button_form1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 575px) {
+    .auth-card {
+      min-height: auto;
+      margin: 1rem auto;
+      border-radius: 0;
+    }
+
+    .auth-panel {
+      min-height: auto;
+      padding: 45px 24px 35px;
+    }
+
+    .auth-tab {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+@keyframes auth-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes auth-form-flip {
+  from {
+    opacity: 0;
+    transform: rotateY(180deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotateY(0);
   }
 }
 
 footer {
-      margin-top: 4rem;
-      position: relative;
-      height: 5rem;
-      width: 100%;
-      background-color: colorway.$lakers;
-      /*z-index: 340;*/
-      //border: 1px solid #ff0000;
-  }
+  position: relative;
+  width: 100%;
+  height: 5rem;
+  margin-top: 4rem;
+  background-color: colorway.$lakers;
+}

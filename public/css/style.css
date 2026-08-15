@@ -11860,56 +11860,68 @@ textarea.form-control-lg {
   }
 }
 .home-page {
-  /* */
   background-color: #333333;
+  color: #6a6f8c;
   margin: 0;
   padding: 0;
+  /* Shared login/sign-up card */
+  /* Keep the general Garbo search fields separate from auth fields. */
+}
+.home-page *,
+.home-page *::before,
+.home-page *::after {
+  box-sizing: border-box;
 }
 .home-page nav {
   position: fixed;
-  height: 4rem;
+  z-index: 1000;
   width: 100%;
+  height: 4rem;
   background-color: #9f00ec;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
 }
 .home-page .show {
   position: relative;
   top: 4px;
-  /*opacity: 0.25;*/
-  /*transition: opacity 0.25s ease, visibility 0.25s ease;*/
-  background-color: #F0EEEE;
+  background-color: #f0eeee;
 }
 .home-page .nav-link {
   display: inline-block;
   flex-wrap: nowrap;
-  transition: transform 0.3s ease-out, color 0.2s ease-in;
   color: #ffffff;
+  transition: transform 0.3s ease-out, color 0.2s ease-in;
 }
 .home-page .nav-link:hover {
-  transform: translateY(-5px);
   color: #E5E4E2;
+  transform: translateY(-5px);
 }
 .home-page .main-body {
-  margin-top: 5em;
-  width: 100%;
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  margin-top: 5em;
 }
 .home-page .greetings {
   width: 100%;
 }
 .home-page .the-logo {
-  padding-top: 1em;
   display: flex;
   justify-content: center;
+  padding-top: 1em;
 }
 .home-page .the-logo img {
   height: 5em;
 }
+.home-page .whoIsGarbo {
+  margin-top: 2em;
+}
+.home-page .whoIsGarbo .thisIsGarbo {
+  padding: 0.5em;
+}
 .home-page .whoIsGarbo .thisIsGarbo h4 {
-  margin: 3em 0 2em 0;
+  margin: 3em 0 2em;
   color: #ffffff;
 }
 .home-page .whoIsGarbo .thisIsGarbo p {
@@ -11917,269 +11929,442 @@ textarea.form-control-lg {
   color: #ffffff;
   line-height: 2;
 }
-@media (min-width: 768px) {
-  .home-page .whoIsGarbo .whoIsGarbo {
-    margin-bottom: 3em;
-  }
-}
 .home-page .welcome-section {
-  margin-top: 2em;
-  height: auto;
   display: block;
+  height: auto;
+  margin-top: 2em;
   place-content: center;
 }
-.home-page .welcome-section .create-user-button, .home-page .welcome-section .current-user-button {
+.home-page .welcome-section .create-user-button,
+.home-page .welcome-section .current-user-button {
+  margin: 0 0 3em;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.home-page .welcome-section .login-button {
-  align-items: center;
-  background-color: #14ff76;
-  border: 2px solid #111;
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: #111;
-  cursor: pointer;
-  display: flex;
-  font-family: Inter, sans-serif;
-  font-size: 16px;
-  height: 3em;
-  justify-content: center;
-  line-height: 24px;
-  width: min(350px, 90%);
-  max-width: 70%;
-  padding: 1em;
-  margin: 0 0 2em 0;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-}
-.home-page .welcome-section .login-button:after {
-  background-color: #111;
-  border-radius: 8px;
-  content: "";
-  display: block;
-  height: 48px;
-  left: 0;
-  width: 100%;
-  position: absolute;
-  top: -2px;
-  transform: translate(8px, 8px);
-  transition: transform 0.2s ease-out;
-  z-index: -1;
-}
-.home-page .welcome-section .login-button:hover:after {
-  transform: translate(0, 0);
-}
-.home-page .welcome-section .login-button:active {
-  background-color: #ffdeda;
-  outline: 0;
-}
-.home-page .welcome-section .login-button:hover {
-  outline: 0;
-}
-@media (min-width: 768px) {
-  .home-page .welcome-section .login-button {
-    padding: 0 40px;
-  }
-}
+.home-page .welcome-section .login-button,
 .home-page .welcome-section .new-user-button {
-  align-items: center;
-  background-color: #14ff76;
-  border: 2px solid #111;
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: #111;
-  cursor: pointer;
+  position: relative;
   display: flex;
-  font-family: Inter, sans-serif;
-  font-size: 16px;
-  height: 3em;
+  align-items: center;
   justify-content: center;
-  line-height: 24px;
   width: min(350px, 90%);
   max-width: 70%;
+  height: 3em;
   padding: 1em;
-  margin: 0 0 2em 0;
-  position: relative;
+  border: 2px solid #111;
+  border-radius: 8px;
+  background-color: #14ff76;
+  color: #111;
+  cursor: pointer;
+  font: 600 16px/24px Inter, sans-serif;
   text-align: center;
   text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
   touch-action: manipulation;
+  user-select: none;
 }
-.home-page .welcome-section .new-user-button:after {
-  background-color: #111;
-  border-radius: 8px;
-  content: "";
-  display: block;
-  height: 48px;
-  left: 0;
-  width: 100%;
+.home-page .welcome-section .login-button::after,
+.home-page .welcome-section .new-user-button::after {
   position: absolute;
   top: -2px;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  background-color: #111;
+  content: "";
   transform: translate(8px, 8px);
   transition: transform 0.2s ease-out;
-  z-index: -1;
 }
-.home-page .welcome-section .new-user-button:hover:after {
+.home-page .welcome-section .login-button:hover::after,
+.home-page .welcome-section .new-user-button:hover::after {
   transform: translate(0, 0);
 }
+.home-page .welcome-section .login-button:active,
 .home-page .welcome-section .new-user-button:active {
   background-color: #ffdeda;
   outline: 0;
 }
-.home-page .welcome-section .new-user-button:hover {
+.home-page .auth-card {
+  display: none;
+  width: 100%;
+  max-width: 525px;
+  min-height: 670px;
+  margin: 2rem auto;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: linear-gradient(rgba(159, 87, 44, 0.92), rgba(100, 31, 7, 0.92)), url("../../public/assets/images/garbo_warehouse.png") no-repeat center/cover;
+  box-shadow: 0 12px 15px rgba(0, 0, 0, 0.24), 0 17px 50px rgba(0, 0, 0, 0.19);
+}
+.home-page .auth-card.visible {
+  display: block;
+  animation: auth-card-in 0.35s ease-out;
+}
+.home-page .auth-panel {
+  width: 100%;
+  min-height: 670px;
+  padding: 70px 60px 50px;
+}
+.home-page .auth-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.home-page .auth-tab {
+  padding: 0 0 0.4rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.home-page .auth-tab.active {
+  border-color: #14ff76;
+  color: #fff;
+}
+.home-page .auth-forms {
+  position: relative;
+  min-height: 480px;
+  perspective: 1000px;
+}
+.home-page .login-user,
+.home-page .new-user {
+  display: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+}
+.home-page .login-user.active,
+.home-page .new-user.active {
+  display: block;
+  animation: auth-form-flip 0.4s linear;
+  transform: rotateY(0);
+}
+.home-page .login-form,
+.home-page .signUp-form {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  align-items: stretch;
+  justify-content: center;
+}
+.home-page .form-group {
+  margin-bottom: 0.25rem;
+}
+.home-page .login-form .form-label,
+.home-page .signUp-form .form-label {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.35rem;
+  color: #c2c5d2;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.home-page .login-form .form-control,
+.home-page .signUp-form .form-control {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 48px;
+  margin: 0;
+  padding: 0.85rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  box-shadow: none;
+}
+.home-page .login-form .form-control::placeholder,
+.home-page .signUp-form .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+.home-page .login-form .form-control:focus,
+.home-page .signUp-form .form-control:focus {
+  border-color: #14ff76;
+  background: rgba(255, 255, 255, 0.16);
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(17, 97, 238, 0.22);
+}
+.home-page .eMail,
+.home-page .confirm-eMail {
+  width: 100%;
+}
+.home-page .keep-signed-in {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.25rem 0 0.75rem;
+  color: #c2c5d2;
+}
+.home-page .keep-signed-in .check {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+.home-page .keep-signed-in label {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+.home-page .keep-signed-in .icon {
+  position: relative;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 0.45rem;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.home-page .keep-signed-in .icon::before,
+.home-page .keep-signed-in .icon::after {
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  background: #fff;
+  content: "";
+  transform: scale(0);
+  transition: transform 0.2s ease-in-out;
+}
+.home-page .keep-signed-in .icon::before {
+  bottom: 5px;
+  left: 2px;
+  width: 5px;
+}
+.home-page .keep-signed-in .icon::after {
+  top: 6px;
+  right: 0;
+}
+.home-page .keep-signed-in .check:checked + label {
+  color: #fff;
+}
+.home-page .keep-signed-in .check:checked + label .icon {
+  background: #14ff76;
+}
+.home-page .keep-signed-in .check:checked + label .icon::before {
+  transform: scale(1) rotate(45deg);
+}
+.home-page .keep-signed-in .check:checked + label .icon::after {
+  transform: scale(1) rotate(-45deg);
+}
+.home-page .form-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(350px, 90%);
+  max-width: 80%;
+  height: 3em;
+  margin: 2em 0 0 0;
+  padding: 1em;
+  border: 2px solid #111;
+  border-radius: 8px;
+  background-color: #14ff76;
+  color: #111;
+  cursor: pointer;
+  font: 600 16px/24px Inter, sans-serif;
+  text-align: center;
+  text-decoration: none;
+  touch-action: manipulation;
+  user-select: none;
+}
+.home-page .form-btn::after {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  background-color: #111;
+  content: "";
+  transform: translate(8px, 8px);
+  transition: transform 0.2s ease-out;
+}
+.home-page .form-btn:hover::after {
+  transform: translate(0, 0);
+}
+.home-page .form-btn:active {
+  background-color: #ffdeda;
   outline: 0;
 }
-@media (min-width: 768px) {
-  .home-page .welcome-section .new-user-button {
-    padding: 0 40px;
-  }
+.home-page .form-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
-.home-page .login-user {
+.home-page .form-divider {
   width: 100%;
-  border: 1px solid greenyellow;
-  display: none;
-  align-items: center;
-  justify-content: center;
+  height: 2px;
+  margin: 2.25rem 0 1.75rem;
+  background: rgba(255, 255, 255, 0.2);
 }
-.home-page .login-form {
-  margin: 1em 0 0 0;
-  height: 375px;
-  max-width: 100%;
-  padding: 0.5em;
-  margin: 0.5em;
-  display: none;
-  /*place-items: center;*/
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rebeccapurple;
+.home-page .forgot-password,
+.home-page .already-member {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #c2c5d2;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
 }
-.home-page .new-user {
-  margin: 2em 0 0 0;
-  max-width: 100%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background-color: #848884;
-  border-radius: 6px;
+.home-page .forgot-password:hover,
+.home-page .already-member:hover {
+  color: #fff;
 }
-.home-page .signUp-form {
-  margin: 1em 0 0 0;
-  max-width: 100%;
-  padding: 0.5em;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-.home-page .valid-feedback {
-  margin-left: 0.5em;
-}
+.home-page .valid-feedback,
 .home-page .invalid-feedback {
   margin-left: 0.5em;
 }
 .home-page .botSearch {
+  display: none;
   max-width: 550px;
   margin: 1em;
-  display: none;
-  /*place-items: center;*/
-  /*align-items: center;*/
-  /*justify-content: center;*/
   border: 1px solid aquamarine;
 }
-.home-page h1, .home-page h2 {
-  /*margin: 0 auto;*/
+.home-page h1,
+.home-page h2 {
   text-align: center;
 }
-.home-page input {
-  margin: 0.5em;
+.home-page .garbos-form input,
+.home-page .botSearch input {
   height: 3em;
-  /*max-width: em;*/
+  margin: 0.5em;
   border: none;
   border-radius: 5px;
 }
-.home-page #email {
-  border-bottom: 1px solid #e52666;
-}
-.home-page .errorMadeAtEmail {
-  display: none;
-  width: 100%;
-  text-align: center;
-  color: #ff0000;
-}
-.home-page .errorMadeAtKeyword {
-  display: none;
-  width: 100%;
-  text-align: center;
-  color: #ff0000;
-}
+.home-page #email,
 .home-page #keyword {
   border-bottom: 1px solid #e52666;
 }
-.home-page label {
-  margin-bottom: -25px;
+.home-page .errorMadeAtEmail,
+.home-page .errorMadeAtKeyword,
+.home-page .errorHappened,
+.home-page .errorHappenedAgain {
+  display: none;
   width: 100%;
-  /*display: flex;*/
-  /*position: relative;*/
-  /*left: -12em;*/
+  color: #f00;
+  text-align: center;
 }
 .home-page .date-range {
   display: flex;
-  gap: 1em; /* space between the two fields */
   justify-content: space-between;
+  gap: 1em;
   margin-bottom: 1em;
 }
 .home-page .date-field {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  flex: 1; /* makes each field expand evenly */
 }
-.home-page #fdate {
-  border-bottom: 1px solid #e52666;
-  background-color: #e5e4e2;
-}
-.home-page .errorHappened {
-  display: none;
-  width: 100%;
-  text-align: center;
-  color: #ff0000;
-}
+.home-page #fdate,
 .home-page #tdate {
   border-bottom: 1px solid #e52666;
   background-color: #e5e4e2;
-}
-.home-page .errorHappenedAgain {
-  display: none;
-  width: 100%;
-  text-align: center;
-  color: #ff0000;
 }
 .home-page .button_form1 {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.home-page .form-btn {
-  margin: 2em 0 0 0;
-  display: block;
-  max-width: 200px;
-  border-radius: 5px;
-  border: outset;
-  background-color: #14ff76;
+@media (max-width: 575px) {
+  .home-page .auth-card {
+    min-height: auto;
+    margin: 1rem auto;
+    border-radius: 0;
+  }
+  .home-page .auth-panel {
+    min-height: auto;
+    padding: 45px 24px 35px;
+  }
+  .home-page .auth-tab {
+    font-size: 1.1rem;
+  }
 }
 
+@keyframes auth-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes auth-form-flip {
+  from {
+    opacity: 0;
+    transform: rotateY(180deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0);
+  }
+}
 footer {
-  margin-top: 4rem;
   position: relative;
-  height: 5rem;
   width: 100%;
+  height: 5rem;
+  margin-top: 4rem;
   background-color: #9f00ec;
-  /*z-index: 340;*/
+}
+
+.about-page {
+  background-color: #333333;
+  color: #6a6f8c;
+  margin: 0;
+  padding: 0;
+}
+.about-page *,
+.about-page *::before,
+.about-page *::after {
+  box-sizing: border-box;
+}
+.about-page nav {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  height: 4rem;
+  background-color: #9f00ec;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19);
+}
+.about-page .show {
+  position: relative;
+  top: 4px;
+  background-color: #f0eeee;
+}
+.about-page .nav-link {
+  display: inline-block;
+  flex-wrap: nowrap;
+  color: #ffffff;
+  transition: transform 0.3s ease-out, color 0.2s ease-in;
+}
+.about-page .nav-link:hover {
+  color: #E5E4E2;
+  transform: translateY(-5px);
+}
+.about-page .about {
+  margin: 5em 0 0 0;
 }
 
 /*# sourceMappingURL=style.css.map */

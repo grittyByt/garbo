@@ -11,7 +11,8 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "generate:frontend-config": "tsx scripts/generate-frontend-config.ts"
   },
   "keywords": [],
   "author": "Terrell N. Whiting @gritty0_0chitty",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.2.3",
     "@types/nodemailer": "^7.0.9",

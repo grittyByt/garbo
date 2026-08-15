@@ -153,6 +153,7 @@ exports.Prisma.PWResetTokenScalarFieldEnum = {
 exports.Prisma.EmailVerificationTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  purpose: 'purpose',
   codeHash: 'codeHash',
   expiresAt: 'expiresAt',
   resendAfter: 'resendAfter',
@@ -175,7 +176,11 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.EmailVerificationPurpose = exports.$Enums.EmailVerificationPurpose = {
+  SIGNUP: 'SIGNUP',
+  FORGOT_USERNAME: 'FORGOT_USERNAME',
+  FORGOT_PASSWORD: 'FORGOT_PASSWORD'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',

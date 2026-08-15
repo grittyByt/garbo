@@ -49,13 +49,25 @@ import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { verifyPassword } from "../lib/password";
 import {loginIpLimiter} from "./middleware";
-import { signupHandler, verifyEmailHandler, resendVerificationHandler } from "../controllers/auth.controller";
+import {
+      signupHandler,
+      verifyEmailHandler,
+      resendVerificationHandler,
+      forgotUsernameHandler,
+      verifyForgotUsernameHandler,
+      forgotPasswordHandler,
+      verifyForgotPasswordHandler,
+      resetPasswordHandler
+} from "../controllers/auth.controller";
+
 
 
 const authRouter = Router();
 
+// SIGNUP
 authRouter.post("/signup", signupHandler);
 
+// LOGIN
 authRouter.post("/login", loginIpLimiter, async (req: Request, res: Response) => {
   try {
 
@@ -95,9 +107,24 @@ authRouter.post("/login", loginIpLimiter, async (req: Request, res: Response) =>
   }
 });
 
-
+// VERIFY SIGNUP EMAIL
 authRouter.post("/verify-email", verifyEmailHandler);
+
 authRouter.post("/resend-verification", resendVerificationHandler);
+
+// FORGOT USERNAME
+authRouter.post("/forgot-username", forgotUsernameHandler);
+
+authRouter.post("/forgot-username/verify", verifyForgotUsernameHandler);
+
+
+// FORGOT PASSWORD
+authRouter.post("/forgot-password", forgotPasswordHandler);
+
+authRouter.post("/forgot-password/verify", verifyForgotPasswordHandler);
+
+// RESET PASSWORD
+authRouter.post("/reset-password", resetPasswordHandler);
 
 
 /**
@@ -108,6 +135,8 @@ authRouter.post("/logout", async (_req, res) => {
   // Placeholder until sessions are added
   return res.status(200).json({ ok: true });
 });
+
+
 
 /**
  * GET /api/auth/me

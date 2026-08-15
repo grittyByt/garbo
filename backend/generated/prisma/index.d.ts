@@ -30,6 +30,24 @@ export type PWResetToken = $Result.DefaultSelection<Prisma.$PWResetTokenPayload>
 export type EmailVerificationToken = $Result.DefaultSelection<Prisma.$EmailVerificationTokenPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const EmailVerificationPurpose: {
+  SIGNUP: 'SIGNUP',
+  FORGOT_USERNAME: 'FORGOT_USERNAME',
+  FORGOT_PASSWORD: 'FORGOT_PASSWORD'
+};
+
+export type EmailVerificationPurpose = (typeof EmailVerificationPurpose)[keyof typeof EmailVerificationPurpose]
+
+}
+
+export type EmailVerificationPurpose = $Enums.EmailVerificationPurpose
+
+export const EmailVerificationPurpose: typeof $Enums.EmailVerificationPurpose
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -3504,6 +3522,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMinAggregateOutputType = {
     id: string | null
     userId: number | null
+    purpose: $Enums.EmailVerificationPurpose | null
     codeHash: string | null
     expiresAt: Date | null
     resendAfter: Date | null
@@ -3515,6 +3534,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMaxAggregateOutputType = {
     id: string | null
     userId: number | null
+    purpose: $Enums.EmailVerificationPurpose | null
     codeHash: string | null
     expiresAt: Date | null
     resendAfter: Date | null
@@ -3526,6 +3546,7 @@ export namespace Prisma {
   export type EmailVerificationTokenCountAggregateOutputType = {
     id: number
     userId: number
+    purpose: number
     codeHash: number
     expiresAt: number
     resendAfter: number
@@ -3549,6 +3570,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMinAggregateInputType = {
     id?: true
     userId?: true
+    purpose?: true
     codeHash?: true
     expiresAt?: true
     resendAfter?: true
@@ -3560,6 +3582,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMaxAggregateInputType = {
     id?: true
     userId?: true
+    purpose?: true
     codeHash?: true
     expiresAt?: true
     resendAfter?: true
@@ -3571,6 +3594,7 @@ export namespace Prisma {
   export type EmailVerificationTokenCountAggregateInputType = {
     id?: true
     userId?: true
+    purpose?: true
     codeHash?: true
     expiresAt?: true
     resendAfter?: true
@@ -3669,6 +3693,7 @@ export namespace Prisma {
   export type EmailVerificationTokenGroupByOutputType = {
     id: string
     userId: number
+    purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date
     resendAfter: Date
@@ -3699,6 +3724,7 @@ export namespace Prisma {
   export type EmailVerificationTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
     resendAfter?: boolean
@@ -3711,6 +3737,7 @@ export namespace Prisma {
   export type EmailVerificationTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
     resendAfter?: boolean
@@ -3723,6 +3750,7 @@ export namespace Prisma {
   export type EmailVerificationTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
     resendAfter?: boolean
@@ -3735,6 +3763,7 @@ export namespace Prisma {
   export type EmailVerificationTokenSelectScalar = {
     id?: boolean
     userId?: boolean
+    purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
     resendAfter?: boolean
@@ -3743,7 +3772,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type EmailVerificationTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "codeHash" | "expiresAt" | "resendAfter" | "attemptCount" | "createdAt" | "updatedAt", ExtArgs["result"]["emailVerificationToken"]>
+  export type EmailVerificationTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "purpose" | "codeHash" | "expiresAt" | "resendAfter" | "attemptCount" | "createdAt" | "updatedAt", ExtArgs["result"]["emailVerificationToken"]>
   export type EmailVerificationTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -3762,6 +3791,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: number
+      purpose: $Enums.EmailVerificationPurpose
       codeHash: string
       expiresAt: Date
       resendAfter: Date
@@ -4194,6 +4224,7 @@ export namespace Prisma {
   interface EmailVerificationTokenFieldRefs {
     readonly id: FieldRef<"EmailVerificationToken", 'String'>
     readonly userId: FieldRef<"EmailVerificationToken", 'Int'>
+    readonly purpose: FieldRef<"EmailVerificationToken", 'EmailVerificationPurpose'>
     readonly codeHash: FieldRef<"EmailVerificationToken", 'String'>
     readonly expiresAt: FieldRef<"EmailVerificationToken", 'DateTime'>
     readonly resendAfter: FieldRef<"EmailVerificationToken", 'DateTime'>
@@ -4667,6 +4698,7 @@ export namespace Prisma {
   export const EmailVerificationTokenScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
+    purpose: 'purpose',
     codeHash: 'codeHash',
     expiresAt: 'expiresAt',
     resendAfter: 'resendAfter',
@@ -4753,6 +4785,20 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'EmailVerificationPurpose'
+   */
+  export type EnumEmailVerificationPurposeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmailVerificationPurpose'>
+    
+
+
+  /**
+   * Reference to a field of type 'EmailVerificationPurpose[]'
+   */
+  export type ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmailVerificationPurpose[]'>
     
 
 
@@ -4966,6 +5012,7 @@ export namespace Prisma {
     NOT?: EmailVerificationTokenWhereInput | EmailVerificationTokenWhereInput[]
     id?: StringFilter<"EmailVerificationToken"> | string
     userId?: IntFilter<"EmailVerificationToken"> | number
+    purpose?: EnumEmailVerificationPurposeFilter<"EmailVerificationToken"> | $Enums.EmailVerificationPurpose
     codeHash?: StringFilter<"EmailVerificationToken"> | string
     expiresAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
     resendAfter?: DateTimeFilter<"EmailVerificationToken"> | Date | string
@@ -4978,6 +5025,7 @@ export namespace Prisma {
   export type EmailVerificationTokenOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     resendAfter?: SortOrder
@@ -4993,6 +5041,7 @@ export namespace Prisma {
     AND?: EmailVerificationTokenWhereInput | EmailVerificationTokenWhereInput[]
     OR?: EmailVerificationTokenWhereInput[]
     NOT?: EmailVerificationTokenWhereInput | EmailVerificationTokenWhereInput[]
+    purpose?: EnumEmailVerificationPurposeFilter<"EmailVerificationToken"> | $Enums.EmailVerificationPurpose
     codeHash?: StringFilter<"EmailVerificationToken"> | string
     expiresAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
     resendAfter?: DateTimeFilter<"EmailVerificationToken"> | Date | string
@@ -5005,6 +5054,7 @@ export namespace Prisma {
   export type EmailVerificationTokenOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     resendAfter?: SortOrder
@@ -5024,6 +5074,7 @@ export namespace Prisma {
     NOT?: EmailVerificationTokenScalarWhereWithAggregatesInput | EmailVerificationTokenScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"EmailVerificationToken"> | string
     userId?: IntWithAggregatesFilter<"EmailVerificationToken"> | number
+    purpose?: EnumEmailVerificationPurposeWithAggregatesFilter<"EmailVerificationToken"> | $Enums.EmailVerificationPurpose
     codeHash?: StringWithAggregatesFilter<"EmailVerificationToken"> | string
     expiresAt?: DateTimeWithAggregatesFilter<"EmailVerificationToken"> | Date | string
     resendAfter?: DateTimeWithAggregatesFilter<"EmailVerificationToken"> | Date | string
@@ -5248,6 +5299,7 @@ export namespace Prisma {
 
   export type EmailVerificationTokenCreateInput = {
     id?: string
+    purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date | string
     resendAfter: Date | string
@@ -5260,6 +5312,7 @@ export namespace Prisma {
   export type EmailVerificationTokenUncheckedCreateInput = {
     id?: string
     userId: number
+    purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date | string
     resendAfter: Date | string
@@ -5270,6 +5323,7 @@ export namespace Prisma {
 
   export type EmailVerificationTokenUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5282,6 +5336,7 @@ export namespace Prisma {
   export type EmailVerificationTokenUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: IntFieldUpdateOperationsInput | number
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5293,6 +5348,7 @@ export namespace Prisma {
   export type EmailVerificationTokenCreateManyInput = {
     id?: string
     userId: number
+    purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date | string
     resendAfter: Date | string
@@ -5303,6 +5359,7 @@ export namespace Prisma {
 
   export type EmailVerificationTokenUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5314,6 +5371,7 @@ export namespace Prisma {
   export type EmailVerificationTokenUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: IntFieldUpdateOperationsInput | number
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5611,9 +5669,17 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
+  export type EnumEmailVerificationPurposeFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmailVerificationPurpose | EnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    in?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel> | $Enums.EmailVerificationPurpose
+  }
+
   export type EmailVerificationTokenCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     resendAfter?: SortOrder
@@ -5630,6 +5696,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     resendAfter?: SortOrder
@@ -5641,6 +5708,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
     resendAfter?: SortOrder
@@ -5652,6 +5720,16 @@ export namespace Prisma {
   export type EmailVerificationTokenSumOrderByAggregateInput = {
     userId?: SortOrder
     attemptCount?: SortOrder
+  }
+
+  export type EnumEmailVerificationPurposeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmailVerificationPurpose | EnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    in?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmailVerificationPurposeWithAggregatesFilter<$PrismaModel> | $Enums.EmailVerificationPurpose
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel>
+    _max?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel>
   }
 
   export type EmailVerificationTokenCreateNestedOneWithoutUserInput = {
@@ -5774,6 +5852,10 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutEmailVerificationInput, UserUncheckedCreateWithoutEmailVerificationInput>
     connectOrCreate?: UserCreateOrConnectWithoutEmailVerificationInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type EnumEmailVerificationPurposeFieldUpdateOperationsInput = {
+    set?: $Enums.EmailVerificationPurpose
   }
 
   export type UserUpdateOneRequiredWithoutEmailVerificationNestedInput = {
@@ -5958,8 +6040,26 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumEmailVerificationPurposeFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmailVerificationPurpose | EnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    in?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel> | $Enums.EmailVerificationPurpose
+  }
+
+  export type NestedEnumEmailVerificationPurposeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.EmailVerificationPurpose | EnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    in?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
+    not?: NestedEnumEmailVerificationPurposeWithAggregatesFilter<$PrismaModel> | $Enums.EmailVerificationPurpose
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel>
+    _max?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel>
+  }
+
   export type EmailVerificationTokenCreateWithoutUserInput = {
     id?: string
+    purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date | string
     resendAfter: Date | string
@@ -5970,6 +6070,7 @@ export namespace Prisma {
 
   export type EmailVerificationTokenUncheckedCreateWithoutUserInput = {
     id?: string
+    purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date | string
     resendAfter: Date | string
@@ -6022,6 +6123,7 @@ export namespace Prisma {
 
   export type EmailVerificationTokenUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6032,6 +6134,7 @@ export namespace Prisma {
 
   export type EmailVerificationTokenUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -10,16 +10,32 @@ import type { Request, Response } from "express";
 import helmet from 'helmet';
 import cookieParser = require('cookie-parser');
 import authRouter from './routes/auth';
+import cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const BACKEND_PORT = process.env.PORT;
+const FRONTEND_PORT = process.env.FRONTEND_PORT;
+
+if (!BACKEND_PORT || !FRONTEND_PORT) {
+  throw new Error("Required server environment variables are missing.");
+}
+
+const FRONTEND_ORIGIN = `http://localhost:${FRONTEND_PORT}`;
+
 console.log("🔥 Starting Garbo backend from app.ts");
 
+// ========================================
+
+// MIDDLEWARE
+
+// ========================================
 app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true })); // for form POSTs
+app.use(cors({ origin: FRONTEND_ORIGIN,  credentials: true }));
 
 // Enforce HTTPS in production
 app.use((req: Request, res: Response, next) => {
@@ -32,9 +48,18 @@ app.use((req: Request, res: Response, next) => {
   next();
 });
 
+// ========================================
 
+// ROUTES
 
+// ========================================
 app.use('/api/auth', authRouter);
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+
+// ========================================
+
+// START SERVER
+
+// ========================================
+app.listen(Number(BACKEND_PORT), () => console.log(`Garbo server is running and operational`));
 // export default app;

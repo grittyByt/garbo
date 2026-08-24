@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model UserPendingSignup
+ * 
+ */
+export type UserPendingSignup = $Result.DefaultSelection<Prisma.$UserPendingSignupPayload>
+/**
  * Model PWResetToken
  * 
  */
@@ -173,6 +178,16 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.userPendingSignup`: Exposes CRUD operations for the **UserPendingSignup** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserPendingSignups
+    * const userPendingSignups = await prisma.userPendingSignup.findMany()
+    * ```
+    */
+  get userPendingSignup(): Prisma.UserPendingSignupDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.pWResetToken`: Exposes CRUD operations for the **PWResetToken** model.
@@ -628,6 +643,7 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    UserPendingSignup: 'UserPendingSignup',
     PWResetToken: 'PWResetToken',
     EmailVerificationToken: 'EmailVerificationToken'
   };
@@ -645,7 +661,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "pWResetToken" | "emailVerificationToken"
+      modelProps: "user" | "userPendingSignup" | "pWResetToken" | "emailVerificationToken"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -720,6 +736,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      UserPendingSignup: {
+        payload: Prisma.$UserPendingSignupPayload<ExtArgs>
+        fields: Prisma.UserPendingSignupFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserPendingSignupFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserPendingSignupFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>
+          }
+          findFirst: {
+            args: Prisma.UserPendingSignupFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserPendingSignupFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>
+          }
+          findMany: {
+            args: Prisma.UserPendingSignupFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>[]
+          }
+          create: {
+            args: Prisma.UserPendingSignupCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>
+          }
+          createMany: {
+            args: Prisma.UserPendingSignupCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserPendingSignupCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>[]
+          }
+          delete: {
+            args: Prisma.UserPendingSignupDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>
+          }
+          update: {
+            args: Prisma.UserPendingSignupUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserPendingSignupDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserPendingSignupUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserPendingSignupUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>[]
+          }
+          upsert: {
+            args: Prisma.UserPendingSignupUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPendingSignupPayload>
+          }
+          aggregate: {
+            args: Prisma.UserPendingSignupAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserPendingSignup>
+          }
+          groupBy: {
+            args: Prisma.UserPendingSignupGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserPendingSignupGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserPendingSignupCountArgs<ExtArgs>
+            result: $Utils.Optional<UserPendingSignupCountAggregateOutputType> | number
           }
         }
       }
@@ -980,6 +1070,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    userPendingSignup?: UserPendingSignupOmit
     pWResetToken?: PWResetTokenOmit
     emailVerificationToken?: EmailVerificationTokenOmit
   }
@@ -1062,10 +1153,12 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
+    emailVerification: number
     resetTokens: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    emailVerification?: boolean | UserCountOutputTypeCountEmailVerificationArgs
     resetTokens?: boolean | UserCountOutputTypeCountResetTokensArgs
   }
 
@@ -1078,6 +1171,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the UserCountOutputType
      */
     select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountEmailVerificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmailVerificationTokenWhereInput
   }
 
   /**
@@ -1478,7 +1578,7 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      emailVerification: Prisma.$EmailVerificationTokenPayload<ExtArgs> | null
+      emailVerification: Prisma.$EmailVerificationTokenPayload<ExtArgs>[]
       resetTokens: Prisma.$PWResetTokenPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -1894,7 +1994,7 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    emailVerification<T extends User$emailVerificationArgs<ExtArgs> = {}>(args?: Subset<T, User$emailVerificationArgs<ExtArgs>>): Prisma__EmailVerificationTokenClient<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    emailVerification<T extends User$emailVerificationArgs<ExtArgs> = {}>(args?: Subset<T, User$emailVerificationArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     resetTokens<T extends User$resetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$resetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PWResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2347,6 +2447,11 @@ export namespace Prisma {
      */
     include?: EmailVerificationTokenInclude<ExtArgs> | null
     where?: EmailVerificationTokenWhereInput
+    orderBy?: EmailVerificationTokenOrderByWithRelationInput | EmailVerificationTokenOrderByWithRelationInput[]
+    cursor?: EmailVerificationTokenWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EmailVerificationTokenScalarFieldEnum | EmailVerificationTokenScalarFieldEnum[]
   }
 
   /**
@@ -2389,6 +2494,1129 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserPendingSignup
+   */
+
+  export type AggregateUserPendingSignup = {
+    _count: UserPendingSignupCountAggregateOutputType | null
+    _avg: UserPendingSignupAvgAggregateOutputType | null
+    _sum: UserPendingSignupSumAggregateOutputType | null
+    _min: UserPendingSignupMinAggregateOutputType | null
+    _max: UserPendingSignupMaxAggregateOutputType | null
+  }
+
+  export type UserPendingSignupAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type UserPendingSignupSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type UserPendingSignupMinAggregateOutputType = {
+    id: number | null
+    firstName: string | null
+    lastName: string | null
+    userName: string | null
+    eMail: string | null
+    passwordHash: string | null
+    createdAt: Date | null
+  }
+
+  export type UserPendingSignupMaxAggregateOutputType = {
+    id: number | null
+    firstName: string | null
+    lastName: string | null
+    userName: string | null
+    eMail: string | null
+    passwordHash: string | null
+    createdAt: Date | null
+  }
+
+  export type UserPendingSignupCountAggregateOutputType = {
+    id: number
+    firstName: number
+    lastName: number
+    userName: number
+    eMail: number
+    passwordHash: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type UserPendingSignupAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type UserPendingSignupSumAggregateInputType = {
+    id?: true
+  }
+
+  export type UserPendingSignupMinAggregateInputType = {
+    id?: true
+    firstName?: true
+    lastName?: true
+    userName?: true
+    eMail?: true
+    passwordHash?: true
+    createdAt?: true
+  }
+
+  export type UserPendingSignupMaxAggregateInputType = {
+    id?: true
+    firstName?: true
+    lastName?: true
+    userName?: true
+    eMail?: true
+    passwordHash?: true
+    createdAt?: true
+  }
+
+  export type UserPendingSignupCountAggregateInputType = {
+    id?: true
+    firstName?: true
+    lastName?: true
+    userName?: true
+    eMail?: true
+    passwordHash?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type UserPendingSignupAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserPendingSignup to aggregate.
+     */
+    where?: UserPendingSignupWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserPendingSignups to fetch.
+     */
+    orderBy?: UserPendingSignupOrderByWithRelationInput | UserPendingSignupOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserPendingSignupWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserPendingSignups from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserPendingSignups.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserPendingSignups
+    **/
+    _count?: true | UserPendingSignupCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserPendingSignupAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserPendingSignupSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserPendingSignupMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserPendingSignupMaxAggregateInputType
+  }
+
+  export type GetUserPendingSignupAggregateType<T extends UserPendingSignupAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserPendingSignup]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserPendingSignup[P]>
+      : GetScalarType<T[P], AggregateUserPendingSignup[P]>
+  }
+
+
+
+
+  export type UserPendingSignupGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserPendingSignupWhereInput
+    orderBy?: UserPendingSignupOrderByWithAggregationInput | UserPendingSignupOrderByWithAggregationInput[]
+    by: UserPendingSignupScalarFieldEnum[] | UserPendingSignupScalarFieldEnum
+    having?: UserPendingSignupScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserPendingSignupCountAggregateInputType | true
+    _avg?: UserPendingSignupAvgAggregateInputType
+    _sum?: UserPendingSignupSumAggregateInputType
+    _min?: UserPendingSignupMinAggregateInputType
+    _max?: UserPendingSignupMaxAggregateInputType
+  }
+
+  export type UserPendingSignupGroupByOutputType = {
+    id: number
+    firstName: string
+    lastName: string
+    userName: string
+    eMail: string
+    passwordHash: string
+    createdAt: Date
+    _count: UserPendingSignupCountAggregateOutputType | null
+    _avg: UserPendingSignupAvgAggregateOutputType | null
+    _sum: UserPendingSignupSumAggregateOutputType | null
+    _min: UserPendingSignupMinAggregateOutputType | null
+    _max: UserPendingSignupMaxAggregateOutputType | null
+  }
+
+  type GetUserPendingSignupGroupByPayload<T extends UserPendingSignupGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserPendingSignupGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserPendingSignupGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserPendingSignupGroupByOutputType[P]>
+            : GetScalarType<T[P], UserPendingSignupGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserPendingSignupSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    userName?: boolean
+    eMail?: boolean
+    passwordHash?: boolean
+    createdAt?: boolean
+    emailVerification?: boolean | UserPendingSignup$emailVerificationArgs<ExtArgs>
+  }, ExtArgs["result"]["userPendingSignup"]>
+
+  export type UserPendingSignupSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    userName?: boolean
+    eMail?: boolean
+    passwordHash?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["userPendingSignup"]>
+
+  export type UserPendingSignupSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    userName?: boolean
+    eMail?: boolean
+    passwordHash?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["userPendingSignup"]>
+
+  export type UserPendingSignupSelectScalar = {
+    id?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    userName?: boolean
+    eMail?: boolean
+    passwordHash?: boolean
+    createdAt?: boolean
+  }
+
+  export type UserPendingSignupOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "userName" | "eMail" | "passwordHash" | "createdAt", ExtArgs["result"]["userPendingSignup"]>
+  export type UserPendingSignupInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    emailVerification?: boolean | UserPendingSignup$emailVerificationArgs<ExtArgs>
+  }
+  export type UserPendingSignupIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserPendingSignupIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $UserPendingSignupPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserPendingSignup"
+    objects: {
+      emailVerification: Prisma.$EmailVerificationTokenPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      firstName: string
+      lastName: string
+      userName: string
+      eMail: string
+      passwordHash: string
+      createdAt: Date
+    }, ExtArgs["result"]["userPendingSignup"]>
+    composites: {}
+  }
+
+  type UserPendingSignupGetPayload<S extends boolean | null | undefined | UserPendingSignupDefaultArgs> = $Result.GetResult<Prisma.$UserPendingSignupPayload, S>
+
+  type UserPendingSignupCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UserPendingSignupFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UserPendingSignupCountAggregateInputType | true
+    }
+
+  export interface UserPendingSignupDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserPendingSignup'], meta: { name: 'UserPendingSignup' } }
+    /**
+     * Find zero or one UserPendingSignup that matches the filter.
+     * @param {UserPendingSignupFindUniqueArgs} args - Arguments to find a UserPendingSignup
+     * @example
+     * // Get one UserPendingSignup
+     * const userPendingSignup = await prisma.userPendingSignup.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserPendingSignupFindUniqueArgs>(args: SelectSubset<T, UserPendingSignupFindUniqueArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one UserPendingSignup that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UserPendingSignupFindUniqueOrThrowArgs} args - Arguments to find a UserPendingSignup
+     * @example
+     * // Get one UserPendingSignup
+     * const userPendingSignup = await prisma.userPendingSignup.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserPendingSignupFindUniqueOrThrowArgs>(args: SelectSubset<T, UserPendingSignupFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserPendingSignup that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPendingSignupFindFirstArgs} args - Arguments to find a UserPendingSignup
+     * @example
+     * // Get one UserPendingSignup
+     * const userPendingSignup = await prisma.userPendingSignup.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserPendingSignupFindFirstArgs>(args?: SelectSubset<T, UserPendingSignupFindFirstArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserPendingSignup that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPendingSignupFindFirstOrThrowArgs} args - Arguments to find a UserPendingSignup
+     * @example
+     * // Get one UserPendingSignup
+     * const userPendingSignup = await prisma.userPendingSignup.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserPendingSignupFindFirstOrThrowArgs>(args?: SelectSubset<T, UserPendingSignupFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more UserPendingSignups that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPendingSignupFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserPendingSignups
+     * const userPendingSignups = await prisma.userPendingSignup.findMany()
+     * 
+     * // Get first 10 UserPendingSignups
+     * const userPendingSignups = await prisma.userPendingSignup.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userPendingSignupWithIdOnly = await prisma.userPendingSignup.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserPendingSignupFindManyArgs>(args?: SelectSubset<T, UserPendingSignupFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a UserPendingSignup.
+     * @param {UserPendingSignupCreateArgs} args - Arguments to create a UserPendingSignup.
+     * @example
+     * // Create one UserPendingSignup
+     * const UserPendingSignup = await prisma.userPendingSignup.create({
+     *   data: {
+     *     // ... data to create a UserPendingSignup
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserPendingSignupCreateArgs>(args: SelectSubset<T, UserPendingSignupCreateArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many UserPendingSignups.
+     * @param {UserPendingSignupCreateManyArgs} args - Arguments to create many UserPendingSignups.
+     * @example
+     * // Create many UserPendingSignups
+     * const userPendingSignup = await prisma.userPendingSignup.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserPendingSignupCreateManyArgs>(args?: SelectSubset<T, UserPendingSignupCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserPendingSignups and returns the data saved in the database.
+     * @param {UserPendingSignupCreateManyAndReturnArgs} args - Arguments to create many UserPendingSignups.
+     * @example
+     * // Create many UserPendingSignups
+     * const userPendingSignup = await prisma.userPendingSignup.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserPendingSignups and only return the `id`
+     * const userPendingSignupWithIdOnly = await prisma.userPendingSignup.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserPendingSignupCreateManyAndReturnArgs>(args?: SelectSubset<T, UserPendingSignupCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a UserPendingSignup.
+     * @param {UserPendingSignupDeleteArgs} args - Arguments to delete one UserPendingSignup.
+     * @example
+     * // Delete one UserPendingSignup
+     * const UserPendingSignup = await prisma.userPendingSignup.delete({
+     *   where: {
+     *     // ... filter to delete one UserPendingSignup
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserPendingSignupDeleteArgs>(args: SelectSubset<T, UserPendingSignupDeleteArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one UserPendingSignup.
+     * @param {UserPendingSignupUpdateArgs} args - Arguments to update one UserPendingSignup.
+     * @example
+     * // Update one UserPendingSignup
+     * const userPendingSignup = await prisma.userPendingSignup.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserPendingSignupUpdateArgs>(args: SelectSubset<T, UserPendingSignupUpdateArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more UserPendingSignups.
+     * @param {UserPendingSignupDeleteManyArgs} args - Arguments to filter UserPendingSignups to delete.
+     * @example
+     * // Delete a few UserPendingSignups
+     * const { count } = await prisma.userPendingSignup.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserPendingSignupDeleteManyArgs>(args?: SelectSubset<T, UserPendingSignupDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserPendingSignups.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPendingSignupUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserPendingSignups
+     * const userPendingSignup = await prisma.userPendingSignup.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserPendingSignupUpdateManyArgs>(args: SelectSubset<T, UserPendingSignupUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserPendingSignups and returns the data updated in the database.
+     * @param {UserPendingSignupUpdateManyAndReturnArgs} args - Arguments to update many UserPendingSignups.
+     * @example
+     * // Update many UserPendingSignups
+     * const userPendingSignup = await prisma.userPendingSignup.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more UserPendingSignups and only return the `id`
+     * const userPendingSignupWithIdOnly = await prisma.userPendingSignup.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserPendingSignupUpdateManyAndReturnArgs>(args: SelectSubset<T, UserPendingSignupUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one UserPendingSignup.
+     * @param {UserPendingSignupUpsertArgs} args - Arguments to update or create a UserPendingSignup.
+     * @example
+     * // Update or create a UserPendingSignup
+     * const userPendingSignup = await prisma.userPendingSignup.upsert({
+     *   create: {
+     *     // ... data to create a UserPendingSignup
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserPendingSignup we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserPendingSignupUpsertArgs>(args: SelectSubset<T, UserPendingSignupUpsertArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of UserPendingSignups.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPendingSignupCountArgs} args - Arguments to filter UserPendingSignups to count.
+     * @example
+     * // Count the number of UserPendingSignups
+     * const count = await prisma.userPendingSignup.count({
+     *   where: {
+     *     // ... the filter for the UserPendingSignups we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserPendingSignupCountArgs>(
+      args?: Subset<T, UserPendingSignupCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserPendingSignupCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserPendingSignup.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPendingSignupAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserPendingSignupAggregateArgs>(args: Subset<T, UserPendingSignupAggregateArgs>): Prisma.PrismaPromise<GetUserPendingSignupAggregateType<T>>
+
+    /**
+     * Group by UserPendingSignup.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserPendingSignupGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserPendingSignupGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserPendingSignupGroupByArgs['orderBy'] }
+        : { orderBy?: UserPendingSignupGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserPendingSignupGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserPendingSignupGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserPendingSignup model
+   */
+  readonly fields: UserPendingSignupFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserPendingSignup.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserPendingSignupClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    emailVerification<T extends UserPendingSignup$emailVerificationArgs<ExtArgs> = {}>(args?: Subset<T, UserPendingSignup$emailVerificationArgs<ExtArgs>>): Prisma__EmailVerificationTokenClient<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserPendingSignup model
+   */
+  interface UserPendingSignupFieldRefs {
+    readonly id: FieldRef<"UserPendingSignup", 'Int'>
+    readonly firstName: FieldRef<"UserPendingSignup", 'String'>
+    readonly lastName: FieldRef<"UserPendingSignup", 'String'>
+    readonly userName: FieldRef<"UserPendingSignup", 'String'>
+    readonly eMail: FieldRef<"UserPendingSignup", 'String'>
+    readonly passwordHash: FieldRef<"UserPendingSignup", 'String'>
+    readonly createdAt: FieldRef<"UserPendingSignup", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserPendingSignup findUnique
+   */
+  export type UserPendingSignupFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPendingSignup to fetch.
+     */
+    where: UserPendingSignupWhereUniqueInput
+  }
+
+  /**
+   * UserPendingSignup findUniqueOrThrow
+   */
+  export type UserPendingSignupFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPendingSignup to fetch.
+     */
+    where: UserPendingSignupWhereUniqueInput
+  }
+
+  /**
+   * UserPendingSignup findFirst
+   */
+  export type UserPendingSignupFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPendingSignup to fetch.
+     */
+    where?: UserPendingSignupWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserPendingSignups to fetch.
+     */
+    orderBy?: UserPendingSignupOrderByWithRelationInput | UserPendingSignupOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserPendingSignups.
+     */
+    cursor?: UserPendingSignupWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserPendingSignups from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserPendingSignups.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserPendingSignups.
+     */
+    distinct?: UserPendingSignupScalarFieldEnum | UserPendingSignupScalarFieldEnum[]
+  }
+
+  /**
+   * UserPendingSignup findFirstOrThrow
+   */
+  export type UserPendingSignupFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPendingSignup to fetch.
+     */
+    where?: UserPendingSignupWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserPendingSignups to fetch.
+     */
+    orderBy?: UserPendingSignupOrderByWithRelationInput | UserPendingSignupOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserPendingSignups.
+     */
+    cursor?: UserPendingSignupWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserPendingSignups from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserPendingSignups.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserPendingSignups.
+     */
+    distinct?: UserPendingSignupScalarFieldEnum | UserPendingSignupScalarFieldEnum[]
+  }
+
+  /**
+   * UserPendingSignup findMany
+   */
+  export type UserPendingSignupFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * Filter, which UserPendingSignups to fetch.
+     */
+    where?: UserPendingSignupWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserPendingSignups to fetch.
+     */
+    orderBy?: UserPendingSignupOrderByWithRelationInput | UserPendingSignupOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserPendingSignups.
+     */
+    cursor?: UserPendingSignupWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserPendingSignups from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserPendingSignups.
+     */
+    skip?: number
+    distinct?: UserPendingSignupScalarFieldEnum | UserPendingSignupScalarFieldEnum[]
+  }
+
+  /**
+   * UserPendingSignup create
+   */
+  export type UserPendingSignupCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserPendingSignup.
+     */
+    data: XOR<UserPendingSignupCreateInput, UserPendingSignupUncheckedCreateInput>
+  }
+
+  /**
+   * UserPendingSignup createMany
+   */
+  export type UserPendingSignupCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserPendingSignups.
+     */
+    data: UserPendingSignupCreateManyInput | UserPendingSignupCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserPendingSignup createManyAndReturn
+   */
+  export type UserPendingSignupCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * The data used to create many UserPendingSignups.
+     */
+    data: UserPendingSignupCreateManyInput | UserPendingSignupCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserPendingSignup update
+   */
+  export type UserPendingSignupUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserPendingSignup.
+     */
+    data: XOR<UserPendingSignupUpdateInput, UserPendingSignupUncheckedUpdateInput>
+    /**
+     * Choose, which UserPendingSignup to update.
+     */
+    where: UserPendingSignupWhereUniqueInput
+  }
+
+  /**
+   * UserPendingSignup updateMany
+   */
+  export type UserPendingSignupUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserPendingSignups.
+     */
+    data: XOR<UserPendingSignupUpdateManyMutationInput, UserPendingSignupUncheckedUpdateManyInput>
+    /**
+     * Filter which UserPendingSignups to update
+     */
+    where?: UserPendingSignupWhereInput
+    /**
+     * Limit how many UserPendingSignups to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserPendingSignup updateManyAndReturn
+   */
+  export type UserPendingSignupUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * The data used to update UserPendingSignups.
+     */
+    data: XOR<UserPendingSignupUpdateManyMutationInput, UserPendingSignupUncheckedUpdateManyInput>
+    /**
+     * Filter which UserPendingSignups to update
+     */
+    where?: UserPendingSignupWhereInput
+    /**
+     * Limit how many UserPendingSignups to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserPendingSignup upsert
+   */
+  export type UserPendingSignupUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserPendingSignup to update in case it exists.
+     */
+    where: UserPendingSignupWhereUniqueInput
+    /**
+     * In case the UserPendingSignup found by the `where` argument doesn't exist, create a new UserPendingSignup with this data.
+     */
+    create: XOR<UserPendingSignupCreateInput, UserPendingSignupUncheckedCreateInput>
+    /**
+     * In case the UserPendingSignup was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserPendingSignupUpdateInput, UserPendingSignupUncheckedUpdateInput>
+  }
+
+  /**
+   * UserPendingSignup delete
+   */
+  export type UserPendingSignupDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    /**
+     * Filter which UserPendingSignup to delete.
+     */
+    where: UserPendingSignupWhereUniqueInput
+  }
+
+  /**
+   * UserPendingSignup deleteMany
+   */
+  export type UserPendingSignupDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserPendingSignups to delete
+     */
+    where?: UserPendingSignupWhereInput
+    /**
+     * Limit how many UserPendingSignups to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserPendingSignup.emailVerification
+   */
+  export type UserPendingSignup$emailVerificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailVerificationToken
+     */
+    select?: EmailVerificationTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailVerificationToken
+     */
+    omit?: EmailVerificationTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailVerificationTokenInclude<ExtArgs> | null
+    where?: EmailVerificationTokenWhereInput
+  }
+
+  /**
+   * UserPendingSignup without action
+   */
+  export type UserPendingSignupDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
   }
 
 
@@ -3511,17 +4739,20 @@ export namespace Prisma {
 
   export type EmailVerificationTokenAvgAggregateOutputType = {
     userId: number | null
+    pendingSignupId: number | null
     attemptCount: number | null
   }
 
   export type EmailVerificationTokenSumAggregateOutputType = {
     userId: number | null
+    pendingSignupId: number | null
     attemptCount: number | null
   }
 
   export type EmailVerificationTokenMinAggregateOutputType = {
     id: string | null
     userId: number | null
+    pendingSignupId: number | null
     purpose: $Enums.EmailVerificationPurpose | null
     codeHash: string | null
     expiresAt: Date | null
@@ -3534,6 +4765,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMaxAggregateOutputType = {
     id: string | null
     userId: number | null
+    pendingSignupId: number | null
     purpose: $Enums.EmailVerificationPurpose | null
     codeHash: string | null
     expiresAt: Date | null
@@ -3546,6 +4778,7 @@ export namespace Prisma {
   export type EmailVerificationTokenCountAggregateOutputType = {
     id: number
     userId: number
+    pendingSignupId: number
     purpose: number
     codeHash: number
     expiresAt: number
@@ -3559,17 +4792,20 @@ export namespace Prisma {
 
   export type EmailVerificationTokenAvgAggregateInputType = {
     userId?: true
+    pendingSignupId?: true
     attemptCount?: true
   }
 
   export type EmailVerificationTokenSumAggregateInputType = {
     userId?: true
+    pendingSignupId?: true
     attemptCount?: true
   }
 
   export type EmailVerificationTokenMinAggregateInputType = {
     id?: true
     userId?: true
+    pendingSignupId?: true
     purpose?: true
     codeHash?: true
     expiresAt?: true
@@ -3582,6 +4818,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMaxAggregateInputType = {
     id?: true
     userId?: true
+    pendingSignupId?: true
     purpose?: true
     codeHash?: true
     expiresAt?: true
@@ -3594,6 +4831,7 @@ export namespace Prisma {
   export type EmailVerificationTokenCountAggregateInputType = {
     id?: true
     userId?: true
+    pendingSignupId?: true
     purpose?: true
     codeHash?: true
     expiresAt?: true
@@ -3692,7 +4930,8 @@ export namespace Prisma {
 
   export type EmailVerificationTokenGroupByOutputType = {
     id: string
-    userId: number
+    userId: number | null
+    pendingSignupId: number | null
     purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date
@@ -3724,6 +4963,7 @@ export namespace Prisma {
   export type EmailVerificationTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    pendingSignupId?: boolean
     purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
@@ -3731,12 +4971,14 @@ export namespace Prisma {
     attemptCount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | EmailVerificationToken$userArgs<ExtArgs>
+    pendingSignup?: boolean | EmailVerificationToken$pendingSignupArgs<ExtArgs>
   }, ExtArgs["result"]["emailVerificationToken"]>
 
   export type EmailVerificationTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    pendingSignupId?: boolean
     purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
@@ -3744,12 +4986,14 @@ export namespace Prisma {
     attemptCount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | EmailVerificationToken$userArgs<ExtArgs>
+    pendingSignup?: boolean | EmailVerificationToken$pendingSignupArgs<ExtArgs>
   }, ExtArgs["result"]["emailVerificationToken"]>
 
   export type EmailVerificationTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    pendingSignupId?: boolean
     purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
@@ -3757,12 +5001,14 @@ export namespace Prisma {
     attemptCount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | EmailVerificationToken$userArgs<ExtArgs>
+    pendingSignup?: boolean | EmailVerificationToken$pendingSignupArgs<ExtArgs>
   }, ExtArgs["result"]["emailVerificationToken"]>
 
   export type EmailVerificationTokenSelectScalar = {
     id?: boolean
     userId?: boolean
+    pendingSignupId?: boolean
     purpose?: boolean
     codeHash?: boolean
     expiresAt?: boolean
@@ -3772,25 +5018,30 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type EmailVerificationTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "purpose" | "codeHash" | "expiresAt" | "resendAfter" | "attemptCount" | "createdAt" | "updatedAt", ExtArgs["result"]["emailVerificationToken"]>
+  export type EmailVerificationTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "pendingSignupId" | "purpose" | "codeHash" | "expiresAt" | "resendAfter" | "attemptCount" | "createdAt" | "updatedAt", ExtArgs["result"]["emailVerificationToken"]>
   export type EmailVerificationTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | EmailVerificationToken$userArgs<ExtArgs>
+    pendingSignup?: boolean | EmailVerificationToken$pendingSignupArgs<ExtArgs>
   }
   export type EmailVerificationTokenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | EmailVerificationToken$userArgs<ExtArgs>
+    pendingSignup?: boolean | EmailVerificationToken$pendingSignupArgs<ExtArgs>
   }
   export type EmailVerificationTokenIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | EmailVerificationToken$userArgs<ExtArgs>
+    pendingSignup?: boolean | EmailVerificationToken$pendingSignupArgs<ExtArgs>
   }
 
   export type $EmailVerificationTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "EmailVerificationToken"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs> | null
+      pendingSignup: Prisma.$UserPendingSignupPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      userId: number
+      userId: number | null
+      pendingSignupId: number | null
       purpose: $Enums.EmailVerificationPurpose
       codeHash: string
       expiresAt: Date
@@ -4192,7 +5443,8 @@ export namespace Prisma {
    */
   export interface Prisma__EmailVerificationTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends EmailVerificationToken$userArgs<ExtArgs> = {}>(args?: Subset<T, EmailVerificationToken$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    pendingSignup<T extends EmailVerificationToken$pendingSignupArgs<ExtArgs> = {}>(args?: Subset<T, EmailVerificationToken$pendingSignupArgs<ExtArgs>>): Prisma__UserPendingSignupClient<$Result.GetResult<Prisma.$UserPendingSignupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4224,6 +5476,7 @@ export namespace Prisma {
   interface EmailVerificationTokenFieldRefs {
     readonly id: FieldRef<"EmailVerificationToken", 'String'>
     readonly userId: FieldRef<"EmailVerificationToken", 'Int'>
+    readonly pendingSignupId: FieldRef<"EmailVerificationToken", 'Int'>
     readonly purpose: FieldRef<"EmailVerificationToken", 'EmailVerificationPurpose'>
     readonly codeHash: FieldRef<"EmailVerificationToken", 'String'>
     readonly expiresAt: FieldRef<"EmailVerificationToken", 'DateTime'>
@@ -4627,6 +5880,44 @@ export namespace Prisma {
   }
 
   /**
+   * EmailVerificationToken.user
+   */
+  export type EmailVerificationToken$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * EmailVerificationToken.pendingSignup
+   */
+  export type EmailVerificationToken$pendingSignupArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserPendingSignup
+     */
+    select?: UserPendingSignupSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserPendingSignup
+     */
+    omit?: UserPendingSignupOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserPendingSignupInclude<ExtArgs> | null
+    where?: UserPendingSignupWhereInput
+  }
+
+  /**
    * EmailVerificationToken without action
    */
   export type EmailVerificationTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4683,6 +5974,19 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const UserPendingSignupScalarFieldEnum: {
+    id: 'id',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    userName: 'userName',
+    eMail: 'eMail',
+    passwordHash: 'passwordHash',
+    createdAt: 'createdAt'
+  };
+
+  export type UserPendingSignupScalarFieldEnum = (typeof UserPendingSignupScalarFieldEnum)[keyof typeof UserPendingSignupScalarFieldEnum]
+
+
   export const PWResetTokenScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -4698,6 +6002,7 @@ export namespace Prisma {
   export const EmailVerificationTokenScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
+    pendingSignupId: 'pendingSignupId',
     purpose: 'purpose',
     codeHash: 'codeHash',
     expiresAt: 'expiresAt',
@@ -4841,7 +6146,7 @@ export namespace Prisma {
     mfaEnrolledAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    emailVerification?: XOR<EmailVerificationTokenNullableScalarRelationFilter, EmailVerificationTokenWhereInput> | null
+    emailVerification?: EmailVerificationTokenListRelationFilter
     resetTokens?: PWResetTokenListRelationFilter
   }
 
@@ -4864,7 +6169,7 @@ export namespace Prisma {
     mfaEnrolledAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    emailVerification?: EmailVerificationTokenOrderByWithRelationInput
+    emailVerification?: EmailVerificationTokenOrderByRelationAggregateInput
     resetTokens?: PWResetTokenOrderByRelationAggregateInput
   }
 
@@ -4890,7 +6195,7 @@ export namespace Prisma {
     mfaEnrolledAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    emailVerification?: XOR<EmailVerificationTokenNullableScalarRelationFilter, EmailVerificationTokenWhereInput> | null
+    emailVerification?: EmailVerificationTokenListRelationFilter
     resetTokens?: PWResetTokenListRelationFilter
   }, "id" | "publicId" | "eMail" | "userName">
 
@@ -4942,6 +6247,73 @@ export namespace Prisma {
     mfaEnrolledAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+  }
+
+  export type UserPendingSignupWhereInput = {
+    AND?: UserPendingSignupWhereInput | UserPendingSignupWhereInput[]
+    OR?: UserPendingSignupWhereInput[]
+    NOT?: UserPendingSignupWhereInput | UserPendingSignupWhereInput[]
+    id?: IntFilter<"UserPendingSignup"> | number
+    firstName?: StringFilter<"UserPendingSignup"> | string
+    lastName?: StringFilter<"UserPendingSignup"> | string
+    userName?: StringFilter<"UserPendingSignup"> | string
+    eMail?: StringFilter<"UserPendingSignup"> | string
+    passwordHash?: StringFilter<"UserPendingSignup"> | string
+    createdAt?: DateTimeFilter<"UserPendingSignup"> | Date | string
+    emailVerification?: XOR<EmailVerificationTokenNullableScalarRelationFilter, EmailVerificationTokenWhereInput> | null
+  }
+
+  export type UserPendingSignupOrderByWithRelationInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    userName?: SortOrder
+    eMail?: SortOrder
+    passwordHash?: SortOrder
+    createdAt?: SortOrder
+    emailVerification?: EmailVerificationTokenOrderByWithRelationInput
+  }
+
+  export type UserPendingSignupWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    userName?: string
+    eMail?: string
+    AND?: UserPendingSignupWhereInput | UserPendingSignupWhereInput[]
+    OR?: UserPendingSignupWhereInput[]
+    NOT?: UserPendingSignupWhereInput | UserPendingSignupWhereInput[]
+    firstName?: StringFilter<"UserPendingSignup"> | string
+    lastName?: StringFilter<"UserPendingSignup"> | string
+    passwordHash?: StringFilter<"UserPendingSignup"> | string
+    createdAt?: DateTimeFilter<"UserPendingSignup"> | Date | string
+    emailVerification?: XOR<EmailVerificationTokenNullableScalarRelationFilter, EmailVerificationTokenWhereInput> | null
+  }, "id" | "userName" | "eMail">
+
+  export type UserPendingSignupOrderByWithAggregationInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    userName?: SortOrder
+    eMail?: SortOrder
+    passwordHash?: SortOrder
+    createdAt?: SortOrder
+    _count?: UserPendingSignupCountOrderByAggregateInput
+    _avg?: UserPendingSignupAvgOrderByAggregateInput
+    _max?: UserPendingSignupMaxOrderByAggregateInput
+    _min?: UserPendingSignupMinOrderByAggregateInput
+    _sum?: UserPendingSignupSumOrderByAggregateInput
+  }
+
+  export type UserPendingSignupScalarWhereWithAggregatesInput = {
+    AND?: UserPendingSignupScalarWhereWithAggregatesInput | UserPendingSignupScalarWhereWithAggregatesInput[]
+    OR?: UserPendingSignupScalarWhereWithAggregatesInput[]
+    NOT?: UserPendingSignupScalarWhereWithAggregatesInput | UserPendingSignupScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"UserPendingSignup"> | number
+    firstName?: StringWithAggregatesFilter<"UserPendingSignup"> | string
+    lastName?: StringWithAggregatesFilter<"UserPendingSignup"> | string
+    userName?: StringWithAggregatesFilter<"UserPendingSignup"> | string
+    eMail?: StringWithAggregatesFilter<"UserPendingSignup"> | string
+    passwordHash?: StringWithAggregatesFilter<"UserPendingSignup"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"UserPendingSignup"> | Date | string
   }
 
   export type PWResetTokenWhereInput = {
@@ -5011,7 +6383,8 @@ export namespace Prisma {
     OR?: EmailVerificationTokenWhereInput[]
     NOT?: EmailVerificationTokenWhereInput | EmailVerificationTokenWhereInput[]
     id?: StringFilter<"EmailVerificationToken"> | string
-    userId?: IntFilter<"EmailVerificationToken"> | number
+    userId?: IntNullableFilter<"EmailVerificationToken"> | number | null
+    pendingSignupId?: IntNullableFilter<"EmailVerificationToken"> | number | null
     purpose?: EnumEmailVerificationPurposeFilter<"EmailVerificationToken"> | $Enums.EmailVerificationPurpose
     codeHash?: StringFilter<"EmailVerificationToken"> | string
     expiresAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
@@ -5019,12 +6392,14 @@ export namespace Prisma {
     attemptCount?: IntFilter<"EmailVerificationToken"> | number
     createdAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
     updatedAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    pendingSignup?: XOR<UserPendingSignupNullableScalarRelationFilter, UserPendingSignupWhereInput> | null
   }
 
   export type EmailVerificationTokenOrderByWithRelationInput = {
     id?: SortOrder
-    userId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    pendingSignupId?: SortOrderInput | SortOrder
     purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
@@ -5033,14 +6408,17 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    pendingSignup?: UserPendingSignupOrderByWithRelationInput
   }
 
   export type EmailVerificationTokenWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    userId?: number
+    pendingSignupId?: number
+    userId_purpose?: EmailVerificationTokenUserIdPurposeCompoundUniqueInput
     AND?: EmailVerificationTokenWhereInput | EmailVerificationTokenWhereInput[]
     OR?: EmailVerificationTokenWhereInput[]
     NOT?: EmailVerificationTokenWhereInput | EmailVerificationTokenWhereInput[]
+    userId?: IntNullableFilter<"EmailVerificationToken"> | number | null
     purpose?: EnumEmailVerificationPurposeFilter<"EmailVerificationToken"> | $Enums.EmailVerificationPurpose
     codeHash?: StringFilter<"EmailVerificationToken"> | string
     expiresAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
@@ -5048,12 +6426,14 @@ export namespace Prisma {
     attemptCount?: IntFilter<"EmailVerificationToken"> | number
     createdAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
     updatedAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "userId">
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    pendingSignup?: XOR<UserPendingSignupNullableScalarRelationFilter, UserPendingSignupWhereInput> | null
+  }, "id" | "pendingSignupId" | "userId_purpose">
 
   export type EmailVerificationTokenOrderByWithAggregationInput = {
     id?: SortOrder
-    userId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    pendingSignupId?: SortOrderInput | SortOrder
     purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
@@ -5073,7 +6453,8 @@ export namespace Prisma {
     OR?: EmailVerificationTokenScalarWhereWithAggregatesInput[]
     NOT?: EmailVerificationTokenScalarWhereWithAggregatesInput | EmailVerificationTokenScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"EmailVerificationToken"> | string
-    userId?: IntWithAggregatesFilter<"EmailVerificationToken"> | number
+    userId?: IntNullableWithAggregatesFilter<"EmailVerificationToken"> | number | null
+    pendingSignupId?: IntNullableWithAggregatesFilter<"EmailVerificationToken"> | number | null
     purpose?: EnumEmailVerificationPurposeWithAggregatesFilter<"EmailVerificationToken"> | $Enums.EmailVerificationPurpose
     codeHash?: StringWithAggregatesFilter<"EmailVerificationToken"> | string
     expiresAt?: DateTimeWithAggregatesFilter<"EmailVerificationToken"> | Date | string
@@ -5101,7 +6482,7 @@ export namespace Prisma {
     mfaEnrolledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    emailVerification?: EmailVerificationTokenCreateNestedOneWithoutUserInput
+    emailVerification?: EmailVerificationTokenCreateNestedManyWithoutUserInput
     resetTokens?: PWResetTokenCreateNestedManyWithoutUserInput
   }
 
@@ -5124,7 +6505,7 @@ export namespace Prisma {
     mfaEnrolledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    emailVerification?: EmailVerificationTokenUncheckedCreateNestedOneWithoutUserInput
+    emailVerification?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
     resetTokens?: PWResetTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -5146,7 +6527,7 @@ export namespace Prisma {
     mfaEnrolledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailVerification?: EmailVerificationTokenUpdateOneWithoutUserNestedInput
+    emailVerification?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
     resetTokens?: PWResetTokenUpdateManyWithoutUserNestedInput
   }
 
@@ -5169,7 +6550,7 @@ export namespace Prisma {
     mfaEnrolledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailVerification?: EmailVerificationTokenUncheckedUpdateOneWithoutUserNestedInput
+    emailVerification?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     resetTokens?: PWResetTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -5233,6 +6614,77 @@ export namespace Prisma {
     mfaEnrolledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserPendingSignupCreateInput = {
+    firstName: string
+    lastName: string
+    userName: string
+    eMail: string
+    passwordHash: string
+    createdAt?: Date | string
+    emailVerification?: EmailVerificationTokenCreateNestedOneWithoutPendingSignupInput
+  }
+
+  export type UserPendingSignupUncheckedCreateInput = {
+    id?: number
+    firstName: string
+    lastName: string
+    userName: string
+    eMail: string
+    passwordHash: string
+    createdAt?: Date | string
+    emailVerification?: EmailVerificationTokenUncheckedCreateNestedOneWithoutPendingSignupInput
+  }
+
+  export type UserPendingSignupUpdateInput = {
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    userName?: StringFieldUpdateOperationsInput | string
+    eMail?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerification?: EmailVerificationTokenUpdateOneWithoutPendingSignupNestedInput
+  }
+
+  export type UserPendingSignupUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    userName?: StringFieldUpdateOperationsInput | string
+    eMail?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailVerification?: EmailVerificationTokenUncheckedUpdateOneWithoutPendingSignupNestedInput
+  }
+
+  export type UserPendingSignupCreateManyInput = {
+    id?: number
+    firstName: string
+    lastName: string
+    userName: string
+    eMail: string
+    passwordHash: string
+    createdAt?: Date | string
+  }
+
+  export type UserPendingSignupUpdateManyMutationInput = {
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    userName?: StringFieldUpdateOperationsInput | string
+    eMail?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserPendingSignupUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    userName?: StringFieldUpdateOperationsInput | string
+    eMail?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PWResetTokenCreateInput = {
@@ -5306,12 +6758,14 @@ export namespace Prisma {
     attemptCount?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutEmailVerificationInput
+    user?: UserCreateNestedOneWithoutEmailVerificationInput
+    pendingSignup?: UserPendingSignupCreateNestedOneWithoutEmailVerificationInput
   }
 
   export type EmailVerificationTokenUncheckedCreateInput = {
     id?: string
-    userId: number
+    userId?: number | null
+    pendingSignupId?: number | null
     purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date | string
@@ -5330,12 +6784,14 @@ export namespace Prisma {
     attemptCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutEmailVerificationNestedInput
+    user?: UserUpdateOneWithoutEmailVerificationNestedInput
+    pendingSignup?: UserPendingSignupUpdateOneWithoutEmailVerificationNestedInput
   }
 
   export type EmailVerificationTokenUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
+    pendingSignupId?: NullableIntFieldUpdateOperationsInput | number | null
     purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5347,7 +6803,8 @@ export namespace Prisma {
 
   export type EmailVerificationTokenCreateManyInput = {
     id?: string
-    userId: number
+    userId?: number | null
+    pendingSignupId?: number | null
     purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date | string
@@ -5370,7 +6827,8 @@ export namespace Prisma {
 
   export type EmailVerificationTokenUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: IntFieldUpdateOperationsInput | number
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
+    pendingSignupId?: NullableIntFieldUpdateOperationsInput | number | null
     purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
     codeHash?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5448,9 +6906,10 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type EmailVerificationTokenNullableScalarRelationFilter = {
-    is?: EmailVerificationTokenWhereInput | null
-    isNot?: EmailVerificationTokenWhereInput | null
+  export type EmailVerificationTokenListRelationFilter = {
+    every?: EmailVerificationTokenWhereInput
+    some?: EmailVerificationTokenWhereInput
+    none?: EmailVerificationTokenWhereInput
   }
 
   export type PWResetTokenListRelationFilter = {
@@ -5462,6 +6921,10 @@ export namespace Prisma {
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type EmailVerificationTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type PWResetTokenOrderByRelationAggregateInput = {
@@ -5629,6 +7092,49 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type EmailVerificationTokenNullableScalarRelationFilter = {
+    is?: EmailVerificationTokenWhereInput | null
+    isNot?: EmailVerificationTokenWhereInput | null
+  }
+
+  export type UserPendingSignupCountOrderByAggregateInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    userName?: SortOrder
+    eMail?: SortOrder
+    passwordHash?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserPendingSignupAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type UserPendingSignupMaxOrderByAggregateInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    userName?: SortOrder
+    eMail?: SortOrder
+    passwordHash?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserPendingSignupMinOrderByAggregateInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    userName?: SortOrder
+    eMail?: SortOrder
+    passwordHash?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserPendingSignupSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -5669,6 +7175,17 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type EnumEmailVerificationPurposeFilter<$PrismaModel = never> = {
     equals?: $Enums.EmailVerificationPurpose | EnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
     in?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
@@ -5676,9 +7193,25 @@ export namespace Prisma {
     not?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel> | $Enums.EmailVerificationPurpose
   }
 
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type UserPendingSignupNullableScalarRelationFilter = {
+    is?: UserPendingSignupWhereInput | null
+    isNot?: UserPendingSignupWhereInput | null
+  }
+
+  export type EmailVerificationTokenUserIdPurposeCompoundUniqueInput = {
+    userId: number
+    purpose: $Enums.EmailVerificationPurpose
+  }
+
   export type EmailVerificationTokenCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    pendingSignupId?: SortOrder
     purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
@@ -5690,12 +7223,14 @@ export namespace Prisma {
 
   export type EmailVerificationTokenAvgOrderByAggregateInput = {
     userId?: SortOrder
+    pendingSignupId?: SortOrder
     attemptCount?: SortOrder
   }
 
   export type EmailVerificationTokenMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    pendingSignupId?: SortOrder
     purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
@@ -5708,6 +7243,7 @@ export namespace Prisma {
   export type EmailVerificationTokenMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    pendingSignupId?: SortOrder
     purpose?: SortOrder
     codeHash?: SortOrder
     expiresAt?: SortOrder
@@ -5719,7 +7255,24 @@ export namespace Prisma {
 
   export type EmailVerificationTokenSumOrderByAggregateInput = {
     userId?: SortOrder
+    pendingSignupId?: SortOrder
     attemptCount?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type EnumEmailVerificationPurposeWithAggregatesFilter<$PrismaModel = never> = {
@@ -5732,10 +7285,11 @@ export namespace Prisma {
     _max?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel>
   }
 
-  export type EmailVerificationTokenCreateNestedOneWithoutUserInput = {
-    create?: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput>
-    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutUserInput
-    connect?: EmailVerificationTokenWhereUniqueInput
+  export type EmailVerificationTokenCreateNestedManyWithoutUserInput = {
+    create?: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput> | EmailVerificationTokenCreateWithoutUserInput[] | EmailVerificationTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutUserInput | EmailVerificationTokenCreateOrConnectWithoutUserInput[]
+    createMany?: EmailVerificationTokenCreateManyUserInputEnvelope
+    connect?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
   }
 
   export type PWResetTokenCreateNestedManyWithoutUserInput = {
@@ -5745,10 +7299,11 @@ export namespace Prisma {
     connect?: PWResetTokenWhereUniqueInput | PWResetTokenWhereUniqueInput[]
   }
 
-  export type EmailVerificationTokenUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput>
-    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutUserInput
-    connect?: EmailVerificationTokenWhereUniqueInput
+  export type EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput> | EmailVerificationTokenCreateWithoutUserInput[] | EmailVerificationTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutUserInput | EmailVerificationTokenCreateOrConnectWithoutUserInput[]
+    createMany?: EmailVerificationTokenCreateManyUserInputEnvelope
+    connect?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
   }
 
   export type PWResetTokenUncheckedCreateNestedManyWithoutUserInput = {
@@ -5786,14 +7341,18 @@ export namespace Prisma {
     set?: string | null
   }
 
-  export type EmailVerificationTokenUpdateOneWithoutUserNestedInput = {
-    create?: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput>
-    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutUserInput
-    upsert?: EmailVerificationTokenUpsertWithoutUserInput
-    disconnect?: EmailVerificationTokenWhereInput | boolean
-    delete?: EmailVerificationTokenWhereInput | boolean
-    connect?: EmailVerificationTokenWhereUniqueInput
-    update?: XOR<XOR<EmailVerificationTokenUpdateToOneWithWhereWithoutUserInput, EmailVerificationTokenUpdateWithoutUserInput>, EmailVerificationTokenUncheckedUpdateWithoutUserInput>
+  export type EmailVerificationTokenUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput> | EmailVerificationTokenCreateWithoutUserInput[] | EmailVerificationTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutUserInput | EmailVerificationTokenCreateOrConnectWithoutUserInput[]
+    upsert?: EmailVerificationTokenUpsertWithWhereUniqueWithoutUserInput | EmailVerificationTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EmailVerificationTokenCreateManyUserInputEnvelope
+    set?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
+    disconnect?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
+    delete?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
+    connect?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
+    update?: EmailVerificationTokenUpdateWithWhereUniqueWithoutUserInput | EmailVerificationTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EmailVerificationTokenUpdateManyWithWhereWithoutUserInput | EmailVerificationTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EmailVerificationTokenScalarWhereInput | EmailVerificationTokenScalarWhereInput[]
   }
 
   export type PWResetTokenUpdateManyWithoutUserNestedInput = {
@@ -5810,14 +7369,18 @@ export namespace Prisma {
     deleteMany?: PWResetTokenScalarWhereInput | PWResetTokenScalarWhereInput[]
   }
 
-  export type EmailVerificationTokenUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput>
-    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutUserInput
-    upsert?: EmailVerificationTokenUpsertWithoutUserInput
-    disconnect?: EmailVerificationTokenWhereInput | boolean
-    delete?: EmailVerificationTokenWhereInput | boolean
-    connect?: EmailVerificationTokenWhereUniqueInput
-    update?: XOR<XOR<EmailVerificationTokenUpdateToOneWithWhereWithoutUserInput, EmailVerificationTokenUpdateWithoutUserInput>, EmailVerificationTokenUncheckedUpdateWithoutUserInput>
+  export type EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput> | EmailVerificationTokenCreateWithoutUserInput[] | EmailVerificationTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutUserInput | EmailVerificationTokenCreateOrConnectWithoutUserInput[]
+    upsert?: EmailVerificationTokenUpsertWithWhereUniqueWithoutUserInput | EmailVerificationTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EmailVerificationTokenCreateManyUserInputEnvelope
+    set?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
+    disconnect?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
+    delete?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
+    connect?: EmailVerificationTokenWhereUniqueInput | EmailVerificationTokenWhereUniqueInput[]
+    update?: EmailVerificationTokenUpdateWithWhereUniqueWithoutUserInput | EmailVerificationTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EmailVerificationTokenUpdateManyWithWhereWithoutUserInput | EmailVerificationTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EmailVerificationTokenScalarWhereInput | EmailVerificationTokenScalarWhereInput[]
   }
 
   export type PWResetTokenUncheckedUpdateManyWithoutUserNestedInput = {
@@ -5832,6 +7395,38 @@ export namespace Prisma {
     update?: PWResetTokenUpdateWithWhereUniqueWithoutUserInput | PWResetTokenUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PWResetTokenUpdateManyWithWhereWithoutUserInput | PWResetTokenUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PWResetTokenScalarWhereInput | PWResetTokenScalarWhereInput[]
+  }
+
+  export type EmailVerificationTokenCreateNestedOneWithoutPendingSignupInput = {
+    create?: XOR<EmailVerificationTokenCreateWithoutPendingSignupInput, EmailVerificationTokenUncheckedCreateWithoutPendingSignupInput>
+    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutPendingSignupInput
+    connect?: EmailVerificationTokenWhereUniqueInput
+  }
+
+  export type EmailVerificationTokenUncheckedCreateNestedOneWithoutPendingSignupInput = {
+    create?: XOR<EmailVerificationTokenCreateWithoutPendingSignupInput, EmailVerificationTokenUncheckedCreateWithoutPendingSignupInput>
+    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutPendingSignupInput
+    connect?: EmailVerificationTokenWhereUniqueInput
+  }
+
+  export type EmailVerificationTokenUpdateOneWithoutPendingSignupNestedInput = {
+    create?: XOR<EmailVerificationTokenCreateWithoutPendingSignupInput, EmailVerificationTokenUncheckedCreateWithoutPendingSignupInput>
+    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutPendingSignupInput
+    upsert?: EmailVerificationTokenUpsertWithoutPendingSignupInput
+    disconnect?: EmailVerificationTokenWhereInput | boolean
+    delete?: EmailVerificationTokenWhereInput | boolean
+    connect?: EmailVerificationTokenWhereUniqueInput
+    update?: XOR<XOR<EmailVerificationTokenUpdateToOneWithWhereWithoutPendingSignupInput, EmailVerificationTokenUpdateWithoutPendingSignupInput>, EmailVerificationTokenUncheckedUpdateWithoutPendingSignupInput>
+  }
+
+  export type EmailVerificationTokenUncheckedUpdateOneWithoutPendingSignupNestedInput = {
+    create?: XOR<EmailVerificationTokenCreateWithoutPendingSignupInput, EmailVerificationTokenUncheckedCreateWithoutPendingSignupInput>
+    connectOrCreate?: EmailVerificationTokenCreateOrConnectWithoutPendingSignupInput
+    upsert?: EmailVerificationTokenUpsertWithoutPendingSignupInput
+    disconnect?: EmailVerificationTokenWhereInput | boolean
+    delete?: EmailVerificationTokenWhereInput | boolean
+    connect?: EmailVerificationTokenWhereUniqueInput
+    update?: XOR<XOR<EmailVerificationTokenUpdateToOneWithWhereWithoutPendingSignupInput, EmailVerificationTokenUpdateWithoutPendingSignupInput>, EmailVerificationTokenUncheckedUpdateWithoutPendingSignupInput>
   }
 
   export type UserCreateNestedOneWithoutResetTokensInput = {
@@ -5854,16 +7449,42 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type UserPendingSignupCreateNestedOneWithoutEmailVerificationInput = {
+    create?: XOR<UserPendingSignupCreateWithoutEmailVerificationInput, UserPendingSignupUncheckedCreateWithoutEmailVerificationInput>
+    connectOrCreate?: UserPendingSignupCreateOrConnectWithoutEmailVerificationInput
+    connect?: UserPendingSignupWhereUniqueInput
+  }
+
   export type EnumEmailVerificationPurposeFieldUpdateOperationsInput = {
     set?: $Enums.EmailVerificationPurpose
   }
 
-  export type UserUpdateOneRequiredWithoutEmailVerificationNestedInput = {
+  export type UserUpdateOneWithoutEmailVerificationNestedInput = {
     create?: XOR<UserCreateWithoutEmailVerificationInput, UserUncheckedCreateWithoutEmailVerificationInput>
     connectOrCreate?: UserCreateOrConnectWithoutEmailVerificationInput
     upsert?: UserUpsertWithoutEmailVerificationInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEmailVerificationInput, UserUpdateWithoutEmailVerificationInput>, UserUncheckedUpdateWithoutEmailVerificationInput>
+  }
+
+  export type UserPendingSignupUpdateOneWithoutEmailVerificationNestedInput = {
+    create?: XOR<UserPendingSignupCreateWithoutEmailVerificationInput, UserPendingSignupUncheckedCreateWithoutEmailVerificationInput>
+    connectOrCreate?: UserPendingSignupCreateOrConnectWithoutEmailVerificationInput
+    upsert?: UserPendingSignupUpsertWithoutEmailVerificationInput
+    disconnect?: UserPendingSignupWhereInput | boolean
+    delete?: UserPendingSignupWhereInput | boolean
+    connect?: UserPendingSignupWhereUniqueInput
+    update?: XOR<XOR<UserPendingSignupUpdateToOneWithWhereWithoutEmailVerificationInput, UserPendingSignupUpdateWithoutEmailVerificationInput>, UserPendingSignupUncheckedUpdateWithoutEmailVerificationInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -6047,6 +7668,33 @@ export namespace Prisma {
     not?: NestedEnumEmailVerificationPurposeFilter<$PrismaModel> | $Enums.EmailVerificationPurpose
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumEmailVerificationPurposeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.EmailVerificationPurpose | EnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
     in?: $Enums.EmailVerificationPurpose[] | ListEnumEmailVerificationPurposeFieldRefInput<$PrismaModel>
@@ -6066,10 +7714,12 @@ export namespace Prisma {
     attemptCount?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    pendingSignup?: UserPendingSignupCreateNestedOneWithoutEmailVerificationInput
   }
 
   export type EmailVerificationTokenUncheckedCreateWithoutUserInput = {
     id?: string
+    pendingSignupId?: number | null
     purpose: $Enums.EmailVerificationPurpose
     codeHash: string
     expiresAt: Date | string
@@ -6082,6 +7732,11 @@ export namespace Prisma {
   export type EmailVerificationTokenCreateOrConnectWithoutUserInput = {
     where: EmailVerificationTokenWhereUniqueInput
     create: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type EmailVerificationTokenCreateManyUserInputEnvelope = {
+    data: EmailVerificationTokenCreateManyUserInput | EmailVerificationTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type PWResetTokenCreateWithoutUserInput = {
@@ -6110,37 +7765,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type EmailVerificationTokenUpsertWithoutUserInput = {
+  export type EmailVerificationTokenUpsertWithWhereUniqueWithoutUserInput = {
+    where: EmailVerificationTokenWhereUniqueInput
     update: XOR<EmailVerificationTokenUpdateWithoutUserInput, EmailVerificationTokenUncheckedUpdateWithoutUserInput>
     create: XOR<EmailVerificationTokenCreateWithoutUserInput, EmailVerificationTokenUncheckedCreateWithoutUserInput>
-    where?: EmailVerificationTokenWhereInput
   }
 
-  export type EmailVerificationTokenUpdateToOneWithWhereWithoutUserInput = {
-    where?: EmailVerificationTokenWhereInput
+  export type EmailVerificationTokenUpdateWithWhereUniqueWithoutUserInput = {
+    where: EmailVerificationTokenWhereUniqueInput
     data: XOR<EmailVerificationTokenUpdateWithoutUserInput, EmailVerificationTokenUncheckedUpdateWithoutUserInput>
   }
 
-  export type EmailVerificationTokenUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
-    codeHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type EmailVerificationTokenUpdateManyWithWhereWithoutUserInput = {
+    where: EmailVerificationTokenScalarWhereInput
+    data: XOR<EmailVerificationTokenUpdateManyMutationInput, EmailVerificationTokenUncheckedUpdateManyWithoutUserInput>
   }
 
-  export type EmailVerificationTokenUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
-    codeHash?: StringFieldUpdateOperationsInput | string
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type EmailVerificationTokenScalarWhereInput = {
+    AND?: EmailVerificationTokenScalarWhereInput | EmailVerificationTokenScalarWhereInput[]
+    OR?: EmailVerificationTokenScalarWhereInput[]
+    NOT?: EmailVerificationTokenScalarWhereInput | EmailVerificationTokenScalarWhereInput[]
+    id?: StringFilter<"EmailVerificationToken"> | string
+    userId?: IntNullableFilter<"EmailVerificationToken"> | number | null
+    pendingSignupId?: IntNullableFilter<"EmailVerificationToken"> | number | null
+    purpose?: EnumEmailVerificationPurposeFilter<"EmailVerificationToken"> | $Enums.EmailVerificationPurpose
+    codeHash?: StringFilter<"EmailVerificationToken"> | string
+    expiresAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
+    resendAfter?: DateTimeFilter<"EmailVerificationToken"> | Date | string
+    attemptCount?: IntFilter<"EmailVerificationToken"> | number
+    createdAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
+    updatedAt?: DateTimeFilter<"EmailVerificationToken"> | Date | string
   }
 
   export type PWResetTokenUpsertWithWhereUniqueWithoutUserInput = {
@@ -6171,6 +7825,70 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PWResetToken"> | Date | string
   }
 
+  export type EmailVerificationTokenCreateWithoutPendingSignupInput = {
+    id?: string
+    purpose: $Enums.EmailVerificationPurpose
+    codeHash: string
+    expiresAt: Date | string
+    resendAfter: Date | string
+    attemptCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutEmailVerificationInput
+  }
+
+  export type EmailVerificationTokenUncheckedCreateWithoutPendingSignupInput = {
+    id?: string
+    userId?: number | null
+    purpose: $Enums.EmailVerificationPurpose
+    codeHash: string
+    expiresAt: Date | string
+    resendAfter: Date | string
+    attemptCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmailVerificationTokenCreateOrConnectWithoutPendingSignupInput = {
+    where: EmailVerificationTokenWhereUniqueInput
+    create: XOR<EmailVerificationTokenCreateWithoutPendingSignupInput, EmailVerificationTokenUncheckedCreateWithoutPendingSignupInput>
+  }
+
+  export type EmailVerificationTokenUpsertWithoutPendingSignupInput = {
+    update: XOR<EmailVerificationTokenUpdateWithoutPendingSignupInput, EmailVerificationTokenUncheckedUpdateWithoutPendingSignupInput>
+    create: XOR<EmailVerificationTokenCreateWithoutPendingSignupInput, EmailVerificationTokenUncheckedCreateWithoutPendingSignupInput>
+    where?: EmailVerificationTokenWhereInput
+  }
+
+  export type EmailVerificationTokenUpdateToOneWithWhereWithoutPendingSignupInput = {
+    where?: EmailVerificationTokenWhereInput
+    data: XOR<EmailVerificationTokenUpdateWithoutPendingSignupInput, EmailVerificationTokenUncheckedUpdateWithoutPendingSignupInput>
+  }
+
+  export type EmailVerificationTokenUpdateWithoutPendingSignupInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
+    attemptCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutEmailVerificationNestedInput
+  }
+
+  export type EmailVerificationTokenUncheckedUpdateWithoutPendingSignupInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableIntFieldUpdateOperationsInput | number | null
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
+    attemptCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UserCreateWithoutResetTokensInput = {
     publicId?: string
     firstName: string
@@ -6189,7 +7907,7 @@ export namespace Prisma {
     mfaEnrolledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    emailVerification?: EmailVerificationTokenCreateNestedOneWithoutUserInput
+    emailVerification?: EmailVerificationTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutResetTokensInput = {
@@ -6211,7 +7929,7 @@ export namespace Prisma {
     mfaEnrolledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    emailVerification?: EmailVerificationTokenUncheckedCreateNestedOneWithoutUserInput
+    emailVerification?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutResetTokensInput = {
@@ -6248,7 +7966,7 @@ export namespace Prisma {
     mfaEnrolledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailVerification?: EmailVerificationTokenUpdateOneWithoutUserNestedInput
+    emailVerification?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResetTokensInput = {
@@ -6270,7 +7988,7 @@ export namespace Prisma {
     mfaEnrolledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailVerification?: EmailVerificationTokenUncheckedUpdateOneWithoutUserNestedInput
+    emailVerification?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutEmailVerificationInput = {
@@ -6319,6 +8037,30 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutEmailVerificationInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutEmailVerificationInput, UserUncheckedCreateWithoutEmailVerificationInput>
+  }
+
+  export type UserPendingSignupCreateWithoutEmailVerificationInput = {
+    firstName: string
+    lastName: string
+    userName: string
+    eMail: string
+    passwordHash: string
+    createdAt?: Date | string
+  }
+
+  export type UserPendingSignupUncheckedCreateWithoutEmailVerificationInput = {
+    id?: number
+    firstName: string
+    lastName: string
+    userName: string
+    eMail: string
+    passwordHash: string
+    createdAt?: Date | string
+  }
+
+  export type UserPendingSignupCreateOrConnectWithoutEmailVerificationInput = {
+    where: UserPendingSignupWhereUniqueInput
+    create: XOR<UserPendingSignupCreateWithoutEmailVerificationInput, UserPendingSignupUncheckedCreateWithoutEmailVerificationInput>
   }
 
   export type UserUpsertWithoutEmailVerificationInput = {
@@ -6375,12 +8117,90 @@ export namespace Prisma {
     resetTokens?: PWResetTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type UserPendingSignupUpsertWithoutEmailVerificationInput = {
+    update: XOR<UserPendingSignupUpdateWithoutEmailVerificationInput, UserPendingSignupUncheckedUpdateWithoutEmailVerificationInput>
+    create: XOR<UserPendingSignupCreateWithoutEmailVerificationInput, UserPendingSignupUncheckedCreateWithoutEmailVerificationInput>
+    where?: UserPendingSignupWhereInput
+  }
+
+  export type UserPendingSignupUpdateToOneWithWhereWithoutEmailVerificationInput = {
+    where?: UserPendingSignupWhereInput
+    data: XOR<UserPendingSignupUpdateWithoutEmailVerificationInput, UserPendingSignupUncheckedUpdateWithoutEmailVerificationInput>
+  }
+
+  export type UserPendingSignupUpdateWithoutEmailVerificationInput = {
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    userName?: StringFieldUpdateOperationsInput | string
+    eMail?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserPendingSignupUncheckedUpdateWithoutEmailVerificationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    userName?: StringFieldUpdateOperationsInput | string
+    eMail?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailVerificationTokenCreateManyUserInput = {
+    id?: string
+    pendingSignupId?: number | null
+    purpose: $Enums.EmailVerificationPurpose
+    codeHash: string
+    expiresAt: Date | string
+    resendAfter: Date | string
+    attemptCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type PWResetTokenCreateManyUserInput = {
     id?: string
     tokenHash: string
     expiresAt: Date | string
     usedAt?: Date | string | null
     createdAt?: Date | string
+  }
+
+  export type EmailVerificationTokenUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
+    attemptCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pendingSignup?: UserPendingSignupUpdateOneWithoutEmailVerificationNestedInput
+  }
+
+  export type EmailVerificationTokenUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pendingSignupId?: NullableIntFieldUpdateOperationsInput | number | null
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
+    attemptCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailVerificationTokenUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    pendingSignupId?: NullableIntFieldUpdateOperationsInput | number | null
+    purpose?: EnumEmailVerificationPurposeFieldUpdateOperationsInput | $Enums.EmailVerificationPurpose
+    codeHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resendAfter?: DateTimeFieldUpdateOperationsInput | Date | string
+    attemptCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PWResetTokenUpdateWithoutUserInput = {

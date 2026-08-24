@@ -4,7 +4,6 @@
 import { signUpForm_verified, loginForm_verified } from "./form_checks_n_balances.js";
 import { emailVerifyDisplay } from "./emailVerify.js";
 import { API_BASE_URL } from "./api-config.js";
-import {process} from "std-env";
 
 function qs<T extends Element>(selector: string, parent: ParentNode = document): T {
   const element = parent.querySelector<T>(selector);
@@ -23,7 +22,6 @@ const welcomeBlock = qs<HTMLElement>(".welcome-section");
 const login_button = qs<HTMLButtonElement>(".login-button");
 const new_user_button = qs<HTMLButtonElement>(".new-user-button");
 const garboIntro = qs<HTMLElement>(".whoIsGarbo");
-const PORT = process.env.PORT
 
 /* =========================
    Shared authentication card

@@ -27,8 +27,8 @@ type newUserSignedUp = {
   firstName: string,
   lastName: string,
   userName: string,
-  email: string,
-  thePath: string
+  eMail: string,
+  password: string
 };
 
 export function signUpForm_verified(
@@ -137,8 +137,8 @@ export function signUpForm_verified(
       firstName: fNameVal,
       lastName: lNameVal,
       userName: uNameVal,
-      email: confirmedEMailVal,
-      thePath: confirmedPassVal,
+      eMail: confirmedEMailVal,
+      password: confirmedPassVal,
     },
   };
 }

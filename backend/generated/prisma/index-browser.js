@@ -141,6 +141,16 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.UserPendingSignupScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  userName: 'userName',
+  eMail: 'eMail',
+  passwordHash: 'passwordHash',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.PWResetTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -153,6 +163,7 @@ exports.Prisma.PWResetTokenScalarFieldEnum = {
 exports.Prisma.EmailVerificationTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  pendingSignupId: 'pendingSignupId',
   purpose: 'purpose',
   codeHash: 'codeHash',
   expiresAt: 'expiresAt',
@@ -184,6 +195,7 @@ exports.EmailVerificationPurpose = exports.$Enums.EmailVerificationPurpose = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  UserPendingSignup: 'UserPendingSignup',
   PWResetToken: 'PWResetToken',
   EmailVerificationToken: 'EmailVerificationToken'
 };

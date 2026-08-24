@@ -29,7 +29,9 @@ model User {
   emailVerified   Boolean   @default(false)
   emailVerifiedAt DateTime?
 
-  emailVerification EmailVerificationToken?
+  // Used for recovery verification:
+  // FORGOT_USERNAME / FORGOT_PASSWORD
+  emailVerification EmailVerificationToken[]
 
   // Optional: for security / UX
   // Lockout / backoff
@@ -50,6 +52,18 @@ model User {
   @@index([eMail])
 }
 
+model UserPendingSignup {
+  id           Int    @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  userName     String @unique
+  eMail        String @unique
+  passwordHash String
+
+  emailVerification EmailVerificationToken?
+  createdAt         DateTime                @default(now())
+}
+
 model PWResetToken {
   id     String @id @default(uuid())
   userId Int
@@ -64,17 +78,39 @@ model PWResetToken {
 }
 
 model EmailVerificationToken {
-  id     String @id @default(uuid())
-  userId Int    @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id String @id @default(uuid())
+
+  // Existing user:
+
+  // FORGOT_USERNAME / FORGOT_PASSWORD
+
+  userId Int?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Pending signup:
+
+  // SIGNUP
+
+  pendingSignupId Int? @unique
+
+  pendingSignup UserPendingSignup? @relation(fields: [pendingSignupId], references: [id], onDelete: Cascade)
 
   purpose EmailVerificationPurpose
 
-  codeHash    String
-  expiresAt   DateTime
+  codeHash String
+
+  expiresAt DateTime
+
   resendAfter DateTime
 
-  attemptCount Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  attemptCount Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, purpose])
+  @@index([userId])
+  @@index([pendingSignupId])
 }

@@ -60,6 +60,8 @@ export async function signupHandler(req: Request, res: Response) {
         error: "Invalid email"
       });
     }
+    const normalizedEmail = eMail.trim().toLowerCase();
+
     if (!password || password.length < 8 || password.length > 64) {
       return res.status(400).json({
         error: "Invalid password"
@@ -69,7 +71,7 @@ export async function signupHandler(req: Request, res: Response) {
 
     // Check uniqueness (depending on your schema unique constraints)
     const userExist = await prisma.user.findFirst({
-      where: { OR: [{ eMail: eMail }, { userName: userName }] },
+      where: { OR: [{ eMail: normalizedEmail }, { userName }] },
       // this allows Prisma to work and sort faster by producing only the id associated
       // with the particular user
       select: { id: true },
@@ -93,28 +95,88 @@ export async function signupHandler(req: Request, res: Response) {
     const expiresAt = new Date(now.getTime() + CODE_TTL_MIN * 60_000);
     const resendAfter = new Date(now.getTime() + RESEND_MIN * 60_000);
 
+    const pendingConflict = await prisma.userPendingSignup.findFirst({
 
+        where: { userName, NOT: { eMail: normalizedEmail } },
+
+        select: { id: true }
+
+      });
+
+    if (pendingConflict) {
+      return res.status(409).json({ error: "Username already in use." });
+    }
+
+    // Pending User Creation
+    const pendingUser = await prisma.userPendingSignup.upsert({
+
+        where: { eMail: normalizedEmail },
+
+        update: {
+          firstName,
+          lastName,
+          userName,
+          passwordHash
+        },
+
+        create: {
+          firstName,
+          lastName,
+          userName,
+          eMail: normalizedEmail,
+          passwordHash
+        },
+
+    });
     // Create user
-    const welcomeUser = await prisma.user.create({
-      data: {
-        firstName: firstName,
-        lastName: lastName,
-        userName: userName,
-        eMail: eMail,
-        passwordHash: passwordHash,
-        emailVerification: {
-          create: {
+    // const welcomeUser = await prisma.user.create({
+    //   data: {
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //     userName: userName,
+    //     eMail: eMail,
+    //     passwordHash: passwordHash,
+    //     emailVerification: {
+    //       create: {
+    //         codeHash,
+    //         expiresAt,
+    //         resendAfter,
+    //         purpose: "SIGNUP"
+    //       },
+    //     },
+    //   },
+    //   select: { id: true, firstName: true, lastName: true, userName: true, eMail: true, emailVerification: true, createdAt: true },
+    // });
+    await prisma.emailVerificationToken.upsert({
+
+        where: { pendingSignupId: pendingUser.id },
+
+        update: {
+            purpose: "SIGNUP",
             codeHash,
             expiresAt,
             resendAfter,
-            purpose: "SIGNUP"
-          },
+            attemptCount: 0,
         },
-      },
-      select: { id: true, firstName: true, lastName: true, userName: true, eMail: true, emailVerification: true, createdAt: true },
+        create: {
+            purpose: "SIGNUP",
+            codeHash,
+            expiresAt,
+            resendAfter,
+            attemptCount: 0,
+
+            pendingSignup: {
+                connect: {
+                    id: pendingUser.id
+                }
+            }
+        },
+
+
+
     });
 
-    await sendVerificationEmail(welcomeUser.eMail, code);
+    await sendVerificationEmail(pendingUser.eMail, code);
 
 
 
@@ -127,7 +189,7 @@ export async function signupHandler(req: Request, res: Response) {
     return res.status(201).json({
       ok: true,
       needsEmailVerification: true,
-      email: welcomeUser.eMail,
+      email: pendingUser.eMail,
       resendAvailableAt: resendAfter.toISOString(),
     });
   } catch (err) {
@@ -142,370 +204,349 @@ export async function signupHandler(req: Request, res: Response) {
 }
 
 export async function verifyEmailHandler(req: Request, res: Response) {
-  try {
-    const { email, code } = req.body as { email: string; code: string };
+    try {
+        const { email, code } = req.body as {
+            email: string;
+            code: string;
+        };
 
-    if (!email || !code) return res.status(400).json({ error: "Email and code are required." });
+        if (!email || !code) {
+            return res.status(400).json({
+                error: "Email and code are required.",
+            });
+        }
 
-    /* search within the User model for the eMail column and select these other
-    * columns that share the same rows as the email entered by the user
-    * */
-    const user = await prisma.user.findUnique({
-      where: { eMail: email.trim().toLowerCase() },
-      select: { id: true, emailVerified: true, emailVerification: true },
-    });
+        const normalizedEmail = email.trim().toLowerCase();
 
-    /* let us verify that the user email input is not blank and check that the email has not already
-    * been verified */
-    if (!user) return res.status(404).json({ error: "User not found." });
-    if (user.emailVerified) return res.json({ ok: true, message: "Email already verified." });
+        // Find the pending signup, not User.
+        const pending = await prisma.userPendingSignup.findUnique({
+            where: {
+                eMail: normalizedEmail,
+            },
+            include: {
+                emailVerification: true,
+            },
+        });
 
-    /* once we know the user email input is not blank and the email has not already been verified
-    * we create a token*/
-    const token = user.emailVerification;
-    if (!token) return res.status(400).json({ error: "No verification token found. Resend code." });
+        if (!pending) {
+            return res.status(404).json({
+                error: "Pending signup not found.",
+            });
+        }
 
-    // Prevents: FORGOT_PASSWORD code > /verify-email > accidentally verifies signup
-    if (token.purpose !== "SIGNUP") {
+        const token = pending.emailVerification;
 
-      return res.status(400).json({
+        if (!token) {
+            return res.status(400).json({
+                error: "No verification token found. Resend code.",
+            });
+        }
 
-        error: "Invalid signup verification request."
+        if (token.purpose !== "SIGNUP") {
+            return res.status(400).json({
+                error: "Invalid signup verification request.",
+            });
+        }
 
-      });
+        if (token.attemptCount >= MAX_ATTEMPTS) {
+            return res.status(429).json({
+                error: "Too many attempts. Please resend a new code.",
+            });
+        }
 
+        const now = new Date();
+
+        if (token.expiresAt <= now) {
+            return res.status(400).json({
+                error: "Code expired. Please resend a new code.",
+            });
+        }
+
+        const incomingHash = hashCode(code.trim());
+
+        const match = timingSafeEqualHex(
+            incomingHash,
+            token.codeHash,
+        );
+
+        if (!match) {
+            await prisma.emailVerificationToken.update({
+                where: {
+                    id: token.id,
+                },
+                data: {
+                    attemptCount: {
+                        increment: 1,
+                    },
+                },
+            });
+
+            return res.status(400).json({
+                error: "Invalid code. Please try again.",
+            });
+        }
+
+        // Verification succeeded.
+        // NOW create the permanent account.
+        const newUser = await prisma.$transaction(async (tx) => {
+
+            const conflict = await tx.user.findFirst({
+
+                where: { OR: [{ eMail: pending.eMail },{ userName: pending.userName }] },
+
+                select: { id: true }
+
+              });
+
+            if (conflict) {
+                throw new Error("EMAIL_OR_USERNAME_CONFLICT");
+            }
+
+            const createdUser = await tx.user.create({
+                data: {
+                    firstName: pending.firstName,
+                    lastName: pending.lastName,
+                    userName: pending.userName,
+                    eMail: pending.eMail,
+                    passwordHash: pending.passwordHash,
+
+                    // Since the account is only created after
+                    // successful verification:
+                    emailVerified: true,
+                    emailVerifiedAt: new Date(),
+                },
+                select: {
+
+                  publicId: true,
+                  firstName: true,
+                  lastName: true,
+                  userName: true,
+                  eMail: true,
+                  createdAt: true
+
+                }
+            });
+
+            await tx.userPendingSignup.delete({
+                where: { id: pending.id }
+            });
+
+            return createdUser;
+
+        });
+
+        return res.status(201).json({
+            ok: true,
+            verified: true,
+            accountCreated: true,
+            user: newUser,
+            message: "Email verified. Account created successfully.",
+        });
+
+    } catch (err) {
+
+        if (err instanceof Error && err.message === "EMAIL_OR_USERNAME_CONFLICT") {
+
+          return res.status(409).json({
+
+            error: "Email or username became unavailable before verification completed."
+
+          });
+
+        }
+
+        console.error("VERIFY EMAIL ERROR:", err);
+        return res.status(500).json({ error: "Server error. Please try again." });
     }
-
-    // lockout attempts
-    // if too many tokens are generated system will flag this as a reason to lockout the user for a time period
-    if (token.attemptCount >= MAX_ATTEMPTS) {
-      return res.status(429).json({ error: "Too many attempts. Please resend a new code." });
-    }
-
-    const now = new Date();
-    if (token.expiresAt <= now) {
-      return res.status(400).json({ error: "Code expired. Please resend a new code." });
-    }
-
-    const incomingHash = hashCode(code.trim());
-    const match = timingSafeEqualHex(incomingHash, token.codeHash);
-
-    if (!match) {
-      await prisma.emailVerificationToken.update({
-        where: { id: token.id },
-        data: { attemptCount: { increment: 1 } },
-      });
-      return res.status(400).json({ error: "Invalid code. Please try again." });
-    }
-
-    // Verified ✅
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: user.id },
-        data: { emailVerified: true, emailVerifiedAt: new Date() },
-      }),
-      prisma.emailVerificationToken.delete({ where: { userId: user.id } }),
-    ]);
-
-    return res.json({ ok: true, verified: true });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Server error. Please try again." });
-  }
 }
 
 export async function resendVerificationHandler(req: Request, res: Response) {
   try {
-
-    const {email, purpose} = req.body as {
-
+    const { email, purpose } = req.body as {
       email?: string;
-
       purpose?: VerificationPurpose;
-
     };
 
     if (!email || !purpose) {
-
       return res.status(400).json({
-
-        error:
-
-          "Email and verification purpose are required."
-
+        error: "Email and verification purpose are required."
       });
-
     }
 
-    const allowedPurposes:
+    const allowedPurposes: VerificationPurpose[] = [
+      "SIGNUP",
+      "FORGOT_USERNAME",
+      "FORGOT_PASSWORD"
+    ];
 
-      VerificationPurpose[] = [
-
-        "SIGNUP",
-
-        "FORGOT_USERNAME",
-
-        "FORGOT_PASSWORD"
-
-      ];
-
-    if (
-
-      !allowedPurposes.includes(
-
-        purpose
-
-      )
-
-    ) {
-
+    if (!allowedPurposes.includes(purpose)) {
       return res.status(400).json({
-
-        error:
-
-          "Invalid verification purpose."
-
+        error: "Invalid verification purpose."
       });
-
     }
 
-    const normalizedEmail =
+    const normalizedEmail = email.trim().toLowerCase();
+    const now = new Date();
 
-      email.trim().toLowerCase();
+    const code = generate6DigitCode();
+    const codeHash = hashCode(code);
 
-    const user =
+    const expiresAt =
+      new Date(now.getTime() + CODE_TTL_MIN * 60_000);
 
-      await prisma.user.findUnique({
+    const resendAfter =
+      new Date(now.getTime() + RESEND_MIN * 60_000);
 
+    /*
+     * ============================
+     * SIGNUP VERIFICATION
+     * ============================
+     */
+    if (purpose === "SIGNUP") {
+
+      const pendingUser =
+        await prisma.userPendingSignup.findUnique({
+          where: {
+            eMail: normalizedEmail
+          },
+          include: {
+            emailVerification: true
+          }
+        });
+
+      if (!pendingUser) {
+        return res.status(404).json({
+          error: "Pending signup not found."
+        });
+      }
+
+      const existing =
+        pendingUser.emailVerification;
+
+      if (
+        existing &&
+        existing.resendAfter > now
+      ) {
+        return res.status(429).json({
+          error: "Resend not available yet.",
+          resendAvailableAt:
+            existing.resendAfter.toISOString()
+        });
+      }
+
+      await prisma.emailVerificationToken.upsert({
         where: {
-
-          eMail: normalizedEmail
-
+          pendingSignupId: pendingUser.id
         },
 
-        include: {
+        update: {
+          purpose: "SIGNUP",
+          codeHash,
+          expiresAt,
+          resendAfter,
+          attemptCount: 0
+        },
 
-          emailVerification: true
-
+        create: {
+          purpose: "SIGNUP",
+          codeHash,
+          expiresAt,
+          resendAfter,
+          attemptCount: 0,
+            pendingSignup: {
+              connect: {
+                  id: pendingUser.id
+              }
+            }
         }
 
       });
 
-    /*
-
-     * Recovery requests should not reveal whether
-
-     * the email belongs to a Garbo account.
-
-     */
-
-    if (!user) {
-
-      if (
-
-        purpose === "FORGOT_USERNAME" ||
-
-        purpose === "FORGOT_PASSWORD"
-
-      ) {
-
-        return res.status(200).json({
-
-          ok: true,
-
-          message:
-
-            "If the account exists, a new verification code has been sent."
-
-        });
-
-      }
-
-      return res.status(404).json({
-
-        error: "User not found."
-
-      });
-
-    }
-
-    /*
-
-     * Signup verification is unnecessary
-
-     * after the email has already been verified.
-
-     */
-
-    if (
-
-      purpose === "SIGNUP" &&
-
-      user.emailVerified
-
-    ) {
+      await sendVerificationEmail(
+        pendingUser.eMail,
+        code
+      );
 
       return res.status(200).json({
-
         ok: true,
-
         message:
-
-          "Email already verified."
-
+          "A new verification code has been sent.",
+        resendAvailableAt:
+          resendAfter.toISOString()
       });
-
     }
-
-    const now =
-
-      new Date();
-
-    const existing =
-
-      user.emailVerification;
 
     /*
-
-     * Regardless of verification purpose,
-
-     * enforce the resend cooldown.
-
+     * ============================
+     * ACCOUNT RECOVERY
+     * ============================
      */
 
-    if (
+    const user = await prisma.user.findUnique({
+      where: { eMail: normalizedEmail },
+      include: { emailVerification: true }
+    });
 
-      existing &&
-
-      existing.resendAfter > now
-
-    ) {
-
-      return res.status(429).json({
-
-        error:
-
-          "Resend not available yet.",
-
-        resendAvailableAt:
-
-          existing.resendAfter.toISOString()
-
+    /*
+     * Do not reveal whether an account exists.
+     */
+    if (!user) {
+      return res.status(200).json({
+        ok: true,
+        message: "If the account exists, a new verification code has been sent."
       });
-
     }
 
-    const code =
+    const existing = user.emailVerification.find(
+        (token) => token.purpose = purpose
+    );
 
-      generate6DigitCode();
-
-    const codeHash =
-
-      hashCode(code);
-
-    const expiresAt =
-
-      new Date(
-
-        now.getTime() +
-
-        CODE_TTL_MIN *
-
-        60_000
-
-      );
-
-    const resendAfter =
-
-      new Date(
-
-        now.getTime() +
-
-        RESEND_MIN *
-
-        60_000
-
-      );
+    if (existing && existing.resendAfter > now) {
+      return res.status(200).json({
+        ok: true,
+        message: "If the account exists, a verification code has been sent."
+      });
+    }
 
     await prisma.emailVerificationToken.upsert({
 
-      where: {
+        where: { userId_purpose: { userId: user.id, purpose } },
+        update: {
 
-        userId: user.id
-
+          purpose,
+          codeHash,
+          expiresAt,
+          resendAfter,
+          attemptCount: 0
       },
 
-      create: {
+        create: {
 
-        userId:
+            purpose, codeHash, expiresAt, resendAfter, attemptCount: 0,
 
-          user.id,
-
-        codeHash,
-
-        expiresAt,
-
-        resendAfter,
-
-        attemptCount: 0,
-
-        purpose
-
-      },
-
-      update: {
-
-        codeHash,
-
-        expiresAt,
-
-        resendAfter,
-
-        attemptCount: 0,
-
-        purpose
-
-      }
-
+            user: {
+                connect: {
+                    id: user.id
+                }
+            }
+        }
     });
 
-    await sendVerificationEmail(
 
-      user.eMail,
-
-      code
-
-    );
+    await sendVerificationEmail(user.eMail, code);
 
     return res.status(200).json({
-
       ok: true,
-
-      message:
-
-        "A new verification code has been sent.",
-
-      resendAvailableAt:
-
-        resendAfter.toISOString()
-
+      message: "If the account exists, a new verification code has been sent.",
+      resendAvailableAt: resendAfter.toISOString()
     });
 
   } catch (err) {
+    console.error("RESEND VERIFICATION ERROR:", err);
 
-    console.error(err);
-
-    return res.status(500).json({
-
-      error:
-
-        "Unable to resend verification code."
-
-    });
-
+    return res.status(500).json({ error: "Unable to resend verification code." });
   }
 }
-
 // POST /api/auth/forgot-username
 export async function forgotUsernameHandler(req: Request, res: Response) {
   try {
@@ -561,16 +602,24 @@ export async function forgotUsernameHandler(req: Request, res: Response) {
 
     await prisma.emailVerificationToken.upsert({
       where: {
-        userId: user.id
+          userId_purpose: {
+              userId: user.id,
+              purpose: "FORGOT_USERNAME"
+          }
       },
 
       create: {
-        userId: user.id,
+        purpose: "FORGOT_USERNAME",
         codeHash,
         expiresAt,
         resendAfter,
         attemptCount: 0,
-        purpose: "FORGOT_USERNAME"
+
+        user: {
+            connect: {
+                id: user.id
+            }
+        }
       },
 
       update: {
@@ -590,11 +639,9 @@ export async function forgotUsernameHandler(req: Request, res: Response) {
     return res.status(200).json({
       ok: true,
 
-      message:
-        "If an account exists for this email, a verification code has been sent.",
+      message: "If an account exists for this email, a verification code has been sent.",
 
-      resendAvailableAt:
-        resendAfter.toISOString()
+      resendAvailableAt: resendAfter.toISOString()
     });
 
   } catch (err) {
@@ -602,8 +649,7 @@ export async function forgotUsernameHandler(req: Request, res: Response) {
     console.error(err);
 
     return res.status(500).json({
-      error:
-        "Unable to process username recovery."
+      error: "Unable to process username recovery."
     });
   }
 }
@@ -628,73 +674,69 @@ export async function verifyForgotUsernameHandler(req: Request, res: Response) {
     const normalizedEmail = email.trim().toLowerCase();
 
     const user = await prisma.user.findUnique({
-
       where: { eMail: normalizedEmail },
 
       select: {
         id: true,
         eMail: true,
         userName: true,
-        emailVerification: true
+
+        emailVerification: {
+            select: {
+                id: true,
+                purpose: true,
+                codeHash: true,
+                expiresAt: true,
+                resendAfter: true,
+                attemptCount: true
+            }
+        }
       }
     });
 
 
-    if (!user || !user.emailVerification) {
-
+    if (!user) {
       return res.status(400).json({
         error: "Invalid or expired verification request."
       });
-
     }
 
-
-    const token = user.emailVerification;
+    const forgottenUserToken = user.emailVerification.find(
+        (verification) => verification.purpose === "FORGOT_USERNAME"
+    );
 
 
     // Make sure this code was actually issued
     // for username recovery.
-    if (token.purpose !== "FORGOT_USERNAME") {
-
-      return res.status(400).json({
-        error: "Invalid verification request."
-      });
+    if (!forgottenUserToken) {
+      return res.status(400).json({error: "Invalid or expired verification request."});
     }
 
 
-    if (
-      token.attemptCount >=
-      MAX_ATTEMPTS
-    ) {
+    if (forgottenUserToken.attemptCount >= MAX_ATTEMPTS) {
 
       return res.status(429).json({
         error: "Too many attempts. Please request a new code."
       });
     }
 
-
     const now = new Date();
 
-
-    if (token.expiresAt <= now) {
+    if (forgottenUserToken.expiresAt <= now) {
 
       return res.status(400).json({
         error: "Verification code expired. Please request a new code."
       });
     }
 
-
     const incomingHash = hashCode(code.trim());
 
     // timingSafeEqualHex comes from lib/verify-code.ts
-    const match = timingSafeEqualHex(incomingHash, token.codeHash);
+    const match = timingSafeEqualHex(incomingHash, forgottenUserToken.codeHash);
 
+    if (!match) { await prisma.emailVerificationToken.update({
 
-    if (!match) {
-
-      await prisma.emailVerificationToken.update({
-
-        where: { id: token.id },
+        where: { id: forgottenUserToken.id },
 
         data: { attemptCount: { increment: 1 } }
       });
@@ -724,7 +766,7 @@ export async function verifyForgotUsernameHandler(req: Request, res: Response) {
     await prisma.emailVerificationToken.delete({
 
       where: {
-        userId: user.id
+        id: forgottenUserToken.id
       }
 
     });
@@ -830,37 +872,29 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
     await prisma.emailVerificationToken.upsert({
 
       where: {
-        userId: user.id
+          userId_purpose: {
+              userId: user.id,
+              purpose: "FORGOT_PASSWORD"
+          }
       },
 
       create: {
 
-        userId: user.id,
+          purpose: "FORGOT_PASSWORD",
+          codeHash,
+          expiresAt,
+          resendAfter,
+          attemptCount: 0,
 
-        codeHash,
-
-        expiresAt,
-
-        resendAfter,
-
-        attemptCount: 0,
-
-        purpose:
-          "FORGOT_PASSWORD"
+          user: { connect: { id: user.id } }
       },
 
       update: {
-
         codeHash,
-
         expiresAt,
-
         resendAfter,
-
         attemptCount: 0,
-
-        purpose:
-          "FORGOT_PASSWORD"
+        purpose: "FORGOT_PASSWORD"
       }
     });
 
@@ -874,12 +908,8 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
     return res.status(200).json({
 
       ok: true,
-
-      message:
-        "If an account exists for this email, a verification code has been sent.",
-
-      resendAvailableAt:
-        resendAfter.toISOString()
+      message: "If an account exists for this email, a verification code has been sent.",
+      resendAvailableAt: resendAfter.toISOString()
     });
 
   } catch (err) {
@@ -888,8 +918,7 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
 
     return res.status(500).json({
 
-      error:
-        "Unable to process password recovery."
+      error: "Unable to process password recovery."
     });
   }
 }
@@ -898,227 +927,218 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
 export async function verifyForgotPasswordHandler(req: Request, res: Response) {
   try {
 
-    const {
-      email,
-      code
-    } = req.body as {
+    const { email, code } = req.body as {
       email?: string;
       code?: string;
     };
 
 
     if (!email || !code) {
-
       return res.status(400).json({
-        error:
-          "Email and verification code are required."
+        error: "Email and verification code are required."
       });
     }
 
 
-    const normalizedEmail =
-      email.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
 
 
-    const user =
-      await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
 
-        where: {
-          eMail: normalizedEmail
-        },
-
+        where: { eMail: normalizedEmail },
         select: {
-          id: true,
-          emailVerification: true
-        }
+            id: true,
+            emailVerification: {
+                select: {
+                    id: true,
+                    purpose: true,
+                    codeHash: true,
+                    expiresAt: true,
+                    resendAfter: true,
+                    attemptCount: true
+                }
+            } }
+
       });
 
 
-    if (
-      !user ||
-      !user.emailVerification
-    ) {
-
-      return res.status(400).json({
-        error:
-          "Invalid or expired verification request."
-      });
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or expired verification request." });
     }
 
 
-    const verification =
-      user.emailVerification;
+    /*
 
+     * emailVerification is one-to-many,
 
-    if (
-      verification.purpose !==
-      "FORGOT_PASSWORD"
-    ) {
+     * so locate the FORGOT_PASSWORD token.
 
-      return res.status(400).json({
-        error:
-          "Invalid verification request."
-      });
+     */
+
+    const forgottenPasswordToken =
+
+      user.emailVerification.find((token) => token.purpose === "FORGOT_PASSWORD");
+
+    if (!forgottenPasswordToken) {
+
+      return res.status(400).json({ error: "Invalid or expired verification request." });
+
     }
 
+    /*
 
-    if (
-      verification.attemptCount >=
-      MAX_ATTEMPTS
-    ) {
+     * Prevent additional attempts once the
+
+     * maximum number has been reached.
+
+     */
+
+    if (forgottenPasswordToken.attemptCount >= MAX_ATTEMPTS) {
 
       return res.status(429).json({
-        error:
-          "Too many attempts. Please request a new code."
+
+        error: "Too many attempts. Please request a new code."
+
       });
+
     }
 
+    const now = new Date();
 
-    const now =
-      new Date();
+    /*
 
+     * Make sure the verification code has
 
-    if (
-      verification.expiresAt <=
-      now
-    ) {
+     * not expired.
+
+     */
+
+    if (forgottenPasswordToken.expiresAt <= now) {
 
       return res.status(400).json({
-        error:
-          "Verification code expired. Please request a new code."
+
+        error: "Verification code expired. Please request a new code."
+
       });
+
     }
 
+    const incomingHash = hashCode(code.trim());
 
-    const incomingHash =
-      hashCode(
-        code.trim()
-      );
+    const match = timingSafeEqualHex(incomingHash, forgottenPasswordToken.codeHash);
 
+    /*
 
-    const match =
-      timingSafeEqualHex(
-        incomingHash,
-        verification.codeHash
-      );
+     * Incorrect code.
 
+     *
+
+     * Increment only this verification token's
+
+     * attempt count.
+
+     */
 
     if (!match) {
 
       await prisma.emailVerificationToken.update({
 
-        where: {
-          id: verification.id
-        },
+        where: { id: forgottenPasswordToken.id },
 
-        data: {
+        data: { attemptCount: { increment: 1 } }
 
-          attemptCount: {
-            increment: 1
-          }
-        }
       });
 
+      return res.status(400).json({ error: "Invalid verification code." });
 
-      return res.status(400).json({
-        error:
-          "Invalid verification code."
-      });
     }
 
-
     /*
+
+     * Email verification succeeded.
+
+     *
+
      * Generate a cryptographically secure
+
      * password-reset token.
-     */
-    const resetToken =
-      crypto
-        .randomBytes(32)
-        .toString("hex");
 
+     */
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
 
     /*
+
      * Never store the raw reset token.
+
      */
-    const resetTokenHash =
-      hashCode(resetToken);
 
+    const resetTokenHash = hashCode(resetToken);
 
-    const resetExpiresAt =
-      new Date(
-        now.getTime() +
-        PASSWORD_RESET_TTL_MIN *
-        60_000
-      );
-
+    const resetExpiresAt = new Date(now.getTime() + PASSWORD_RESET_TTL_MIN * 60_000);
 
     /*
+
      * Remove old unused reset tokens for
+
      * this user before creating another.
+
      */
+
     await prisma.pWResetToken.deleteMany({
 
-      where: {
+      where: { userId: user.id, usedAt: null }
 
-        userId: user.id,
-
-        usedAt: null
-      }
     });
-
 
     await prisma.pWResetToken.create({
 
       data: {
 
-        userId:
-          user.id,
+        userId: user.id,
 
-        tokenHash:
-          resetTokenHash,
+        tokenHash: resetTokenHash,
 
-        expiresAt:
-          resetExpiresAt
+        expiresAt: resetExpiresAt
+
       }
-    });
 
+    });
 
     /*
-     * EVC cannot be reused after successful
-     * verification.
+
+     * The FORGOT_PASSWORD verification token
+
+     * has served its purpose and cannot be reused.
+
+     *
+
+     * Delete this exact token rather than every
+
+     * verification token belonging to the user.
+
      */
+
     await prisma.emailVerificationToken.delete({
-
-      where: {
-        userId: user.id
-      }
+      where: { id: forgottenPasswordToken.id }
     });
-
 
     return res.status(200).json({
 
       ok: true,
-
       verified: true,
-
       resetToken,
-
-      resetTokenExpiresAt:
-        resetExpiresAt.toISOString(),
-
-      message:
-        "Email verified. You may now create a new password."
+      resetTokenExpiresAt: resetExpiresAt.toISOString(),
+      message: "Email verified. You may now create a new password."
     });
 
   } catch (err) {
 
-    console.error(err);
-
-    return res.status(500).json({
-
-      error:
-        "Unable to verify password recovery."
+      console.error("VERIFY FORGOT PASSWORD ERROR:", err);
+      return res.status(500).json({
+      error: "Unable to verify password recovery."
     });
+
   }
 }
 

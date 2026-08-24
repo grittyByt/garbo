@@ -1,10 +1,13 @@
-import { PrismaClient } from "@prisma/client";
-import {PrismaPg} from "@prisma/adapter-pg";
-import process = require("node:process");
+import "dotenv/config";
+import { PrismaClient } from "../generated/prisma";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-// constant will process new data from this database url
-const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL!,
-});
+const connectionString = process.env.DATABASE_URL;
 
-export const prisma = new PrismaClient({adapter});
+if (!connectionString) {
+    throw new Error("DATABASE_URL is not defined in the environment.");
+}
+
+const adapter = new PrismaPg({ connectionString });
+
+export const prisma = new PrismaClient({ adapter });

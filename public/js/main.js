@@ -1,8 +1,9 @@
 /*==========================
  *         IMPORTS
  * =========================*/
-import { signUpForm_verified, loginForm_verified, } from "./form_checks_n_balances.js";
+import { signUpForm_verified, loginForm_verified } from "./form_checks_n_balances.js";
 import { emailVerifyDisplay } from "./emailVerify.js";
+import { API_BASE_URL } from "./api-config.js";
 function qs(selector, parent = document) {
     const element = parent.querySelector(selector);
     if (!element) {
@@ -117,8 +118,8 @@ const lName = document.createElement("input");
 const userEmail = document.createElement("input");
 const confirmEmail = document.createElement("input");
 const uName = document.createElement("input");
-const pathway = document.createElement("input");
-const confirmPath = document.createElement("input");
+const password = document.createElement("input");
+const confirmPassword = document.createElement("input");
 const signUp_btn = document.createElement("button");
 const signUpDivider = document.createElement("div");
 const alreadyMember = document.createElement("button");
@@ -136,8 +137,8 @@ lName.classList.add("form-control", "lastName");
 userEmail.classList.add("form-control", "eMail");
 confirmEmail.classList.add("form-control", "confirm-eMail");
 uName.classList.add("form-control", "new-userName");
-pathway.classList.add("new-password", "form-control");
-confirmPath.classList.add("confirm-password", "form-control");
+password.classList.add("new-password", "form-control");
+confirmPassword.classList.add("confirm-password", "form-control");
 signUp_btn.classList.add("form-btn");
 signUpDivider.classList.add("form-divider");
 alreadyMember.classList.add("already-member");
@@ -184,23 +185,23 @@ confirmEmail.name = "eMail";
 confirmEmail.placeholder = "Confirm your email";
 confirmEmail.autocomplete = "email";
 confirmEmail.required = true;
-pathway.id = "validationCustom06";
-pathway.type = "password";
-pathway.name = "password";
-pathway.placeholder = "Create a password";
-pathway.autocomplete = "new-password";
-pathway.required = true;
-confirmPath.id = "validationCustom07";
-confirmPath.type = "password";
-confirmPath.name = "passwordHash";
-confirmPath.placeholder = "Confirm your password";
-confirmPath.autocomplete = "new-password";
-confirmPath.required = true;
+password.id = "validationCustom06";
+password.type = "password";
+password.name = "password";
+password.placeholder = "Create a password";
+password.autocomplete = "new-password";
+password.required = true;
+confirmPassword.id = "validationCustom07";
+confirmPassword.type = "password";
+confirmPassword.name = "passwordHash";
+confirmPassword.placeholder = "Confirm your password";
+confirmPassword.autocomplete = "new-password";
+confirmPassword.required = true;
 signUp_btn.type = "submit";
 signUp_btn.textContent = "Sign Up";
 alreadyMember.type = "button";
 alreadyMember.textContent = "Already a member? Sign in";
-signUp_sheet.append(createSignUpGroup("First Name", fName, feedback_su), createSignUpGroup("Last Name", lName, feedback_su2), createSignUpGroup("Create a Username", uName, feedback_su3), createSignUpGroup("Email", userEmail, feedback_su6), createSignUpGroup("Confirm Email", confirmEmail, feedback_su7), createSignUpGroup("Password", pathway, feedback_su8), createSignUpGroup("Confirm Password", confirmPath, feedback_su9), signUp_btn, signUpDivider, alreadyMember);
+signUp_sheet.append(createSignUpGroup("First Name", fName, feedback_su), createSignUpGroup("Last Name", lName, feedback_su2), createSignUpGroup("Create a Username", uName, feedback_su3), createSignUpGroup("Email", userEmail, feedback_su6), createSignUpGroup("Confirm Email", confirmEmail, feedback_su7), createSignUpGroup("Password", password, feedback_su8), createSignUpGroup("Confirm Password", confirmPassword, feedback_su9), signUp_btn, signUpDivider, alreadyMember);
 newUserBlock.appendChild(signUp_sheet);
 /* =========================
    Build card once
@@ -247,7 +248,7 @@ alreadyMember.addEventListener("click", display_login);
 ========================= */
 signUp_sheet.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const result = signUpForm_verified(fName, lName, uName, userEmail, confirmEmail, pathway, confirmPath);
+    const result = signUpForm_verified(fName, lName, uName, userEmail, confirmEmail, password, confirmPassword);
     if (!result.ok) {
         signUp_sheet.classList.add("was-validated");
         return;
@@ -256,12 +257,12 @@ signUp_sheet.addEventListener("submit", async (event) => {
         firstName: fName.value.trim(),
         lastName: lName.value.trim(),
         userName: uName.value.trim(),
-        email: confirmEmail.value.trim(),
-        thePath: confirmPath.value,
+        eMail: confirmEmail.value.trim(),
+        password: confirmPassword.value,
     };
     try {
         signUp_btn.disabled = true;
-        const response = await fetch("/api/auth/signup", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(user),
@@ -272,9 +273,9 @@ signUp_sheet.addEventListener("submit", async (event) => {
             return;
         }
         await emailVerifyDisplay();
-        alert("Signup successful!");
-        signUp_sheet.reset();
-        display_login();
+        // alert("Signup successful!");
+        // signUp_sheet.reset();
+        // display_login();
     }
     catch (error) {
         console.error("Signup request failed:", error);

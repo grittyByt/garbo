@@ -408,9 +408,10 @@
   }
 
   .forgot-password,
+  .forgot-username,
   .already-member {
     display: block;
-    width: 100%;
+    width: 50%;
     border: 0;
     background: transparent;
     color: #c2c5d2;
@@ -420,6 +421,7 @@
   }
 
   .forgot-password:hover,
+  .forgot-username:hover,
   .already-member:hover {
     color: #fff;
   }

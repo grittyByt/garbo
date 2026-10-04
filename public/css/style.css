@@ -12217,9 +12217,10 @@ textarea.form-control-lg {
   background: rgba(255, 255, 255, 0.2);
 }
 .home-page .forgot-password,
+.home-page .forgot-username,
 .home-page .already-member {
   display: block;
-  width: 100%;
+  width: 50%;
   border: 0;
   background: transparent;
   color: #c2c5d2;
@@ -12228,6 +12229,7 @@ textarea.form-control-lg {
   text-decoration: none;
 }
 .home-page .forgot-password:hover,
+.home-page .forgot-username:hover,
 .home-page .already-member:hover {
   color: #fff;
 }

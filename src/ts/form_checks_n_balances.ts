@@ -18,7 +18,8 @@ import {
   feedback_su8,
   feedback_su9,
   feedback_login,
-  feedback_li2} from "./main.js";
+  feedback_li2
+} from "./main.js";
 
 /*++++++++++++++++++++++++++++++++++++*/
 /*++++++++++++++++++++++++++++++++++++*/
@@ -81,15 +82,15 @@ export function signUpForm_verified(
     "3 to 20 characters are required!"
   );
 
-  // Validate lName: 3–25 characters
+  // Validate lName: 2–25 characters
   const lNameVal = lName.value.trim();
-  const validLName = lNameVal.length >= 3 && lNameVal.length <= 25;
+  const validLName = lNameVal.length >= 2 && lNameVal.length <= 25;
   updateClass(
     lName,
     validLName,
     feedback_su2,
     "Looks good",
-    "3 to 20 characters are required!"
+    "2 to 25 characters are required!"
   );
 
   // Validate uName: 5–16 characters

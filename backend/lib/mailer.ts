@@ -55,30 +55,253 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#039;");
 }
 
-export async function sendVerificationEmail(to: string, code: string) {
-  const appName = "Garbo";
+export async function sendVerificationEmail(to: string, code: string): Promise<void> {
 
-  const mailer = await createMailer();
-  await mailer.sendMail({
-    from: mailFrom,
-    to,
-    subject: `Your ${appName} verification code`,
-    text: `Your ${appName} verification code is: ${code}\n\nThis code expires in 10 minutes.`,
-    html: `
-      <div style="font-family: Arial, sans-serif; line-height: 1.4">
-        <h2>${appName} Email Verification</h2>
-        <p>Your verification code is:</p>
-        <p 
-        style="font-size: 28px; 
-        font-weight: bold; 
-        letter-spacing: 4px;">${code}
-        </p>
-        <p>This code expires in <b>10 minutes</b>.</p>
-      </div>
-    `,
-  });
+    const appName = "Garbo";
+    const mailer = await createMailer();
+
+    await mailer.sendMail({
+        from: mailFrom,
+        to,
+
+        subject: `Verify your ${appName} email address`,
+
+        // Plain-text fallback
+        text: `${appName} Automated Email Services
+
+        Please verify your email address
+        
+        We want to say thanks for signing up and creating your ${appName} account.
+        ${appName} is here to help organize your inbox.
+        
+        Enter the verification code below to finish setting up your account:
+        
+        ${code}
+        
+        This code expires in 10 minutes.
+        
+        If you didn't create a ${appName} account, you can safely ignore this email.
+        
+        © 2026 ${appName}
+        
+        thegarbagebot.com
+                `.trim(),
+
+        // HTML version
+        html: `
+        <!DOCTYPE html>
+        
+        <html lang="en">
+        
+        <head>
+            <meta charset="UTF-8">
+        
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+        
+            <title>
+                Verify your Garbo email address
+            </title>
+        </head>
+        
+        <body style="
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #1f2937;
+        ">
+        
+            <!-- Main email background -->
+            <table
+                role="presentation"
+                style="
+                    width: 100%;
+                    border-spacing: 0;
+                    border-collapse: collapse;
+                    background-color: #f4f4f4;
+                "
+            >
+        
+                <tr>
+        
+                    <td style="
+                        padding: 40px 15px;
+                        text-align: center;
+                    ">
+        
+                        <!-- Email container -->
+                        <table
+                            role="presentation"
+                            style="
+                                width: 100%;
+                                max-width: 600px;
+                                margin: 0 auto;
+                                border-spacing: 0;
+                                border-collapse: separate;
+                                background-color: #ffffff;
+                                border-radius: 12px;
+                                overflow: hidden;
+                            "
+                        >
+        
+                            <!-- Garbo Header -->
+                            <tr>
+        
+                                <td style="
+                                    padding: 32px 30px 20px;
+                                    background-color: #ffffff;
+                                    text-align: center;
+                                ">
+        
+                                    <h1 style="
+                                        margin: 0;
+                                        font-size: 28px;
+                                        color: #1f2937;
+                                    ">
+                                        Garbo Automated Email Services
+                                    </h1>
+        
+                                </td>
+        
+                            </tr>
+        
+                            <!-- Email Content -->
+                            <tr>
+        
+                                <td style="
+                                    padding: 20px 40px 40px;
+                                    text-align: left;
+                                ">
+        
+                                    <h2 style="
+                                        margin: 0 0 24px;
+                                        text-align: center;
+                                        font-size: 24px;
+                                        color: #111827;
+                                    ">
+                                        Please verify your email address
+                                    </h2>
+        
+                                    <p style="
+                                        margin: 0 0 18px;
+                                        font-size: 16px;
+                                        line-height: 1.6;
+                                    ">
+                                        We want to say thanks for signing up
+                                        and creating your Garbo account.
+                                        Garbo is here to help you stay
+                                        organized with your inbox.
+                                    </p>
+        
+                                    <p style="
+                                        margin: 0 0 28px;
+                                        font-size: 16px;
+                                        line-height: 1.6;
+                                    ">
+                                        Enter the verification code below
+                                        to finish setting up your account:
+                                    </p>
+        
+                                    <!-- Verification Code -->
+                                    <div style="
+                                        margin: 30px 0;
+                                        text-align: center;
+                                    ">
+        
+                                        <span style="
+                                            display: inline-block;
+                                            padding: 16px 28px;
+                                            background-color: #f3f4f6;
+                                            border-radius: 8px;
+                                            font-size: 32px;
+                                            font-weight: bold;
+                                            letter-spacing: 8px;
+                                            color: #111827;
+                                        ">
+                                            ${code}
+                                        </span>
+        
+                                    </div>
+        
+                                    <p style="
+                                        margin: 28px 0 12px;
+                                        text-align: center;
+                                        font-size: 14px;
+                                        color: #6b7280;
+                                    ">
+                                        This code expires in
+                                        <strong>10 minutes</strong>.
+                                    </p>
+        
+                                    <p style="
+                                        margin: 30px 0 0;
+                                        font-size: 14px;
+                                        line-height: 1.6;
+                                        color: #6b7280;
+                                    ">
+                                        If you didn't create a Garbo account,
+                                        you can safely ignore this email.
+                                    </p>
+        
+                                </td>
+        
+                            </tr>
+        
+                            <!-- Footer -->
+                            <tr>
+        
+                                <td style="
+                                    padding: 25px 30px;
+                                    border-top: 1px solid #e5e7eb;
+                                    background-color: #f9fafb;
+                                    text-align: center;
+                                ">
+        
+                                    <p style="
+                                        margin: 0 0 8px;
+                                        font-size: 13px;
+                                        color: #6b7280;
+                                    ">
+                                        © 2026 Garbo
+                                    </p>
+        
+                                    <p style="
+                                        margin: 0;
+                                        font-size: 13px;
+                                    ">
+        
+                                        <a
+                                            href="https://www.thegarbagebot.com"
+                                            style="
+                                                color: #4b5563;
+                                                text-decoration: none;
+                                            "
+                                        >
+                                            thegarbagebot.com
+                                        </a>
+        
+                                    </p>
+        
+                                </td>
+        
+                            </tr>
+        
+                        </table>
+        
+                    </td>
+        
+                </tr>
+        
+            </table>
+        
+        </body>
+        
+        </html>`.trim(),
+    });
 }
-
 export async function sendUsernameRecoveryEmail(
     email: string,
     username: string
@@ -114,7 +337,6 @@ export async function sendUsernameRecoveryEmail(
       html: `
 
         <div
-
           style="
             font-family: Arial, sans-serif;
             max-width: 600px;

@@ -67,6 +67,7 @@ const keepSignedInGroup = document.createElement("div");
 const keepSignedIn = document.createElement("input");
 const keepSignedInLabel = document.createElement("label");
 const keepSignedInIcon = document.createElement("span");
+const forgotUsername = document.createElement("a");
 const forgotPassword = document.createElement("a");
 const loginDivider = document.createElement("div");
 
@@ -85,6 +86,7 @@ loginForm_button.classList.add("form-btn");
 keepSignedInGroup.classList.add("col-12", "keep-signed-in");
 keepSignedIn.classList.add("check");
 keepSignedInIcon.classList.add("icon");
+forgotUsername.classList.add("forgot-username");
 forgotPassword.classList.add("forgot-password");
 loginDivider.classList.add("form-divider");
 
@@ -117,6 +119,8 @@ keepSignedInLabel.append(keepSignedInIcon, " Keep me signed in");
 
 loginForm_button.type = "submit";
 loginForm_button.textContent = "Sign In";
+forgotUsername.href = "#forgot";
+forgotUsername.textContent = "Forgot Username?";
 forgotPassword.href = "#forgot";
 forgotPassword.textContent = "Forgot Password?";
 
@@ -129,6 +133,7 @@ login_sheet.append(
   keepSignedInGroup,
   loginForm_button,
   loginDivider,
+  forgotUsername,
   forgotPassword,
 );
 loginBlock.appendChild(login_sheet);

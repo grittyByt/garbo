@@ -81,7 +81,7 @@ export async function signupHandler(req: Request, res: Response) {
       // 409 = Conflict
       // This response is sent when a request conflicts with the current state of the server.
       return res.status(409).json({
-        error: "Email or username already in use"
+        error: "Email or username is already in use"
       });
     }
 
@@ -104,7 +104,7 @@ export async function signupHandler(req: Request, res: Response) {
       });
 
     if (pendingConflict) {
-      return res.status(409).json({ error: "Username already in use." });
+      return res.status(409).json({ error: "Username is already in use." });
     }
 
     // Pending User Creation
@@ -212,7 +212,7 @@ export async function verifyEmailHandler(req: Request, res: Response) {
 
         if (!email || !code) {
             return res.status(400).json({
-                error: "Email and code are required.",
+                error: "Email and verifier passcode are required.",
             });
         }
 
@@ -238,7 +238,7 @@ export async function verifyEmailHandler(req: Request, res: Response) {
 
         if (!token) {
             return res.status(400).json({
-                error: "No verification token found. Resend code.",
+                error: "No verification token found.  Resend verifier passcode.",
             });
         }
 
@@ -250,7 +250,9 @@ export async function verifyEmailHandler(req: Request, res: Response) {
 
         if (token.attemptCount >= MAX_ATTEMPTS) {
             return res.status(429).json({
-                error: "Too many attempts. Please resend a new code.",
+                error:
+                    "Too many failed attempts. You may request a new verifier passcode " +
+                    "after the cooldown time limit has been reached.",
             });
         }
 
@@ -258,7 +260,7 @@ export async function verifyEmailHandler(req: Request, res: Response) {
 
         if (token.expiresAt <= now) {
             return res.status(400).json({
-                error: "Code expired. Please resend a new code.",
+                error: "Code has expired. Please resend a new verifier passcode.",
             });
         }
 
@@ -282,7 +284,7 @@ export async function verifyEmailHandler(req: Request, res: Response) {
             });
 
             return res.status(400).json({
-                error: "Invalid code. Please try again.",
+                error: "Invalid verifier passcode. Please try again.",
             });
         }
 

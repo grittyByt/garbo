@@ -1,13 +1,17 @@
+"use strict";
 /* =========================
    Helpers (TS-safe DOM)
 ========================= */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.signUpForm_verified = signUpForm_verified;
+exports.loginForm_verified = loginForm_verified;
 // need to import functions to the main.ts file
 // add module type to html file as well
 /*==========================
 *         IMPORTS
 * =========================*/
-import { feedback_su, feedback_su2, feedback_su3, feedback_su6, feedback_su7, feedback_su8, feedback_su9, feedback_login, feedback_li2 } from "./main.js";
-export function signUpForm_verified(fName, lName, uName, 
+var main_js_1 = require("./main.js");
+function signUpForm_verified(fName, lName, uName, 
 // age: HTMLInputElement,
 userEmail, confirmEmail, pathway, confirmPath) {
     // Helper function to update class based on condition
@@ -28,38 +32,38 @@ userEmail, confirmEmail, pathway, confirmPath) {
         }
     }
     function isValidEmailFormat(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
     // Validate fName: 3–25 characters
-    const fNameVal = fName.value.trim();
-    const validFName = fNameVal.length >= 2 && fNameVal.length <= 25;
-    updateClass(fName, validFName, feedback_su, "Looks good", "3 to 20 characters are required!");
-    // Validate lName: 2–25 characters
-    const lNameVal = lName.value.trim();
-    const validLName = lNameVal.length >= 2 && lNameVal.length <= 25;
-    updateClass(lName, validLName, feedback_su2, "Looks good", "2 to 25 characters are required!");
+    var fNameVal = fName.value.trim();
+    var validFName = fNameVal.length >= 2 && fNameVal.length <= 25;
+    updateClass(fName, validFName, main_js_1.feedback_su, "Looks good", "3 to 20 characters are required!");
+    // Validate lName: 3–25 characters
+    var lNameVal = lName.value.trim();
+    var validLName = lNameVal.length >= 3 && lNameVal.length <= 25;
+    updateClass(lName, validLName, main_js_1.feedback_su2, "Looks good", "3 to 20 characters are required!");
     // Validate uName: 5–16 characters
-    const uNameVal = uName.value.trim();
-    const validUName = uNameVal.length >= 5 && uNameVal.length <= 16;
-    updateClass(uName, validUName, feedback_su3, "Looks good", "5 to 16 characters are required!");
+    var uNameVal = uName.value.trim();
+    var validUName = uNameVal.length >= 5 && uNameVal.length <= 16;
+    updateClass(uName, validUName, main_js_1.feedback_su3, "Looks good", "5 to 16 characters are required!");
     // Validate eMail: non-empty and valid format
-    const eMailVal = userEmail.value.trim();
-    const validEMail = eMailVal !== "" && isValidEmailFormat(eMailVal);
-    updateClass(userEmail, validEMail, feedback_su6, "Email is good", "Email is not valid");
+    var eMailVal = userEmail.value.trim();
+    var validEMail = eMailVal !== "" && isValidEmailFormat(eMailVal);
+    updateClass(userEmail, validEMail, main_js_1.feedback_su6, "Email is good", "Email is not valid");
     // Validate confirmMail: matches eMail and valid format
-    const confirmedEMailVal = confirmEmail.value.trim();
-    const validConfirmedEMail = confirmedEMailVal !== "" && confirmedEMailVal === eMailVal;
-    updateClass(confirmEmail, validConfirmedEMail, feedback_su7, "Email is confirmed", "Email does not match");
+    var confirmedEMailVal = confirmEmail.value.trim();
+    var validConfirmedEMail = confirmedEMailVal !== "" && confirmedEMailVal === eMailVal;
+    updateClass(confirmEmail, validConfirmedEMail, main_js_1.feedback_su7, "Email is confirmed", "Email does not match");
     // Validate password: 8–20 characters
-    const passwordVal = pathway.value.trim();
-    const validPassword = passwordVal.length >= 8 && passwordVal.length <= 20;
-    updateClass(pathway, validPassword, feedback_su8, "Password is good", "8 to 20 characters are required");
+    var passwordVal = pathway.value.trim();
+    var validPassword = passwordVal.length >= 8 && passwordVal.length <= 20;
+    updateClass(pathway, validPassword, main_js_1.feedback_su8, "Password is good", "8 to 20 characters are required");
     // Validate confirmPass: matches password and 8–20 characters
-    const confirmedPassVal = confirmPath.value.trim();
-    const validConfirmedPass = confirmedPassVal === passwordVal;
-    updateClass(confirmPath, validConfirmedPass, feedback_su9, "Password is confirmed", "Password does not match!");
-    const legit = validFName && validLName &&
+    var confirmedPassVal = confirmPath.value.trim();
+    var validConfirmedPass = confirmedPassVal === passwordVal;
+    updateClass(confirmPath, validConfirmedPass, main_js_1.feedback_su9, "Password is confirmed", "Password does not match!");
+    var legit = validFName && validLName &&
         validUName && validEMail &&
         validConfirmedEMail && validPassword &&
         validConfirmedPass;
@@ -78,11 +82,11 @@ userEmail, confirmEmail, pathway, confirmPath) {
 /*=======================
    Login validation
 =========================*/
-export function loginForm_verified(uName, pWord) {
-    const uNameVal = uName.value.trim();
-    const passwordVal = pWord.value.trim();
+function loginForm_verified(uName, pWord) {
+    var uNameVal = uName.value.trim();
+    var passwordVal = pWord.value.trim();
     // Regex to detect email
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     function uFeedback(reason, input, feedbackEl) {
         if (reason) {
             input.classList.add("is-invalid");
@@ -162,7 +166,7 @@ export function loginForm_verified(uName, pWord) {
         return "";
     }
     function notValidPassword() {
-        const securePass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,20}$/;
+        var securePass = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,20}$/;
         if (passwordVal.length === 0)
             return "empty";
         if (passwordVal.length < 8)
@@ -175,17 +179,17 @@ export function loginForm_verified(uName, pWord) {
             return "weak";
         return "";
     }
-    const uNameError = notValidUsername();
-    const pWordError = notValidPassword();
-    uFeedback(uNameError, uName, feedback_login);
-    pFeedback(pWordError, pWord, feedback_li2);
+    var uNameError = notValidUsername();
+    var pWordError = notValidPassword();
+    uFeedback(uNameError, uName, main_js_1.feedback_login);
+    pFeedback(pWordError, pWord, main_js_1.feedback_li2);
 }
 // the user has the option to fill in the email input or the keyword input with this function
 function checksNBalances(theEmail, theKey) {
     // an empty array to catch all the errors
-    const errors = [];
-    const email = theEmail.trim();
-    const keyword = theKey.trim();
+    var errors = [];
+    var email = theEmail.trim();
+    var keyword = theKey.trim();
     //don't leave both input fields blank Garbo needs something to search by
     if (email === "" && keyword === "") {
         //email error
@@ -231,39 +235,39 @@ function checksNBalances(theEmail, theKey) {
 // this function will affect the DOM by displaying the error messages to the user
 function showGarboErrors(errors) {
     //grabbing the HTML element by its className
-    const emailErrorBox = document.querySelector(".errorMadeAtEmail");
-    const keywordErrorBox = document.querySelector(".errorMadeAtKeyword");
+    var emailErrorBox = document.querySelector(".errorMadeAtEmail");
+    var keywordErrorBox = document.querySelector(".errorMadeAtKeyword");
     //grabbing the p tag within the previous classNames
-    const emailErrorMsg = emailErrorBox?.querySelector("p");
-    const keywordErrorMsg = keywordErrorBox?.querySelector("p");
+    var emailErrorMsg = emailErrorBox === null || emailErrorBox === void 0 ? void 0 : emailErrorBox.querySelector("p");
+    var keywordErrorMsg = keywordErrorBox === null || keywordErrorBox === void 0 ? void 0 : keywordErrorBox.querySelector("p");
     //default to CSS display setting
-    emailErrorBox?.style.setProperty("display", "none");
-    keywordErrorBox?.style.setProperty("display", "none");
+    emailErrorBox === null || emailErrorBox === void 0 ? void 0 : emailErrorBox.style.setProperty("display", "none");
+    keywordErrorBox === null || keywordErrorBox === void 0 ? void 0 : keywordErrorBox.style.setProperty("display", "none");
     // clears old error messages
     if (emailErrorMsg)
         emailErrorMsg.textContent = "";
     if (keywordErrorMsg)
         keywordErrorMsg.textContent = "";
     // Find the first email-related error (if any)
-    const emailErr = errors.find((e) => e.input === "email");
+    var emailErr = errors.find(function (e) { return e.input === "email"; });
     // Find the first keyword-related error (if any)
-    const keywordErr = errors.find((e) => e.input === "keyword");
+    var keywordErr = errors.find(function (e) { return e.input === "keyword"; });
     // If we found an email error, show it
     if (emailErr) {
         if (emailErrorMsg)
             emailErrorMsg.textContent = emailErr.message;
-        emailErrorBox?.style.setProperty("display", "block");
+        emailErrorBox === null || emailErrorBox === void 0 ? void 0 : emailErrorBox.style.setProperty("display", "block");
     }
     // If we found a keyword error, show it
     if (keywordErr) {
         if (keywordErrorMsg)
             keywordErrorMsg.textContent = keywordErr.message;
-        keywordErrorBox?.style.setProperty("display", "block");
+        keywordErrorBox === null || keywordErrorBox === void 0 ? void 0 : keywordErrorBox.style.setProperty("display", "block");
     }
 }
 // this function ensures an email is in the correct format
 function isValidEmail(email) {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     // returns true or false
     return emailRegex.test(email);
 }

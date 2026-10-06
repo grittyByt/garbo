@@ -60,8 +60,17 @@ model UserPendingSignup {
   eMail        String @unique
   passwordHash String
 
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  // Number of times this signup has exhausted
+  // the maximum verification attempts
+  lockoutCount Int @default(0)
+
+  // Prevents verification/resending until this time
+  lockedUntil DateTime?
+
   emailVerification EmailVerificationToken?
-  createdAt         DateTime                @default(now())
 }
 
 model PWResetToken {
@@ -80,34 +89,26 @@ model PWResetToken {
 model EmailVerificationToken {
   id String @id @default(uuid())
 
-  // Existing user:
-
-  // FORGOT_USERNAME / FORGOT_PASSWORD
+  // Existing user: FORGOT_USERNAME / FORGOT_PASSWORD
 
   userId Int?
 
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Pending signup:
+  // Pending signup: SIGNUP
 
-  // SIGNUP
-
-  pendingSignupId Int? @unique
-
-  pendingSignup UserPendingSignup? @relation(fields: [pendingSignupId], references: [id], onDelete: Cascade)
-
-  purpose EmailVerificationPurpose
-
-  codeHash String
-
-  expiresAt DateTime
-
-  resendAfter DateTime
-
-  attemptCount Int @default(0)
+  pendingSignupId Int?                     @unique
+  pendingSignup   UserPendingSignup?       @relation(fields: [pendingSignupId], references: [id], onDelete: Cascade)
+  purpose         EmailVerificationPurpose
+  codeHash        String
+  // Current verification code expiration
+  expiresAt       DateTime
+  // Normal resend cooldown
+  resendAfter     DateTime
+  // Attempts against CURRENT code
+  attemptCount    Int                      @default(0)
 
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
 
   @@unique([userId, purpose])

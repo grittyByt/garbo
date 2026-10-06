@@ -25,11 +25,7 @@ function calculateLockoutMinutes(previousLockoutCount: number): number {
   );
 }
 
-const lockoutMinutes = calculateLockoutMinutes(pendingSignup.lockoutCount);
 
-const lockedUntil = new Date(
-  Date.now() + lockoutMinutes * 60 * 1000
-);
 
 type VerificationPurpose =
 
@@ -329,7 +325,7 @@ export async function verifyEmailHandler(req: Request, res: Response) {
                     }),
 
                     prisma.userPendingSignup.update({
-                        where: {id: pending.id},
+                        where: { id: pending.id },
                         data: {
                             lockoutCount: {increment: 1},
                             lockedUntil,

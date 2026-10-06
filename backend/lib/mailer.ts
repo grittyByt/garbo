@@ -280,7 +280,7 @@ export async function sendVerificationEmail(to: string, code: string): Promise<v
                                                 text-decoration: none;
                                             "
                                         >
-                                            thegarbagebot.com
+                                            www.thegarbagebot.com
                                         </a>
         
                                     </p>
@@ -302,10 +302,7 @@ export async function sendVerificationEmail(to: string, code: string): Promise<v
         </html>`.trim(),
     });
 }
-export async function sendUsernameRecoveryEmail(
-    email: string,
-    username: string
-) {
+export async function sendUsernameRecoveryEmail(email: string, username: string) {
 
   const appName = "Garbo";
 
@@ -317,9 +314,7 @@ export async function sendUsernameRecoveryEmail(
     await mailer.sendMail({
 
       from: mailFrom,
-
       to: email,
-
       subject: `${appName} Username Recovery`,
 
       text: `Hello, you recently requested help recovering your ${appName} username.
@@ -332,63 +327,207 @@ export async function sendUsernameRecoveryEmail(
             
             If you did not request your username, you can safely ignore this email.
             
+            // add a report button so users may report discrepancies with their account
+            // add link back to login form
+            
             — ${appName}`.trim(),
 
       html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
 
-        <div
-          style="
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 24px;
-          "
-        >
-
-          <h2>
-            ${appName} Username Recovery
-          </h2>
-
-          <p>
-            You recently requested help recovering your ${appName} username.
-          </p>
-
-          <p>
-            Your username is:
-          </p>
-
-          <div
-
-            style="
-              padding: 16px;
-              margin: 20px 0;
-              background-color: #f3f3f3;
-              border-radius: 8px;
-              text-align: center;
-            "
-          >
-
-            <strong
-              style="font-size: 24px;"
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
             >
-              ${safeUsername}
-            </strong>
 
-          </div>
+            <title>
+                ${appName} Username Recovery
+            </title>
+        </head>
 
-          <p>
-            You can now return to ${appName} and log in using this username.
-          </p>
+        <body style="
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #1f2937;
+        ">
 
-          <p>
-            If you did not request your username, you can safely ignore this email.
-          </p>
+            <!-- Main email background -->
+            <table
+                role="presentation"
+                style="
+                    width: 100%;
+                    border-spacing: 0;
+                    border-collapse: collapse;
+                    background-color: #f4f4f4;
+                "
+            >
 
-          <p>
-            — ${appName}
-          </p>
-        </div>
-      `
+                <tr>
+                    <td style="
+                        padding: 40px 15px;
+                        text-align: center;
+                    ">
+                        <!-- Email container -->
+                        <table
+                            role="presentation"
+                            style="
+                                width: 100%;
+                                max-width: 600px;
+                                margin: 0 auto;
+                                border-spacing: 0;
+                                border-collapse: separate;
+                                background-color: #ffffff;
+                                border-radius: 12px;
+                                overflow: hidden;
+                            "
+                        >
+                            <!-- Garbo Header -->
+                            <tr>
+                                <td style="
+                                    padding: 32px 30px 20px;
+                                    background-color: #ffffff;
+                                    text-align: center;
+                                ">
+                                    <h1 style="
+                                        margin: 0;
+                                        font-size: 28px;
+                                        color: #1f2937;
+                                    ">
+                                        Garbo Automated Email Services
+                                    </h1>
+                                </td>
+                            </tr>
+                            <!-- Email Content -->
+                            <tr>
+                                <td style="
+                                    padding: 20px 40px 40px;
+                                    text-align: left;
+                                ">
+                                    <h2 style="
+                                        margin: 0 0 24px;
+                                        text-align: center;
+                                        font-size: 24px;
+                                        color: #111827;
+                                    ">
+                                        ${appName} Username Recovery
+                                    </h2>
+
+                                    <p style="
+                                        margin: 0 0 18px;
+                                        font-size: 16px;
+                                        line-height: 1.6;
+                                    ">
+                                        You recently requested help recovering your ${appName} username.
+                                    </p>
+
+                                    <p style="
+                                        margin: 0 0 28px;
+                                        font-size: 16px;
+                                        line-height: 1.6;
+                                    ">
+                                        Your username is:
+                                    </p>
+
+                                    <!-- Username matched with email -->
+                                    <div style="
+                                        margin: 30px 0;
+                                        text-align: center;
+                                    ">
+
+                                        <span style="
+                                            display: inline-block;
+                                            padding: 16px 28px;
+                                            background-color: #f3f4f6;
+                                            border-radius: 8px;
+                                            font-size: 32px;
+                                            font-weight: bold;
+                                            letter-spacing: 8px;
+                                            color: #111827;
+                                        ">
+
+                                            ${safeUsername}
+
+                                        </span>
+
+                                    </div>
+
+                                    <p style="
+                                        margin: 28px 0 12px;
+                                        text-align: center;
+                                        font-size: 14px;
+                                        color: #6b7280;
+                                    ">
+                                       You can now return to ${appName} and log in using this username.
+                                    </p>
+
+                                    <p style="
+                                        margin: 30px 0 0;
+                                        font-size: 14px;
+                                        line-height: 1.6;
+                                        color: #6b7280;
+                                    ">
+                                        If you did not request your username, you can safely ignore this email.
+                                    </p>
+
+                                </td>
+
+                            </tr>
+
+                            <!-- Footer -->
+                            <tr>
+
+                                <td style="
+                                    padding: 25px 30px;
+                                    border-top: 1px solid #e5e7eb;
+                                    background-color: #f9fafb;
+                                    text-align: center;
+                                ">
+
+                                    <p style="
+                                        margin: 0 0 8px;
+                                        font-size: 13px;
+                                        color: #6b7280;
+                                    ">
+                                        © 2026 Garbo
+                                    </p>
+
+                                    <p style="
+                                        margin: 0;
+                                        font-size: 13px;
+                                    ">
+
+                                        <a
+                                            href="https://www.thegarbagebot.com"
+                                            style="
+                                                color: #4b5563;
+                                                text-decoration: none;
+                                            "
+                                        >
+                                            www.thegarbagebot.com
+                                        </a>
+
+                                    </p>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </body>
+
+        </html>`.trim(),
     });
     console.log(`Username recovery email sent to ${email}`);
   } catch (err) {

@@ -6,17 +6,35 @@ import { generate6DigitCode, hashCode, timingSafeEqualHex } from "../lib/verify-
 import { sendVerificationEmail, sendUsernameRecoveryEmail } from "../lib/mailer";
 import {hashPassword} from "../lib/password";
 
-const CODE_TTL_MIN = 10;
+// First punishment after max failed attempts
+const INITIAL_LOCKOUT_MINUTES = 5;
+// How long the code itself is valid
+const VERIFICATION_CODE_EXPIRATION_MINUTES = 10;
+// How soon a normal resend is allowed
 const RESEND_MIN = 5;
-const MAX_ATTEMPTS = 5;
+const MAX_VERIFICATION_ATTEMPTS = 5;
 const PASSWORD_RESET_TTL_MIN = 15;
+const PENDING_USER_LIFETIME_MS = 36 * 60 * 60 * 1000;
+// How much subsequent punishments increase
+const LOCKOUT_INCREMENT_MINUTES = 30;
+
+function calculateLockoutMinutes(previousLockoutCount: number): number {
+  return (
+    INITIAL_LOCKOUT_MINUTES +
+    previousLockoutCount * LOCKOUT_INCREMENT_MINUTES
+  );
+}
+
+const lockoutMinutes = calculateLockoutMinutes(pendingSignup.lockoutCount);
+
+const lockedUntil = new Date(
+  Date.now() + lockoutMinutes * 60 * 1000
+);
 
 type VerificationPurpose =
 
   | "SIGNUP"
-
   | "FORGOT_USERNAME"
-
   | "FORGOT_PASSWORD";
 
 export async function signupHandler(req: Request, res: Response) {
@@ -92,7 +110,7 @@ export async function signupHandler(req: Request, res: Response) {
     const code = generate6DigitCode();
     const codeHash = hashCode(code);
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + CODE_TTL_MIN * 60_000);
+    const expiresAt = new Date(now.getTime() + PENDING_USER_LIFETIME_MS);
     const resendAfter = new Date(now.getTime() + RESEND_MIN * 60_000);
 
     const pendingConflict = await prisma.userPendingSignup.findFirst({
@@ -106,6 +124,7 @@ export async function signupHandler(req: Request, res: Response) {
     if (pendingConflict) {
       return res.status(409).json({ error: "Username is already in use." });
     }
+
 
     // Pending User Creation
     const pendingUser = await prisma.userPendingSignup.upsert({
@@ -124,7 +143,8 @@ export async function signupHandler(req: Request, res: Response) {
           lastName,
           userName,
           eMail: normalizedEmail,
-          passwordHash
+          passwordHash,
+          expiresAt
         },
 
     });
@@ -234,6 +254,18 @@ export async function verifyEmailHandler(req: Request, res: Response) {
             });
         }
 
+        const now = new Date();
+
+        if (pending.expiresAt <= now) {
+            await prisma.userPendingSignup.delete({
+                where: { id: pending.id },
+            });
+
+            return res.status(410).json({
+                error: "Your signup has expired. Please create your account again.",
+            });
+        }
+
         const token = pending.emailVerification;
 
         if (!token) {
@@ -248,15 +280,20 @@ export async function verifyEmailHandler(req: Request, res: Response) {
             });
         }
 
-        if (token.attemptCount >= MAX_ATTEMPTS) {
+        if (pending.lockedUntil && pending.lockedUntil > now) {
+            const remainingMs =
+                pending.lockedUntil.getTime() - now.getTime();
+
+            const remainingMinutes = Math.ceil(remainingMs / 60_000);
+
             return res.status(429).json({
                 error:
-                    "Too many failed attempts. You may request a new verifier passcode " +
-                    "after the cooldown time limit has been reached.",
+                    `Too many failed attempts. Please wait ${remainingMinutes} ` +
+                    `minute(s) before requesting another verifier passcode.`,
+                lockedUntil: pending.lockedUntil,
             });
         }
 
-        const now = new Date();
 
         if (token.expiresAt <= now) {
             return res.status(400).json({
@@ -272,19 +309,60 @@ export async function verifyEmailHandler(req: Request, res: Response) {
         );
 
         if (!match) {
+            const newAttemptCount = token.attemptCount + 1;
+
+            // User has reached the maximum attempts
+            if (newAttemptCount >= MAX_VERIFICATION_ATTEMPTS) {
+
+                const lockoutMinutes = calculateLockoutMinutes(
+                    pending.lockoutCount
+                );
+
+                const lockedUntil = new Date(
+                    Date.now() + lockoutMinutes * 60 * 1000
+                );
+
+                await prisma.$transaction([
+                    prisma.emailVerificationToken.update({
+                        where: {id: token.id},
+                        data: {attemptCount: newAttemptCount},
+                    }),
+
+                    prisma.userPendingSignup.update({
+                        where: {id: pending.id},
+                        data: {
+                            lockoutCount: {increment: 1},
+                            lockedUntil,
+                        },
+                    }),
+                ]);
+
+                return res.status(429).json({
+                    error:
+                        `Too many failed attempts. You must wait ${lockoutMinutes} ` +
+                        `minute(s) before requesting another verifier passcode.`,
+                    lockedUntil,
+                });
+            }
+
+
+            // Incorrect, but they still have attempts remaining
             await prisma.emailVerificationToken.update({
                 where: {
                     id: token.id,
                 },
                 data: {
-                    attemptCount: {
-                        increment: 1,
-                    },
+                    attemptCount: newAttemptCount,
                 },
             });
 
+            const attemptsRemaining =
+                MAX_VERIFICATION_ATTEMPTS - newAttemptCount;
+
             return res.status(400).json({
-                error: "Invalid verifier passcode. Please try again.",
+                error:
+                    `Invalid verifier passcode. ` +
+                    `${attemptsRemaining} attempt(s) remaining.`,
             });
         }
 
@@ -305,13 +383,13 @@ export async function verifyEmailHandler(req: Request, res: Response) {
             }
 
             const createdUser = await tx.user.create({
+
                 data: {
                     firstName: pending.firstName,
                     lastName: pending.lastName,
                     userName: pending.userName,
                     eMail: pending.eMail,
                     passwordHash: pending.passwordHash,
-
                     // Since the account is only created after
                     // successful verification:
                     emailVerified: true,
@@ -325,7 +403,6 @@ export async function verifyEmailHandler(req: Request, res: Response) {
                   userName: true,
                   eMail: true,
                   createdAt: true
-
                 }
             });
 
@@ -390,15 +467,6 @@ export async function resendVerificationHandler(req: Request, res: Response) {
     const normalizedEmail = email.trim().toLowerCase();
     const now = new Date();
 
-    const code = generate6DigitCode();
-    const codeHash = hashCode(code);
-
-    const expiresAt =
-      new Date(now.getTime() + CODE_TTL_MIN * 60_000);
-
-    const resendAfter =
-      new Date(now.getTime() + RESEND_MIN * 60_000);
-
     /*
      * ============================
      * SIGNUP VERIFICATION
@@ -416,25 +484,97 @@ export async function resendVerificationHandler(req: Request, res: Response) {
           }
         });
 
+      // Pending signup does not exist.
       if (!pendingUser) {
         return res.status(404).json({
           error: "Pending signup not found."
         });
       }
 
+      /*
+       * Check whether the entire pending signup
+       * has exceeded its 36-hour lifetime.
+       */
+      if (pendingUser.expiresAt <= now) {
+
+        await prisma.userPendingSignup.delete({
+          where: {
+            id: pendingUser.id
+          }
+        });
+
+        return res.status(410).json({
+          error:
+            "Your signup has expired. Please create your account again."
+        });
+      }
+
+      /*
+       * Check whether the user is currently locked
+       * out because they exceeded the maximum
+       * verification attempts.
+       */
+      if (
+        pendingUser.lockedUntil &&
+        pendingUser.lockedUntil > now
+      ) {
+
+        const remainingMs =
+          pendingUser.lockedUntil.getTime() -
+          now.getTime();
+
+        const remainingMinutes =
+          Math.ceil(remainingMs / 60_000);
+
+        return res.status(429).json({
+          error:
+            `Too many failed verification attempts. ` +
+            `Please wait ${remainingMinutes} minute(s) ` +
+            `before requesting another verifier passcode.`,
+
+          resendAvailableAt:
+            pendingUser.lockedUntil.toISOString()
+        });
+      }
+
       const existing =
         pendingUser.emailVerification;
 
+      /*
+       * Normal resend cooldown.
+       */
       if (
         existing &&
         existing.resendAfter > now
       ) {
         return res.status(429).json({
           error: "Resend not available yet.",
+
           resendAvailableAt:
             existing.resendAfter.toISOString()
         });
       }
+
+      /*
+       * All checks have passed.
+       * NOW generate the new verification code.
+       */
+
+      const code = generate6DigitCode();
+
+      const codeHash = hashCode(code);
+
+      const expiresAt = new Date(
+        now.getTime() +
+        VERIFICATION_CODE_EXPIRATION_MINUTES * 60_000
+      );
+
+      const resendAfter = new Date(now.getTime() + RESEND_MIN * 60_000);
+
+      /*
+       * Replace the previous verification code
+       * or create one if none currently exists.
+       */
 
       await prisma.emailVerificationToken.upsert({
         where: {
@@ -446,6 +586,8 @@ export async function resendVerificationHandler(req: Request, res: Response) {
           codeHash,
           expiresAt,
           resendAfter,
+
+          // New code gets a fresh set of attempts.
           attemptCount: 0
         },
 
@@ -455,28 +597,48 @@ export async function resendVerificationHandler(req: Request, res: Response) {
           expiresAt,
           resendAfter,
           attemptCount: 0,
-            pendingSignup: {
-              connect: {
-                  id: pendingUser.id
-              }
-            }
-        }
 
+          pendingSignup: {
+            connect: {
+              id: pendingUser.id
+            }
+          }
+        }
       });
 
-      await sendVerificationEmail(
-        pendingUser.eMail,
-        code
-      );
+      /*
+       * The previous lockout has elapsed.
+       *
+       * Clear lockedUntil but DO NOT reset
+       * lockoutCount.
+       */
+
+      if (pendingUser.lockedUntil) {
+        await prisma.userPendingSignup.update({
+          where: {
+            id: pendingUser.id
+          },
+
+          data: {
+            lockedUntil: null
+          }
+        });
+      }
+
+      /*
+       * Send the newly generated code.
+       */
+      await sendVerificationEmail(pendingUser.eMail, code);
 
       return res.status(200).json({
         ok: true,
-        message:
-          "A new verification code has been sent.",
-        resendAvailableAt:
-          resendAfter.toISOString()
+
+        message: "A new verification code has been sent.",
+
+        resendAvailableAt: resendAfter.toISOString()
       });
     }
+
 
     /*
      * ============================
@@ -486,67 +648,124 @@ export async function resendVerificationHandler(req: Request, res: Response) {
 
     const user = await prisma.user.findUnique({
       where: { eMail: normalizedEmail },
+
       include: { emailVerification: true }
     });
 
-    /*
-     * Do not reveal whether an account exists.
-     */
+
     if (!user) {
       return res.status(200).json({
         ok: true,
-        message: "If the account exists, a new verification code has been sent."
+
+        message:
+          "If the account exists, a new verification code has been sent."
       });
     }
+
+    /*
+     * Find the existing token for the
+     * requested recovery purpose.
+     */
 
     const existing = user.emailVerification.find(
-        (token) => token.purpose = purpose
+      (token) => token.purpose === purpose
     );
 
-    if (existing && existing.resendAfter > now) {
+    /*
+     * Respect the normal resend cooldown.
+     *
+     * We still return a generic response so we
+     * don't expose information about the account.
+     */
+    if (
+      existing &&
+      existing.resendAfter > now
+    ) {
       return res.status(200).json({
         ok: true,
-        message: "If the account exists, a verification code has been sent."
+
+        message:
+          "If the account exists, a verification code has been sent."
       });
     }
 
+    /*
+     * All account-recovery checks have passed.
+     *
+     * NOW generate the new verification code.
+     */
+
+    const code = generate6DigitCode();
+
+    const codeHash = hashCode(code);
+
+    const expiresAt = new Date(
+      now.getTime() +
+      VERIFICATION_CODE_EXPIRATION_MINUTES * 60_000
+    );
+
+    const resendAfter = new Date(
+      now.getTime() +
+      RESEND_MIN * 60_000
+    );
+
     await prisma.emailVerificationToken.upsert({
-
-        where: { userId_purpose: { userId: user.id, purpose } },
-        update: {
-
-          purpose,
-          codeHash,
-          expiresAt,
-          resendAfter,
-          attemptCount: 0
+      where: {
+        userId_purpose: {
+          userId: user.id,
+          purpose
+        }
       },
 
-        create: {
+      update: {
+        purpose,
+        codeHash,
+        expiresAt,
+        resendAfter,
+        attemptCount: 0
+      },
 
-            purpose, codeHash, expiresAt, resendAfter, attemptCount: 0,
+      create: {
+        purpose,
+        codeHash,
+        expiresAt,
+        resendAfter,
+        attemptCount: 0,
 
-            user: {
-                connect: {
-                    id: user.id
-                }
-            }
+        user: {
+          connect: {
+            id: user.id
+          }
         }
+      }
     });
 
-
-    await sendVerificationEmail(user.eMail, code);
+    await sendVerificationEmail(
+      user.eMail,
+      code
+    );
 
     return res.status(200).json({
       ok: true,
-      message: "If the account exists, a new verification code has been sent.",
-      resendAvailableAt: resendAfter.toISOString()
+
+      message:
+        "If the account exists, a new verification code has been sent.",
+
+      resendAvailableAt:
+        resendAfter.toISOString()
     });
 
   } catch (err) {
-    console.error("RESEND VERIFICATION ERROR:", err);
 
-    return res.status(500).json({ error: "Unable to resend verification code." });
+    console.error(
+      "RESEND VERIFICATION ERROR:",
+      err
+    );
+
+    return res.status(500).json({
+      error:
+        "Unable to resend verification code."
+    });
   }
 }
 // POST /api/auth/forgot-username
@@ -594,7 +813,7 @@ export async function forgotUsernameHandler(req: Request, res: Response) {
 
     const expiresAt = new Date(
       now.getTime() +
-      CODE_TTL_MIN * 60_000
+      INITIAL_LOCKOUT_MINUTES * 60_000
     );
 
     const resendAfter = new Date(
@@ -715,7 +934,7 @@ export async function verifyForgotUsernameHandler(req: Request, res: Response) {
     }
 
 
-    if (forgottenUserToken.attemptCount >= MAX_ATTEMPTS) {
+    if (forgottenUserToken.attemptCount >= MAX_VERIFICATION_ATTEMPTS) {
 
       return res.status(429).json({
         error: "Too many attempts. Please request a new code."
@@ -860,7 +1079,7 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
     const expiresAt =
       new Date(
         now.getTime() +
-        CODE_TTL_MIN * 60_000
+        INITIAL_LOCKOUT_MINUTES * 60_000
       );
 
 
@@ -988,14 +1207,11 @@ export async function verifyForgotPasswordHandler(req: Request, res: Response) {
     }
 
     /*
-
      * Prevent additional attempts once the
-
      * maximum number has been reached.
-
      */
 
-    if (forgottenPasswordToken.attemptCount >= MAX_ATTEMPTS) {
+    if (forgottenPasswordToken.attemptCount >= MAX_VERIFICATION_ATTEMPTS) {
 
       return res.status(429).json({
 

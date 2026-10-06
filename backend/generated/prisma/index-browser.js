@@ -148,7 +148,10 @@ exports.Prisma.UserPendingSignupScalarFieldEnum = {
   userName: 'userName',
   eMail: 'eMail',
   passwordHash: 'passwordHash',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt',
+  lockoutCount: 'lockoutCount',
+  lockedUntil: 'lockedUntil'
 };
 
 exports.Prisma.PWResetTokenScalarFieldEnum = {

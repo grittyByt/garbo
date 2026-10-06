@@ -2511,10 +2511,12 @@ export namespace Prisma {
 
   export type UserPendingSignupAvgAggregateOutputType = {
     id: number | null
+    lockoutCount: number | null
   }
 
   export type UserPendingSignupSumAggregateOutputType = {
     id: number | null
+    lockoutCount: number | null
   }
 
   export type UserPendingSignupMinAggregateOutputType = {
@@ -2525,6 +2527,9 @@ export namespace Prisma {
     eMail: string | null
     passwordHash: string | null
     createdAt: Date | null
+    expiresAt: Date | null
+    lockoutCount: number | null
+    lockedUntil: Date | null
   }
 
   export type UserPendingSignupMaxAggregateOutputType = {
@@ -2535,6 +2540,9 @@ export namespace Prisma {
     eMail: string | null
     passwordHash: string | null
     createdAt: Date | null
+    expiresAt: Date | null
+    lockoutCount: number | null
+    lockedUntil: Date | null
   }
 
   export type UserPendingSignupCountAggregateOutputType = {
@@ -2545,16 +2553,21 @@ export namespace Prisma {
     eMail: number
     passwordHash: number
     createdAt: number
+    expiresAt: number
+    lockoutCount: number
+    lockedUntil: number
     _all: number
   }
 
 
   export type UserPendingSignupAvgAggregateInputType = {
     id?: true
+    lockoutCount?: true
   }
 
   export type UserPendingSignupSumAggregateInputType = {
     id?: true
+    lockoutCount?: true
   }
 
   export type UserPendingSignupMinAggregateInputType = {
@@ -2565,6 +2578,9 @@ export namespace Prisma {
     eMail?: true
     passwordHash?: true
     createdAt?: true
+    expiresAt?: true
+    lockoutCount?: true
+    lockedUntil?: true
   }
 
   export type UserPendingSignupMaxAggregateInputType = {
@@ -2575,6 +2591,9 @@ export namespace Prisma {
     eMail?: true
     passwordHash?: true
     createdAt?: true
+    expiresAt?: true
+    lockoutCount?: true
+    lockedUntil?: true
   }
 
   export type UserPendingSignupCountAggregateInputType = {
@@ -2585,6 +2604,9 @@ export namespace Prisma {
     eMail?: true
     passwordHash?: true
     createdAt?: true
+    expiresAt?: true
+    lockoutCount?: true
+    lockedUntil?: true
     _all?: true
   }
 
@@ -2682,6 +2704,9 @@ export namespace Prisma {
     eMail: string
     passwordHash: string
     createdAt: Date
+    expiresAt: Date
+    lockoutCount: number
+    lockedUntil: Date | null
     _count: UserPendingSignupCountAggregateOutputType | null
     _avg: UserPendingSignupAvgAggregateOutputType | null
     _sum: UserPendingSignupSumAggregateOutputType | null
@@ -2711,6 +2736,9 @@ export namespace Prisma {
     eMail?: boolean
     passwordHash?: boolean
     createdAt?: boolean
+    expiresAt?: boolean
+    lockoutCount?: boolean
+    lockedUntil?: boolean
     emailVerification?: boolean | UserPendingSignup$emailVerificationArgs<ExtArgs>
   }, ExtArgs["result"]["userPendingSignup"]>
 
@@ -2722,6 +2750,9 @@ export namespace Prisma {
     eMail?: boolean
     passwordHash?: boolean
     createdAt?: boolean
+    expiresAt?: boolean
+    lockoutCount?: boolean
+    lockedUntil?: boolean
   }, ExtArgs["result"]["userPendingSignup"]>
 
   export type UserPendingSignupSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2732,6 +2763,9 @@ export namespace Prisma {
     eMail?: boolean
     passwordHash?: boolean
     createdAt?: boolean
+    expiresAt?: boolean
+    lockoutCount?: boolean
+    lockedUntil?: boolean
   }, ExtArgs["result"]["userPendingSignup"]>
 
   export type UserPendingSignupSelectScalar = {
@@ -2742,9 +2776,12 @@ export namespace Prisma {
     eMail?: boolean
     passwordHash?: boolean
     createdAt?: boolean
+    expiresAt?: boolean
+    lockoutCount?: boolean
+    lockedUntil?: boolean
   }
 
-  export type UserPendingSignupOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "userName" | "eMail" | "passwordHash" | "createdAt", ExtArgs["result"]["userPendingSignup"]>
+  export type UserPendingSignupOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "userName" | "eMail" | "passwordHash" | "createdAt" | "expiresAt" | "lockoutCount" | "lockedUntil", ExtArgs["result"]["userPendingSignup"]>
   export type UserPendingSignupInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     emailVerification?: boolean | UserPendingSignup$emailVerificationArgs<ExtArgs>
   }
@@ -2764,6 +2801,9 @@ export namespace Prisma {
       eMail: string
       passwordHash: string
       createdAt: Date
+      expiresAt: Date
+      lockoutCount: number
+      lockedUntil: Date | null
     }, ExtArgs["result"]["userPendingSignup"]>
     composites: {}
   }
@@ -3195,6 +3235,9 @@ export namespace Prisma {
     readonly eMail: FieldRef<"UserPendingSignup", 'String'>
     readonly passwordHash: FieldRef<"UserPendingSignup", 'String'>
     readonly createdAt: FieldRef<"UserPendingSignup", 'DateTime'>
+    readonly expiresAt: FieldRef<"UserPendingSignup", 'DateTime'>
+    readonly lockoutCount: FieldRef<"UserPendingSignup", 'Int'>
+    readonly lockedUntil: FieldRef<"UserPendingSignup", 'DateTime'>
   }
     
 
@@ -5981,7 +6024,10 @@ export namespace Prisma {
     userName: 'userName',
     eMail: 'eMail',
     passwordHash: 'passwordHash',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    expiresAt: 'expiresAt',
+    lockoutCount: 'lockoutCount',
+    lockedUntil: 'lockedUntil'
   };
 
   export type UserPendingSignupScalarFieldEnum = (typeof UserPendingSignupScalarFieldEnum)[keyof typeof UserPendingSignupScalarFieldEnum]
@@ -6260,6 +6306,9 @@ export namespace Prisma {
     eMail?: StringFilter<"UserPendingSignup"> | string
     passwordHash?: StringFilter<"UserPendingSignup"> | string
     createdAt?: DateTimeFilter<"UserPendingSignup"> | Date | string
+    expiresAt?: DateTimeFilter<"UserPendingSignup"> | Date | string
+    lockoutCount?: IntFilter<"UserPendingSignup"> | number
+    lockedUntil?: DateTimeNullableFilter<"UserPendingSignup"> | Date | string | null
     emailVerification?: XOR<EmailVerificationTokenNullableScalarRelationFilter, EmailVerificationTokenWhereInput> | null
   }
 
@@ -6271,6 +6320,9 @@ export namespace Prisma {
     eMail?: SortOrder
     passwordHash?: SortOrder
     createdAt?: SortOrder
+    expiresAt?: SortOrder
+    lockoutCount?: SortOrder
+    lockedUntil?: SortOrderInput | SortOrder
     emailVerification?: EmailVerificationTokenOrderByWithRelationInput
   }
 
@@ -6285,6 +6337,9 @@ export namespace Prisma {
     lastName?: StringFilter<"UserPendingSignup"> | string
     passwordHash?: StringFilter<"UserPendingSignup"> | string
     createdAt?: DateTimeFilter<"UserPendingSignup"> | Date | string
+    expiresAt?: DateTimeFilter<"UserPendingSignup"> | Date | string
+    lockoutCount?: IntFilter<"UserPendingSignup"> | number
+    lockedUntil?: DateTimeNullableFilter<"UserPendingSignup"> | Date | string | null
     emailVerification?: XOR<EmailVerificationTokenNullableScalarRelationFilter, EmailVerificationTokenWhereInput> | null
   }, "id" | "userName" | "eMail">
 
@@ -6296,6 +6351,9 @@ export namespace Prisma {
     eMail?: SortOrder
     passwordHash?: SortOrder
     createdAt?: SortOrder
+    expiresAt?: SortOrder
+    lockoutCount?: SortOrder
+    lockedUntil?: SortOrderInput | SortOrder
     _count?: UserPendingSignupCountOrderByAggregateInput
     _avg?: UserPendingSignupAvgOrderByAggregateInput
     _max?: UserPendingSignupMaxOrderByAggregateInput
@@ -6314,6 +6372,9 @@ export namespace Prisma {
     eMail?: StringWithAggregatesFilter<"UserPendingSignup"> | string
     passwordHash?: StringWithAggregatesFilter<"UserPendingSignup"> | string
     createdAt?: DateTimeWithAggregatesFilter<"UserPendingSignup"> | Date | string
+    expiresAt?: DateTimeWithAggregatesFilter<"UserPendingSignup"> | Date | string
+    lockoutCount?: IntWithAggregatesFilter<"UserPendingSignup"> | number
+    lockedUntil?: DateTimeNullableWithAggregatesFilter<"UserPendingSignup"> | Date | string | null
   }
 
   export type PWResetTokenWhereInput = {
@@ -6623,6 +6684,9 @@ export namespace Prisma {
     eMail: string
     passwordHash: string
     createdAt?: Date | string
+    expiresAt: Date | string
+    lockoutCount?: number
+    lockedUntil?: Date | string | null
     emailVerification?: EmailVerificationTokenCreateNestedOneWithoutPendingSignupInput
   }
 
@@ -6634,6 +6698,9 @@ export namespace Prisma {
     eMail: string
     passwordHash: string
     createdAt?: Date | string
+    expiresAt: Date | string
+    lockoutCount?: number
+    lockedUntil?: Date | string | null
     emailVerification?: EmailVerificationTokenUncheckedCreateNestedOneWithoutPendingSignupInput
   }
 
@@ -6644,6 +6711,9 @@ export namespace Prisma {
     eMail?: StringFieldUpdateOperationsInput | string
     passwordHash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockoutCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     emailVerification?: EmailVerificationTokenUpdateOneWithoutPendingSignupNestedInput
   }
 
@@ -6655,6 +6725,9 @@ export namespace Prisma {
     eMail?: StringFieldUpdateOperationsInput | string
     passwordHash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockoutCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     emailVerification?: EmailVerificationTokenUncheckedUpdateOneWithoutPendingSignupNestedInput
   }
 
@@ -6666,6 +6739,9 @@ export namespace Prisma {
     eMail: string
     passwordHash: string
     createdAt?: Date | string
+    expiresAt: Date | string
+    lockoutCount?: number
+    lockedUntil?: Date | string | null
   }
 
   export type UserPendingSignupUpdateManyMutationInput = {
@@ -6675,6 +6751,9 @@ export namespace Prisma {
     eMail?: StringFieldUpdateOperationsInput | string
     passwordHash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockoutCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserPendingSignupUncheckedUpdateManyInput = {
@@ -6685,6 +6764,9 @@ export namespace Prisma {
     eMail?: StringFieldUpdateOperationsInput | string
     passwordHash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockoutCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PWResetTokenCreateInput = {
@@ -7105,10 +7187,14 @@ export namespace Prisma {
     eMail?: SortOrder
     passwordHash?: SortOrder
     createdAt?: SortOrder
+    expiresAt?: SortOrder
+    lockoutCount?: SortOrder
+    lockedUntil?: SortOrder
   }
 
   export type UserPendingSignupAvgOrderByAggregateInput = {
     id?: SortOrder
+    lockoutCount?: SortOrder
   }
 
   export type UserPendingSignupMaxOrderByAggregateInput = {
@@ -7119,6 +7205,9 @@ export namespace Prisma {
     eMail?: SortOrder
     passwordHash?: SortOrder
     createdAt?: SortOrder
+    expiresAt?: SortOrder
+    lockoutCount?: SortOrder
+    lockedUntil?: SortOrder
   }
 
   export type UserPendingSignupMinOrderByAggregateInput = {
@@ -7129,10 +7218,14 @@ export namespace Prisma {
     eMail?: SortOrder
     passwordHash?: SortOrder
     createdAt?: SortOrder
+    expiresAt?: SortOrder
+    lockoutCount?: SortOrder
+    lockedUntil?: SortOrder
   }
 
   export type UserPendingSignupSumOrderByAggregateInput = {
     id?: SortOrder
+    lockoutCount?: SortOrder
   }
 
   export type UserScalarRelationFilter = {
@@ -8046,6 +8139,9 @@ export namespace Prisma {
     eMail: string
     passwordHash: string
     createdAt?: Date | string
+    expiresAt: Date | string
+    lockoutCount?: number
+    lockedUntil?: Date | string | null
   }
 
   export type UserPendingSignupUncheckedCreateWithoutEmailVerificationInput = {
@@ -8056,6 +8152,9 @@ export namespace Prisma {
     eMail: string
     passwordHash: string
     createdAt?: Date | string
+    expiresAt: Date | string
+    lockoutCount?: number
+    lockedUntil?: Date | string | null
   }
 
   export type UserPendingSignupCreateOrConnectWithoutEmailVerificationInput = {
@@ -8135,6 +8234,9 @@ export namespace Prisma {
     eMail?: StringFieldUpdateOperationsInput | string
     passwordHash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockoutCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserPendingSignupUncheckedUpdateWithoutEmailVerificationInput = {
@@ -8145,6 +8247,9 @@ export namespace Prisma {
     eMail?: StringFieldUpdateOperationsInput | string
     passwordHash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockoutCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type EmailVerificationTokenCreateManyUserInput = {

@@ -2,7 +2,7 @@
  *         IMPORTS
  * =========================*/
 import { signUpForm_verified, loginForm_verified } from "./form_checks_n_balances.js";
-import { emailVerifyDisplay } from "./emailVerify.js";
+import { emailVerifyDisplay, type VerificationState } from "./emailVerify.js";
 import { API_BASE_URL } from "./api-config.js";
 
 function qs<T extends Element>(selector: string, parent: ParentNode = document): T {
@@ -14,6 +14,7 @@ function qs<T extends Element>(selector: string, parent: ParentNode = document):
   return element;
 }
 
+
 /* =========================
    Existing DOM references
 ========================= */
@@ -22,6 +23,10 @@ const welcomeBlock = qs<HTMLElement>(".welcome-section");
 const login_button = qs<HTMLButtonElement>(".login-button");
 const new_user_button = qs<HTMLButtonElement>(".new-user-button");
 const garboIntro = qs<HTMLElement>(".whoIsGarbo");
+
+document.addEventListener(
+  "DOMContentLoaded", () => { void restorePendingVerification(); }
+);
 
 /* =========================
    Shared authentication card
@@ -349,17 +354,34 @@ signUp_sheet.addEventListener("submit", async (event) => {
       body: JSON.stringify(user),
     });
 
-    const data: { error?: string } = await response.json();
+    const data: {
+      error?: string;
+      locked?: boolean;
+      lockedUntil?: string;
+    } = await response.json();
 
     if (!response.ok) {
+
+      /*
+      * If this email already has a pending signup
+      * that is locked, remember the email so the
+      * verification modal can be restored.
+      */
+
+      if (response.status === 429 && data.locked) {
+
+        sessionStorage.setItem("pendingVerificationEmail", user.eMail.toLowerCase());
+        await emailVerifyDisplay();
+        return;
+      }
+
       alert(data.error ?? "Signup failed.");
       return;
     }
-
+     /*
+     * Now display the verification modal.
+     */
     await emailVerifyDisplay();
-    // alert("Signup successful!");
-    // signUp_sheet.reset();
-    // display_login();
   } catch (error: unknown) {
     console.error("Signup request failed:", error);
     alert("Unable to connect to the server. Please try again.");
@@ -368,7 +390,60 @@ signUp_sheet.addEventListener("submit", async (event) => {
   }
 });
 
+async function restorePendingVerification(): Promise<void> {
+
+  const pendingEmail = sessionStorage.getItem("pendingVerificationEmail");
+
+  if (!pendingEmail) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/auth/verification-status`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: pendingEmail,
+          purpose: "SIGNUP"
+        })
+      }
+    );
+
+    /*
+     * There is no longer a pending signup.
+     */
+    if (response.status === 404 || response.status === 410) {
+      sessionStorage.removeItem("pendingVerificationEmail");
+      return;
+    }
+
+    if (!response.ok) {
+      console.error("Unable to restore verification state.");
+      return;
+    }
+    const data = await response.json() as VerificationState;
+
+    if (data.pendingVerification) {
+      await emailVerifyDisplay(data);
+
+      // We'll use data.locked,
+      // data.lockedUntil,
+      // data.attemptsRemaining,
+      // etc. when we build the modal behavior.
+    } else {
+      sessionStorage.removeItem("pendingVerificationEmail");
+    }
+  } catch (error: unknown) {
+    console.error("Verification status request failed:", error);
+  }
+}
+
 login_sheet.addEventListener("submit", (event) => {
   event.preventDefault();
   loginForm_verified(userName_input, password_input);
 });
+

@@ -50,14 +50,15 @@ import { prisma } from "../lib/prisma";
 import { verifyPassword } from "../lib/password";
 import {loginIpLimiter} from "./middleware";
 import {
-      signupHandler,
-      verifyEmailHandler,
-      resendVerificationHandler,
-      forgotUsernameHandler,
-      verifyForgotUsernameHandler,
-      forgotPasswordHandler,
-      verifyForgotPasswordHandler,
-      resetPasswordHandler
+    signupHandler,
+    verifyEmailHandler,
+    resendVerificationHandler,
+    forgotUsernameHandler,
+    verifyForgotUsernameHandler,
+    forgotPasswordHandler,
+    verifyForgotPasswordHandler,
+    resetPasswordHandler,
+    verificationStatusHandler
 } from "../controllers/auth.controller";
 
 
@@ -126,6 +127,8 @@ authRouter.post("/forgot-password/verify", verifyForgotPasswordHandler);
 // RESET PASSWORD
 authRouter.post("/reset-password", resetPasswordHandler);
 
+// VERIFICATION STATUS
+authRouter.post("/verification-status", verificationStatusHandler);
 
 /**
  * POST /api/auth/logout

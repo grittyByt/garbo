@@ -25,11 +25,7 @@ function calculateLockoutMinutes(previousLockoutCount: number): number {
   );
 }
 
-const lockoutMinutes = calculateLockoutMinutes(pendingSignup.lockoutCount);
 
-const lockedUntil = new Date(
-  Date.now() + lockoutMinutes * 60 * 1000
-);
 
 type VerificationPurpose =
 
@@ -125,6 +121,32 @@ export async function signupHandler(req: Request, res: Response) {
       return res.status(409).json({ error: "Username is already in use." });
     }
 
+    // Checks whether a new user is lockedout currently
+    const existingPending = await prisma.userPendingSignup.findUnique({
+        where: { eMail: normalizedEmail }
+    });
+
+    // Check if pending user has expired after 36hr wait time
+    if (existingPending && existingPending.expiresAt <= new Date()) {
+
+        await prisma.userPendingSignup.delete({
+            where: { id: existingPending.id }
+        });
+    }
+
+    // If pending user is still alive and locked
+    if (existingPending && existingPending.expiresAt > new Date() &&
+        existingPending.lockedUntil &&
+        existingPending.lockedUntil > new Date()
+    ) {
+          return res.status(429).json({
+            error: "This email is temporarily locked from verification.",
+            pendingVerification: true,
+            locked: true,
+            lockedUntil: existingPending.lockedUntil.toISOString()
+          });
+    }
+
 
     // Pending User Creation
     const pendingUser = await prisma.userPendingSignup.upsert({
@@ -148,25 +170,8 @@ export async function signupHandler(req: Request, res: Response) {
         },
 
     });
-    // Create user
-    // const welcomeUser = await prisma.user.create({
-    //   data: {
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //     userName: userName,
-    //     eMail: eMail,
-    //     passwordHash: passwordHash,
-    //     emailVerification: {
-    //       create: {
-    //         codeHash,
-    //         expiresAt,
-    //         resendAfter,
-    //         purpose: "SIGNUP"
-    //       },
-    //     },
-    //   },
-    //   select: { id: true, firstName: true, lastName: true, userName: true, eMail: true, emailVerification: true, createdAt: true },
-    // });
+
+    // creation of the token assigned to the upcoming user
     await prisma.emailVerificationToken.upsert({
 
         where: { pendingSignupId: pendingUser.id },
@@ -191,9 +196,6 @@ export async function signupHandler(req: Request, res: Response) {
                 }
             }
         },
-
-
-
     });
 
     await sendVerificationEmail(pendingUser.eMail, code);
@@ -329,7 +331,7 @@ export async function verifyEmailHandler(req: Request, res: Response) {
                     }),
 
                     prisma.userPendingSignup.update({
-                        where: {id: pending.id},
+                        where: { id: pending.id },
                         data: {
                             lockoutCount: {increment: 1},
                             lockedUntil,
@@ -339,8 +341,9 @@ export async function verifyEmailHandler(req: Request, res: Response) {
 
                 return res.status(429).json({
                     error:
-                        `Too many failed attempts. You must wait ${lockoutMinutes} ` +
-                        `minute(s) before requesting another verifier passcode.`,
+                        `Maximum verification attempts reached.`,
+                    locked: true,
+                    attemptsRemaining: 0,
                     lockedUntil,
                 });
             }
@@ -356,13 +359,12 @@ export async function verifyEmailHandler(req: Request, res: Response) {
                 },
             });
 
-            const attemptsRemaining =
-                MAX_VERIFICATION_ATTEMPTS - newAttemptCount;
+            const attemptsRemaining = MAX_VERIFICATION_ATTEMPTS - newAttemptCount;
 
             return res.status(400).json({
-                error:
-                    `Invalid verifier passcode. ` +
-                    `${attemptsRemaining} attempt(s) remaining.`,
+                error: `Invalid verifier passcode.`,
+                locked: false,
+                attemptsRemaining
             });
         }
 
@@ -571,59 +573,72 @@ export async function resendVerificationHandler(req: Request, res: Response) {
 
       const resendAfter = new Date(now.getTime() + RESEND_MIN * 60_000);
 
+      // Send email first then after it has been sent THEN token is created
+      try {
+          await sendVerificationEmail(pendingUser.eMail, code);
+      } catch (emailError) {
+          console.error("VERIFICATION EMAIL SEND ERROR:", emailError);
+
+          return res.status(503).json({
+            error: "Unable to send verification email. Please try again."
+          });
+      }
+
       /*
        * Replace the previous verification code
        * or create one if none currently exists.
        */
 
-      await prisma.emailVerificationToken.upsert({
-        where: {
-          pendingSignupId: pendingUser.id
-        },
+      await prisma.$transaction(async (tx) => {
 
-        update: {
-          purpose: "SIGNUP",
-          codeHash,
-          expiresAt,
-          resendAfter,
+          await tx.emailVerificationToken.upsert({
+            where: {
+              pendingSignupId: pendingUser.id
+            },
 
-          // New code gets a fresh set of attempts.
-          attemptCount: 0
-        },
+            update: {
+              purpose: "SIGNUP",
+              codeHash,
+              expiresAt,
+              resendAfter,
+              attemptCount: 0
+            },
 
-        create: {
-          purpose: "SIGNUP",
-          codeHash,
-          expiresAt,
-          resendAfter,
-          attemptCount: 0,
+            create: {
+              purpose: "SIGNUP",
+              codeHash,
+              expiresAt,
+              resendAfter,
+              attemptCount: 0,
 
-          pendingSignup: {
-            connect: {
-              id: pendingUser.id
+              pendingSignup: {
+                connect: {
+                  id: pendingUser.id
+                }
+              }
             }
-          }
-        }
-      });
+          });
 
-      /*
-       * The previous lockout has elapsed.
-       *
-       * Clear lockedUntil but DO NOT reset
-       * lockoutCount.
-       */
+          /*
+           * The user successfully waited through
+           * the lockout period.
+           *
+           * Clear lockedUntil, but preserve
+           * lockoutCount.
+           */
+          if (pendingUser.lockedUntil) {
+            await tx.userPendingSignup.update({
+              where: {
+                id: pendingUser.id
+              },
 
-      if (pendingUser.lockedUntil) {
-        await prisma.userPendingSignup.update({
-          where: {
-            id: pendingUser.id
-          },
-
-          data: {
-            lockedUntil: null
+              data: {
+                lockedUntil: null
+              }
+            });
           }
         });
-      }
+
 
       /*
        * Send the newly generated code.
@@ -1509,6 +1524,83 @@ export async function resetPasswordHandler(req: Request, res: Response) {
 
       error:
         "Unable to reset password."
+    });
+  }
+}
+
+// What state is this pending signup currently in?
+export async function verificationStatusHandler(req: Request, res: Response) {
+  try {
+    const { email, purpose } = req.body;
+
+    if (!email || purpose !== "SIGNUP") {
+      return res.status(400).json({
+        error: "Invalid verification status request."
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const pending =
+      await prisma.userPendingSignup.findUnique({
+        where: { eMail: normalizedEmail },
+
+        include: { emailVerification: true }
+      });
+
+    if (!pending) {
+      return res.status(404).json({
+        pendingVerification: false
+      });
+    }
+
+    const now = new Date();
+
+    /*
+     * Entire signup expired.
+     */
+    if (pending.expiresAt <= now) {
+      await prisma.userPendingSignup.delete({
+        where: { id: pending.id }
+      });
+
+      return res.status(410).json({
+        pendingVerification: false,
+        expired: true
+      });
+    }
+
+    const token = pending.emailVerification;
+
+    const locked =
+      pending.lockedUntil !== null &&
+      pending.lockedUntil > now;
+
+    const attemptsRemaining =
+        token ? Math.max(0, MAX_VERIFICATION_ATTEMPTS - token.attemptCount)
+      : MAX_VERIFICATION_ATTEMPTS;
+
+    return res.status(200).json({
+      pendingVerification: true,
+
+      locked,
+      lockedUntil:
+        pending.lockedUntil?.toISOString()
+        ?? null,
+
+      attemptsRemaining,
+
+      canResend:
+        !locked && (!token || token.resendAfter <= now),
+
+      resendAvailableAt: token?.resendAfter.toISOString() ?? null
+    });
+
+  } catch (err) {
+    console.error("VERIFICATION STATUS ERROR:", err);
+
+    return res.status(500).json({
+      error: "Unable to retrieve verification status."
     });
   }
 }
